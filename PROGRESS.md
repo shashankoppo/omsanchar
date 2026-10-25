@@ -11,7 +11,7 @@ Estimated P0 completion: **about 40%**. This is a rough deliverable-coverage est
 | ID | Status | Evidence / remaining work |
 |---|---|---|
 | D1 Repository scaffold and CI | Complete locally; hosted CI pending | `make dev-native` ran in WSL2; the verification image built and passed its spec tests; the gateway image built and returned healthy under Podman. The CI workflow includes Docker/Compose builds, dependency SBOM, Grype high-severity gate, and license checks. This checkout has no remote, so no hosted CI run is available. |
-| D2 Protocol spec v0.1 | Review-ready; tag pending | Relative remaining-millisecond deadlines, signed i64 microcredits, rational price and cumulative ceiling rounding, checked overflow, and cutoff behavior are specified. Rust and Python use shared JSON vectors. Need create `v0.1.0` and run Buf breaking against it. |
+| D2 Protocol spec v0.1 | Tagged; compatibility check passes | Relative remaining-millisecond deadlines, signed i64 microcredits, rational price and cumulative ceiling rounding, checked overflow, and cutoff behavior are specified. Rust and Python use shared JSON vectors. Annotated tag `v0.1.0` is created; local Buf format, lint, build, and tag-based breaking checks pass. |
 | D3 One-command integrated dev environment | Not started | `make dev-native` runs the D4 gateway. The larger Envoy, NATS JetStream, SPIRE, mock MCP, OTel Collector, and dashboard stack is not assembled. |
 | D4 First end-to-end resumable model slice | Complete as a local reference | Native Python gateway to deterministic mock stream has bearer auth, tenant quota, per-token microcredit metering, trace propagation, metrics, audit events, graceful SIGTERM, and resume by stream ID/cursor. Automated TCP disconnect/resume test receives six sequenced outputs exactly once. In-memory only; not a production gateway. |
 | D5 Envoy/Rust benchmark spike | Partial | D4 loopback smoke measurement and raw data exist. No Envoy-versus-Rust comparison, TLS, MCP tool call, fan-out, or concurrent workload has run. |
@@ -31,7 +31,7 @@ Corrections applied from the latest prompt and file 04:
 - Replaced generic unsigned cost units with non-negative signed 64-bit microcredits. The spec defines rational price rates, cumulative ceiling rounding, overflow rejection, and withholding an unaffordable output before release. HTTP `OS-3029` preserves `OS-0200` tenant-quota or `OS-0201` request-budget cause.
 - Added the executable Rust stream state machine and independent Python cross-check against shared JSON conformance vectors; the stream crate has explicit finite limits.
 - Added locked Cargo dependency/license inventory checks, dependency SBOM generation, and a high-severity Grype CI gate. These configured scans have not yet run in CI.
-- Pointed Buf breaking compatibility at `v0.1.0`; the tag and check still need to be executed.
+- Pointed Buf breaking compatibility at `v0.1.0`; the annotated tag was created and the local compatibility check passed.
 - Kept this session focused on the D4 vertical slice and D6 token spike. The broader platform blueprint's peer fabric, channels/media, learned routing, and artifact fabric remain outside this session's scope.
 
 Open contract question: a relative duration forwarded between hosts does not include time spent in the network. The sender must bound its own outbound attempt with its monotonic deadline and propagate cancellation; transport behavior and retry semantics need explicit binding-level review.
