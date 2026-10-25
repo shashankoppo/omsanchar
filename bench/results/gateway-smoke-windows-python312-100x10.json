@@ -1,0 +1,585 @@
+{
+  "schema_version": 1,
+  "benchmark": "native_gateway_loopback_stream_smoke",
+  "measured_at_utc": "2026-10-25T11:15:18.451234+00:00",
+  "source_revision": null,
+  "environment": {
+    "os": "Windows-11-10.0.26200-SP0",
+    "python": "3.12.8",
+    "architecture": "AMD64",
+    "processor_identifier": "AMD64 Family 25 Model 80 Stepping 0, AuthenticAMD",
+    "logical_processors": 12,
+    "total_ram_bytes": 16487870464
+  },
+  "workload": {
+    "transport": "HTTP/1.1 over IPv4 loopback",
+    "requests": 100,
+    "warmup_requests": 10,
+    "concurrency": 1,
+    "input_tokens": 2,
+    "output_tokens_per_request": 1,
+    "model": "deterministic in-process mock",
+    "mock_delay_ms": 0,
+    "auth": "static local bearer credential",
+    "price_table": {
+      "input_microcredits_per_token": 1,
+      "output_microcredits_per_token": 2
+    }
+  },
+  "confidence_interval_method": "95% percentile bootstrap interval for the median, 2,000 resamples, seed 0",
+  "metrics_ms": {
+    "headers": {
+      "min": 0.8124,
+      "median": 1.143,
+      "mean": 2.302302,
+      "p95": 13.5343,
+      "p99": 18.6512,
+      "max": 24.9949,
+      "median_ci95_percentile_bootstrap": {
+        "low": 1.10535,
+        "high": 1.1651,
+        "resamples": 2000,
+        "seed": 0
+      }
+    },
+    "first_token": {
+      "min": 0.8922,
+      "median": 1.22845,
+      "mean": 2.390136,
+      "p95": 13.6719,
+      "p99": 18.7904,
+      "max": 25.0975,
+      "median_ci95_percentile_bootstrap": {
+        "low": 1.1898,
+        "high": 1.2642,
+        "resamples": 2000,
+        "seed": 0
+      }
+    },
+    "complete": {
+      "min": 0.9086,
+      "median": 1.2812,
+      "mean": 2.450323,
+      "p95": 13.778,
+      "p99": 18.8121,
+      "max": 25.1727,
+      "median_ci95_percentile_bootstrap": {
+        "low": 1.2587,
+        "high": 1.3153,
+        "resamples": 2000,
+        "seed": 0
+      }
+    }
+  },
+  "raw_samples_ns": [
+    {
+      "headers_ns": 1139100,
+      "first_token_ns": 1244700,
+      "complete_ns": 1315800
+    },
+    {
+      "headers_ns": 1191000,
+      "first_token_ns": 1260700,
+      "complete_ns": 1281800
+    },
+    {
+      "headers_ns": 1146900,
+      "first_token_ns": 1240000,
+      "complete_ns": 1312900
+    },
+    {
+      "headers_ns": 1231400,
+      "first_token_ns": 1327900,
+      "complete_ns": 1389800
+    },
+    {
+      "headers_ns": 973100,
+      "first_token_ns": 1070800,
+      "complete_ns": 1154000
+    },
+    {
+      "headers_ns": 1084000,
+      "first_token_ns": 1156500,
+      "complete_ns": 1214900
+    },
+    {
+      "headers_ns": 1166300,
+      "first_token_ns": 1255200,
+      "complete_ns": 1315300
+    },
+    {
+      "headers_ns": 1099600,
+      "first_token_ns": 1160800,
+      "complete_ns": 1220200
+    },
+    {
+      "headers_ns": 1029200,
+      "first_token_ns": 1138500,
+      "complete_ns": 1158000
+    },
+    {
+      "headers_ns": 812400,
+      "first_token_ns": 892200,
+      "complete_ns": 944300
+    },
+    {
+      "headers_ns": 1017600,
+      "first_token_ns": 1174300,
+      "complete_ns": 1263500
+    },
+    {
+      "headers_ns": 1442200,
+      "first_token_ns": 1519400,
+      "complete_ns": 1571700
+    },
+    {
+      "headers_ns": 957300,
+      "first_token_ns": 1043700,
+      "complete_ns": 1084900
+    },
+    {
+      "headers_ns": 14272200,
+      "first_token_ns": 14373800,
+      "complete_ns": 14445300
+    },
+    {
+      "headers_ns": 1303800,
+      "first_token_ns": 1386100,
+      "complete_ns": 1481400
+    },
+    {
+      "headers_ns": 1063500,
+      "first_token_ns": 1158600,
+      "complete_ns": 1232600
+    },
+    {
+      "headers_ns": 1202100,
+      "first_token_ns": 1297000,
+      "complete_ns": 1366200
+    },
+    {
+      "headers_ns": 1202800,
+      "first_token_ns": 1303100,
+      "complete_ns": 1370900
+    },
+    {
+      "headers_ns": 1122200,
+      "first_token_ns": 1244200,
+      "complete_ns": 1297000
+    },
+    {
+      "headers_ns": 1165600,
+      "first_token_ns": 1264200,
+      "complete_ns": 1343600
+    },
+    {
+      "headers_ns": 1113500,
+      "first_token_ns": 1213100,
+      "complete_ns": 1256200
+    },
+    {
+      "headers_ns": 1204200,
+      "first_token_ns": 1287200,
+      "complete_ns": 1340100
+    },
+    {
+      "headers_ns": 1022500,
+      "first_token_ns": 1130000,
+      "complete_ns": 1153300
+    },
+    {
+      "headers_ns": 1105900,
+      "first_token_ns": 1182500,
+      "complete_ns": 1293600
+    },
+    {
+      "headers_ns": 1388200,
+      "first_token_ns": 1454500,
+      "complete_ns": 1517200
+    },
+    {
+      "headers_ns": 1153600,
+      "first_token_ns": 1228400,
+      "complete_ns": 1280600
+    },
+    {
+      "headers_ns": 1112600,
+      "first_token_ns": 1196500,
+      "complete_ns": 1280500
+    },
+    {
+      "headers_ns": 936000,
+      "first_token_ns": 1022600,
+      "complete_ns": 1119200
+    },
+    {
+      "headers_ns": 855800,
+      "first_token_ns": 919900,
+      "complete_ns": 998400
+    },
+    {
+      "headers_ns": 847800,
+      "first_token_ns": 931900,
+      "complete_ns": 948200
+    },
+    {
+      "headers_ns": 859700,
+      "first_token_ns": 937400,
+      "complete_ns": 1026600
+    },
+    {
+      "headers_ns": 940200,
+      "first_token_ns": 1039800,
+      "complete_ns": 1134100
+    },
+    {
+      "headers_ns": 907400,
+      "first_token_ns": 1005000,
+      "complete_ns": 1050100
+    },
+    {
+      "headers_ns": 939000,
+      "first_token_ns": 1005300,
+      "complete_ns": 1056700
+    },
+    {
+      "headers_ns": 840400,
+      "first_token_ns": 900700,
+      "complete_ns": 908600
+    },
+    {
+      "headers_ns": 991700,
+      "first_token_ns": 1044700,
+      "complete_ns": 1084400
+    },
+    {
+      "headers_ns": 892300,
+      "first_token_ns": 973100,
+      "complete_ns": 1027600
+    },
+    {
+      "headers_ns": 878000,
+      "first_token_ns": 961800,
+      "complete_ns": 977400
+    },
+    {
+      "headers_ns": 915300,
+      "first_token_ns": 1002700,
+      "complete_ns": 1052100
+    },
+    {
+      "headers_ns": 975100,
+      "first_token_ns": 1065900,
+      "complete_ns": 1118800
+    },
+    {
+      "headers_ns": 15969500,
+      "first_token_ns": 16053300,
+      "complete_ns": 16104100
+    },
+    {
+      "headers_ns": 1284000,
+      "first_token_ns": 1347800,
+      "complete_ns": 1394900
+    },
+    {
+      "headers_ns": 1164800,
+      "first_token_ns": 1273600,
+      "complete_ns": 1356600
+    },
+    {
+      "headers_ns": 13534300,
+      "first_token_ns": 13671900,
+      "complete_ns": 13778000
+    },
+    {
+      "headers_ns": 1217300,
+      "first_token_ns": 1298600,
+      "complete_ns": 1400400
+    },
+    {
+      "headers_ns": 1169500,
+      "first_token_ns": 1266200,
+      "complete_ns": 1354200
+    },
+    {
+      "headers_ns": 1104800,
+      "first_token_ns": 1226100,
+      "complete_ns": 1273000
+    },
+    {
+      "headers_ns": 1137400,
+      "first_token_ns": 1209400,
+      "complete_ns": 1269800
+    },
+    {
+      "headers_ns": 1226700,
+      "first_token_ns": 1329200,
+      "complete_ns": 1428200
+    },
+    {
+      "headers_ns": 1083800,
+      "first_token_ns": 1187600,
+      "complete_ns": 1226400
+    },
+    {
+      "headers_ns": 1137100,
+      "first_token_ns": 1270200,
+      "complete_ns": 1299700
+    },
+    {
+      "headers_ns": 1203900,
+      "first_token_ns": 1301700,
+      "complete_ns": 1368400
+    },
+    {
+      "headers_ns": 1149900,
+      "first_token_ns": 1280900,
+      "complete_ns": 1334700
+    },
+    {
+      "headers_ns": 1241200,
+      "first_token_ns": 1304200,
+      "complete_ns": 1326600
+    },
+    {
+      "headers_ns": 1258200,
+      "first_token_ns": 1400700,
+      "complete_ns": 1480200
+    },
+    {
+      "headers_ns": 1983700,
+      "first_token_ns": 2091800,
+      "complete_ns": 2170300
+    },
+    {
+      "headers_ns": 1048400,
+      "first_token_ns": 1151500,
+      "complete_ns": 1230500
+    },
+    {
+      "headers_ns": 967100,
+      "first_token_ns": 1078000,
+      "complete_ns": 1129800
+    },
+    {
+      "headers_ns": 956600,
+      "first_token_ns": 1033000,
+      "complete_ns": 1091900
+    },
+    {
+      "headers_ns": 966200,
+      "first_token_ns": 1060400,
+      "complete_ns": 1131000
+    },
+    {
+      "headers_ns": 1022700,
+      "first_token_ns": 1048200,
+      "complete_ns": 1116100
+    },
+    {
+      "headers_ns": 24994900,
+      "first_token_ns": 25097500,
+      "complete_ns": 25172700
+    },
+    {
+      "headers_ns": 1228500,
+      "first_token_ns": 1295400,
+      "complete_ns": 1346300
+    },
+    {
+      "headers_ns": 1236700,
+      "first_token_ns": 1313700,
+      "complete_ns": 1331600
+    },
+    {
+      "headers_ns": 1225600,
+      "first_token_ns": 1290100,
+      "complete_ns": 1337600
+    },
+    {
+      "headers_ns": 1104300,
+      "first_token_ns": 1198900,
+      "complete_ns": 1261200
+    },
+    {
+      "headers_ns": 18651200,
+      "first_token_ns": 18790400,
+      "complete_ns": 18812100
+    },
+    {
+      "headers_ns": 1197700,
+      "first_token_ns": 1294800,
+      "complete_ns": 1359600
+    },
+    {
+      "headers_ns": 1034800,
+      "first_token_ns": 1111000,
+      "complete_ns": 1128300
+    },
+    {
+      "headers_ns": 1160100,
+      "first_token_ns": 1192000,
+      "complete_ns": 1290900
+    },
+    {
+      "headers_ns": 1080200,
+      "first_token_ns": 1163100,
+      "complete_ns": 1224800
+    },
+    {
+      "headers_ns": 1165100,
+      "first_token_ns": 1228500,
+      "complete_ns": 1275500
+    },
+    {
+      "headers_ns": 1226700,
+      "first_token_ns": 1290600,
+      "complete_ns": 1305300
+    },
+    {
+      "headers_ns": 1524900,
+      "first_token_ns": 1604600,
+      "complete_ns": 1665500
+    },
+    {
+      "headers_ns": 1215600,
+      "first_token_ns": 1255700,
+      "complete_ns": 1352900
+    },
+    {
+      "headers_ns": 1092100,
+      "first_token_ns": 1169900,
+      "complete_ns": 1230200
+    },
+    {
+      "headers_ns": 1094600,
+      "first_token_ns": 1166800,
+      "complete_ns": 1229000
+    },
+    {
+      "headers_ns": 10787800,
+      "first_token_ns": 10862700,
+      "complete_ns": 10925600
+    },
+    {
+      "headers_ns": 1292200,
+      "first_token_ns": 1357800,
+      "complete_ns": 1385100
+    },
+    {
+      "headers_ns": 1100300,
+      "first_token_ns": 1137800,
+      "complete_ns": 1261300
+    },
+    {
+      "headers_ns": 1154300,
+      "first_token_ns": 1221300,
+      "complete_ns": 1244000
+    },
+    {
+      "headers_ns": 1186500,
+      "first_token_ns": 1280900,
+      "complete_ns": 1384100
+    },
+    {
+      "headers_ns": 1078200,
+      "first_token_ns": 1136000,
+      "complete_ns": 1179000
+    },
+    {
+      "headers_ns": 1068000,
+      "first_token_ns": 1147600,
+      "complete_ns": 1211600
+    },
+    {
+      "headers_ns": 16008600,
+      "first_token_ns": 16119000,
+      "complete_ns": 16174600
+    },
+    {
+      "headers_ns": 1177500,
+      "first_token_ns": 1240300,
+      "complete_ns": 1254700
+    },
+    {
+      "headers_ns": 1108000,
+      "first_token_ns": 1137200,
+      "complete_ns": 1255400
+    },
+    {
+      "headers_ns": 1136600,
+      "first_token_ns": 1216600,
+      "complete_ns": 1277000
+    },
+    {
+      "headers_ns": 1066200,
+      "first_token_ns": 1138400,
+      "complete_ns": 1191400
+    },
+    {
+      "headers_ns": 1086100,
+      "first_token_ns": 1150000,
+      "complete_ns": 1197000
+    },
+    {
+      "headers_ns": 1222700,
+      "first_token_ns": 1280400,
+      "complete_ns": 1299000
+    },
+    {
+      "headers_ns": 1097800,
+      "first_token_ns": 1170500,
+      "complete_ns": 1225500
+    },
+    {
+      "headers_ns": 1154900,
+      "first_token_ns": 1269100,
+      "complete_ns": 1375800
+    },
+    {
+      "headers_ns": 1119400,
+      "first_token_ns": 1210300,
+      "complete_ns": 1279400
+    },
+    {
+      "headers_ns": 12440600,
+      "first_token_ns": 12559300,
+      "complete_ns": 12579100
+    },
+    {
+      "headers_ns": 1150200,
+      "first_token_ns": 1277400,
+      "complete_ns": 1331900
+    },
+    {
+      "headers_ns": 1189300,
+      "first_token_ns": 1301500,
+      "complete_ns": 1414500
+    },
+    {
+      "headers_ns": 1157900,
+      "first_token_ns": 1262600,
+      "complete_ns": 1309600
+    },
+    {
+      "headers_ns": 1404500,
+      "first_token_ns": 1588800,
+      "complete_ns": 1669800
+    },
+    {
+      "headers_ns": 1481000,
+      "first_token_ns": 1586100,
+      "complete_ns": 1630800
+    }
+  ],
+  "source_sha256": {
+    "bench\\smoke_gateway.py": "f35e86cf7917cfab7060e9fa318ce1fb9c8ba15f1206addad21290acd9382385",
+    "gateway\\server.py": "ee5b3bf74665ac93dd90453c4c4a5776876d275f3007c134a30c862391a2de9f"
+  },
+  "limitations": [
+    "This is an end-to-end smoke measurement of the Python reference gateway, not proxy overhead.",
+    "It is not an Envoy-versus-Rust comparison and does not cover MCP tool-call or fan-out workloads.",
+    "Loopback, one client, one in-process mock model, one output token, and no TLS are used."
+  ]
+}
