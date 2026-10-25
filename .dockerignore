@@ -1,0 +1,15 @@
+.git
+.venv
+.venv-wsl
+venv
+.tools
+.tools-npm
+.bufcache
+__pycache__
+*.py[cod]
+artifacts
+target
+dist
+.env
+.env.*
+!.env.example

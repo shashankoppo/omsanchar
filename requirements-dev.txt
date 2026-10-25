@@ -1,0 +1,2 @@
+# Exact versions; dependency metadata is reviewed in docs/security/dependency-inventory.json.
+ruff==0.17.2

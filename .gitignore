@@ -1,0 +1,28 @@
+# Local environments and generated artifacts
+.venv/
+.venv-wsl/
+venv/
+.tools/
+.tools-npm/
+.bufcache/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+target/
+dist/
+artifacts/
+.env
+.env.*
+!.env.example
+
+# IDE and operating system files
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Local runtime data
+data/
+logs/

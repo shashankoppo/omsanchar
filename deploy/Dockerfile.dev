@@ -1,0 +1,15 @@
+# Local development image; production base image and hardening are deferred to D3.
+FROM python:3.12.8-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    OM_GATEWAY_HOST=0.0.0.0 \
+    OM_GATEWAY_PORT=8080
+
+WORKDIR /app
+COPY gateway ./gateway
+COPY sim ./sim
+COPY spec ./spec
+
+EXPOSE 8080
+CMD ["python", "-m", "gateway.server"]

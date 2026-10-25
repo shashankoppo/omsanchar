@@ -1,0 +1,10 @@
+# Verification-only container. Runtime images and production base digests are
+# selected and reviewed with D3; this image is not a deployment artifact.
+FROM python:3.12.8-slim
+
+WORKDIR /workspace
+COPY spec ./spec
+COPY sim ./sim
+COPY scripts ./scripts
+
+CMD ["python", "-m", "unittest", "discover", "-s", "spec/tests", "-v"]
