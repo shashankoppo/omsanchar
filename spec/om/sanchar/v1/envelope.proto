@@ -1,0 +1,63 @@
+syntax = "proto3";
+
+package om.sanchar.v1;
+
+// Envelope is the versioned transport-neutral message exchanged by Om Sanchar.
+message Envelope {
+  // Envelope semantic version. This draft supports only version 1.
+  uint32 version = 1;
+  // ULID encoded as 26 uppercase Crockford Base32 characters.
+  string id = 2;
+  // Stable caller-generated key used for bounded duplicate suppression.
+  string idempotency_key = 3;
+  // Canonical om:// address of the sender.
+  string from = 4;
+  // Canonical om:// address of the recipient.
+  string to = 5;
+  MessageKind kind = 6;
+  // Opaque payload bytes. The selected protocol binding defines its encoding.
+  bytes payload = 7;
+  Metadata meta = 8;
+  // Opaque capability grant; validated by the selected identity/policy profile.
+  bytes grant = 9;
+  // Monotonically increasing per-stream sequence, starting at 1; zero means absent.
+  uint64 seq = 10;
+  // Optional message signature. The signing profile is not fixed in v0.1.
+  optional bytes signature = 11;
+}
+
+enum MessageKind {
+  MESSAGE_KIND_UNSPECIFIED = 0;
+  MESSAGE_KIND_REQUEST = 1;
+  MESSAGE_KIND_RESPONSE = 2;
+  MESSAGE_KIND_EVENT = 3;
+  MESSAGE_KIND_CONTROL = 4;
+}
+
+enum PriorityClass {
+  PRIORITY_CLASS_UNSPECIFIED = 0;
+  PRIORITY_CLASS_VOICE = 1;
+  PRIORITY_CLASS_INTERACTIVE = 2;
+  PRIORITY_CLASS_BATCH = 3;
+}
+
+message Metadata {
+  // W3C traceparent value; an empty string means no caller trace context.
+  string traceparent = 1;
+  // Tenant used for policy, quota, residency, and metering decisions.
+  string tenant = 2;
+  PriorityClass class = 3;
+  // Remaining deadline duration in milliseconds; zero means inherit the
+  // configured policy deadline at ingress. Hops propagate the remaining value.
+  uint64 deadline_ms = 4;
+  Budget budget = 5;
+}
+
+message Budget {
+  // Optional ceilings. Absence means inherit a configured policy ceiling;
+  // zero is an explicit zero budget. Cost is signed on the wire so invalid
+  // negative values can be rejected, but valid limits are in [0, INT64_MAX].
+  optional uint64 token_limit = 1;
+  optional int64 cost_limit_microcredits = 2;
+  optional uint32 max_hops = 3;
+}

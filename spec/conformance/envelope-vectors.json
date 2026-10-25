@@ -1,0 +1,121 @@
+[
+  {
+    "name": "minimal valid request",
+    "valid": true,
+    "envelope": {
+      "version": 1,
+      "id": "01JGFJJZ00ABCDEF0123456789",
+      "idempotencyKey": "req-0001",
+      "from": "om://acme/agent/planner",
+      "to": "om://acme/model/gpt-4o@v1",
+      "kind": "MESSAGE_KIND_REQUEST",
+      "payload": "aGVsbG8=",
+      "meta": {
+        "traceparent": "00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01",
+        "tenant": "acme",
+        "class": "PRIORITY_CLASS_INTERACTIVE",
+        "deadlineMs": "30000",
+        "budget": {"tokenLimit": "1000", "costLimitMicrocredits": "250000", "maxHops": 8}
+      },
+      "grant": "",
+      "seq": "1"
+    }
+  },
+  {
+    "name": "accept maximum signed microcredit limit",
+    "valid": true,
+    "envelope": {
+      "version": 1,
+      "id": "01JGFJJZ00ABCDEF0123456789",
+      "idempotencyKey": "req-max-cost",
+      "from": "om://acme/agent/planner",
+      "to": "om://acme/model/gpt-4o",
+      "kind": "MESSAGE_KIND_REQUEST",
+      "payload": "",
+      "meta": {
+        "tenant": "acme",
+        "class": "PRIORITY_CLASS_BATCH",
+        "deadlineMs": "30000",
+        "budget": {"costLimitMicrocredits": "9223372036854775807"}
+      }
+    }
+  },
+  {
+    "name": "reject unsupported envelope version",
+    "valid": false,
+    "envelope": {
+      "version": 2,
+      "id": "01JGFJJZ00ABCDEF0123456789",
+      "idempotencyKey": "req-0002",
+      "from": "om://acme/agent/planner",
+      "to": "om://acme/model/gpt-4o",
+      "kind": "MESSAGE_KIND_REQUEST",
+      "payload": "",
+      "meta": {"tenant": "acme", "class": "PRIORITY_CLASS_BATCH"}
+    }
+  },
+  {
+    "name": "reject malformed ULID",
+    "valid": false,
+    "envelope": {
+      "version": 1,
+      "id": "not-a-ulid",
+      "idempotencyKey": "req-0003",
+      "from": "om://acme/agent/planner",
+      "to": "om://acme/model/gpt-4o",
+      "kind": "MESSAGE_KIND_REQUEST",
+      "payload": "",
+      "meta": {"tenant": "acme", "class": "PRIORITY_CLASS_BATCH"}
+    }
+  },
+  {
+    "name": "reject boolean envelope version",
+    "valid": false,
+    "envelope": {
+      "version": true,
+      "id": "01JGFJJZ00ABCDEF0123456789",
+      "idempotencyKey": "req-0004",
+      "from": "om://acme/agent/planner",
+      "to": "om://acme/model/gpt-4o",
+      "kind": "MESSAGE_KIND_REQUEST",
+      "payload": "",
+      "meta": {"tenant": "acme", "class": "PRIORITY_CLASS_BATCH"}
+    }
+  },
+  {
+    "name": "reject negative microcredit limit",
+    "valid": false,
+    "envelope": {
+      "version": 1,
+      "id": "01JGFJJZ00ABCDEF0123456789",
+      "idempotencyKey": "req-0005",
+      "from": "om://acme/agent/planner",
+      "to": "om://acme/model/gpt-4o",
+      "kind": "MESSAGE_KIND_REQUEST",
+      "payload": "",
+      "meta": {
+        "tenant": "acme",
+        "class": "PRIORITY_CLASS_BATCH",
+        "budget": {"costLimitMicrocredits": "-1"}
+      }
+    }
+  },
+  {
+    "name": "reject microcredit limit above signed 64-bit range",
+    "valid": false,
+    "envelope": {
+      "version": 1,
+      "id": "01JGFJJZ00ABCDEF0123456789",
+      "idempotencyKey": "req-0006",
+      "from": "om://acme/agent/planner",
+      "to": "om://acme/model/gpt-4o",
+      "kind": "MESSAGE_KIND_REQUEST",
+      "payload": "",
+      "meta": {
+        "tenant": "acme",
+        "class": "PRIORITY_CLASS_BATCH",
+        "budget": {"costLimitMicrocredits": "9223372036854775808"}
+      }
+    }
+  }
+]

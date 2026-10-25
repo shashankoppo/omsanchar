@@ -1,0 +1,146 @@
+[
+  {
+    "name": "resume after disconnect has no missing or duplicate events",
+    "limits": {
+      "bufferLimit": 4,
+      "maxEvents": 8,
+      "maxPayloadBytes": 32,
+      "maxTotalPayloadBytes": 128
+    },
+    "operations": [
+      {"op": "open"},
+      {"op": "publish", "key": "k1", "payload": "one", "expectSeq": 1},
+      {"op": "publish", "key": "k2", "payload": "two", "expectSeq": 2},
+      {"op": "ack", "cursor": 1},
+      {"op": "ack", "cursor": 0, "expectError": "OS-0402"},
+      {"op": "ack", "cursor": 3, "expectError": "OS-0402"},
+      {"op": "disconnect"},
+      {"op": "resume", "cursor": 1, "expectSeqs": [2]},
+      {"op": "publish", "key": "k2", "payload": "two", "expectSeq": 2},
+      {"op": "disconnect"},
+      {"op": "resume", "cursor": 1, "expectSeqs": [2]},
+      {"op": "state", "expectState": "OPEN", "expectLastSeq": 2, "expectAckCursor": 1}
+    ]
+  },
+  {
+    "name": "idempotency and bounded unacknowledged buffer",
+    "limits": {
+      "bufferLimit": 2,
+      "maxEvents": 4,
+      "maxPayloadBytes": 32,
+      "maxTotalPayloadBytes": 128
+    },
+    "operations": [
+      {"op": "open"},
+      {"op": "publish", "key": "k1", "payload": "one", "expectSeq": 1},
+      {"op": "publish", "key": "k1", "payload": "one", "expectSeq": 1},
+      {"op": "publish", "key": "k1", "payload": "different", "expectError": "OS-0401"},
+      {"op": "publish", "key": "k2", "payload": "two", "expectSeq": 2},
+      {"op": "publish", "key": "k3", "payload": "three", "expectError": "OS-0403"},
+      {"op": "ack", "cursor": 1},
+      {"op": "publish", "key": "k3", "payload": "three", "expectSeq": 3},
+      {"op": "state", "expectState": "OPEN", "expectLastSeq": 3, "expectAckCursor": 1}
+    ]
+  },
+  {
+    "name": "expired and ahead resume cursors do not change suspended state",
+    "limits": {
+      "bufferLimit": 2,
+      "maxEvents": 4,
+      "maxPayloadBytes": 32,
+      "maxTotalPayloadBytes": 128
+    },
+    "operations": [
+      {"op": "open"},
+      {"op": "publish", "key": "k1", "payload": "one", "expectSeq": 1},
+      {"op": "ack", "cursor": 1},
+      {"op": "disconnect"},
+      {"op": "resume", "cursor": 0, "expectError": "OS-0400"},
+      {"op": "resume", "cursor": 2, "expectError": "OS-0402"},
+      {"op": "resume", "cursor": 1, "expectSeqs": []},
+      {"op": "state", "expectState": "OPEN", "expectLastSeq": 1, "expectAckCursor": 1}
+    ]
+  },
+  {
+    "name": "dedupe record and payload limits remain finite after acknowledgement",
+    "limits": {
+      "bufferLimit": 1,
+      "maxEvents": 4,
+      "maxPayloadBytes": 3,
+      "maxTotalPayloadBytes": 4
+    },
+    "operations": [
+      {"op": "open"},
+      {"op": "publish", "key": "k1", "payload": "1234", "expectError": "OS-0404"},
+      {"op": "publish", "key": "k1", "payload": "123", "expectSeq": 1},
+      {"op": "ack", "cursor": 1},
+      {"op": "publish", "key": "k2", "payload": "1", "expectSeq": 2},
+      {"op": "ack", "cursor": 2},
+      {"op": "publish", "key": "k3", "payload": "1", "expectError": "OS-0404"},
+      {"op": "state", "expectState": "OPEN", "expectLastSeq": 2, "expectAckCursor": 2}
+    ]
+  },
+  {
+    "name": "unique idempotency records have a finite limit",
+    "limits": {
+      "bufferLimit": 1,
+      "maxEvents": 1,
+      "maxPayloadBytes": 8,
+      "maxTotalPayloadBytes": 8
+    },
+    "operations": [
+      {"op": "open"},
+      {"op": "publish", "key": "k1", "payload": "one", "expectSeq": 1},
+      {"op": "ack", "cursor": 1},
+      {"op": "publish", "key": "k2", "payload": "two", "expectError": "OS-0404"},
+      {"op": "state", "expectState": "OPEN", "expectLastSeq": 1, "expectAckCursor": 1}
+    ]
+  },
+  {
+    "name": "terminal stream cannot be reopened",
+    "limits": {
+      "bufferLimit": 1,
+      "maxEvents": 1,
+      "maxPayloadBytes": 8,
+      "maxTotalPayloadBytes": 8
+    },
+    "operations": [
+      {"op": "open"},
+      {"op": "complete"},
+      {"op": "disconnect", "expectError": "OS-0001"},
+      {"op": "state", "expectState": "COMPLETED", "expectLastSeq": 0, "expectAckCursor": 0}
+    ]
+  },
+  {
+    "name": "failed stream stays terminal after disconnect",
+    "limits": {
+      "bufferLimit": 1,
+      "maxEvents": 1,
+      "maxPayloadBytes": 8,
+      "maxTotalPayloadBytes": 8
+    },
+    "operations": [
+      {"op": "open"},
+      {"op": "disconnect"},
+      {"op": "fail"},
+      {"op": "resume", "cursor": 0, "expectError": "OS-0001"},
+      {"op": "state", "expectState": "FAILED", "expectLastSeq": 0, "expectAckCursor": 0}
+    ]
+  },
+  {
+    "name": "cancelled stream stays terminal after disconnect",
+    "limits": {
+      "bufferLimit": 1,
+      "maxEvents": 1,
+      "maxPayloadBytes": 8,
+      "maxTotalPayloadBytes": 8
+    },
+    "operations": [
+      {"op": "open"},
+      {"op": "disconnect"},
+      {"op": "cancel"},
+      {"op": "resume", "cursor": 0, "expectError": "OS-0001"},
+      {"op": "state", "expectState": "CANCELLED", "expectLastSeq": 0, "expectAckCursor": 0}
+    ]
+  }
+]

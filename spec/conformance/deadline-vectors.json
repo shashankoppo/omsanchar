@@ -1,0 +1,35 @@
+[
+  {
+    "name": "zero inherits policy maximum",
+    "requestedMs": 0,
+    "policyMaxMs": 30000,
+    "effectiveMs": 30000,
+    "elapsedMonotonicNs": 0,
+    "remainingMs": 30000
+  },
+  {
+    "name": "caller duration is clamped to tenant maximum",
+    "requestedMs": 60000,
+    "policyMaxMs": 30000,
+    "effectiveMs": 30000,
+    "elapsedMonotonicNs": 1500000,
+    "remainingMs": 29998
+  },
+  {
+    "name": "sub-millisecond elapsed time rounds down conservatively",
+    "requestedMs": 25,
+    "policyMaxMs": 100,
+    "effectiveMs": 25,
+    "elapsedMonotonicNs": 100000,
+    "remainingMs": 24,
+    "wallClockJumpMs": [-86400000, 86400000]
+  },
+  {
+    "name": "less than one millisecond remaining expires",
+    "requestedMs": 25,
+    "policyMaxMs": 100,
+    "effectiveMs": 25,
+    "elapsedMonotonicNs": 24999999,
+    "error": "OS-0500"
+  }
+]
