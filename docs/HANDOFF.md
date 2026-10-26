@@ -4,7 +4,7 @@ Updated: 2026-10-27 (Asia/Calcutta)
 
 ## Preserved state
 
-- Working branch: `wip/session3`; checkpoint `2d31921` (`checkpoint: preserve session 3 prototype and evidence`) committed all 47 paths present at the handoff. Subsequent token-investigation changes are currently uncommitted and must be checkpointed at the next milestone.
+- Working branch: `wip/session3`; latest checkpoint `7e1ca6f` (`fix(bench): make biscuit token generation reproducible`). The initial Session 3 state and the token reproducibility investigation are committed.
 - No Git remote is configured. The GitHub repository `om-sanchar` and hosted CI have not been created/run.
 - The Session 3 handoff reports a release-mode verification failure, but the failing scheme/depth/token and complete log were not saved. A seeded-RNG byte reproducibility test failed before and passes after deterministic Biscuit key generation. This identifies token construction nondeterminism, not the verifier-failure cause. The old timing report was moved to `bench/quarantine/` and is not accepted evidence.
 - Security reports currently describe an older Cargo lockfile and are stale after the bytes/Tokio pin changes. Rerun Syft, Grype, and cargo-audit before reporting them as current.
