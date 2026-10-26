@@ -27,7 +27,19 @@ LICENSE_ALIASES = {
     "mit license": "mit",
     "mit": "mit",
 }
-ALLOWED_CARGO_LICENSE_IDS = {"apache-2.0", "bsl-1.0", "mit", "unicode-3.0", "unlicense"}
+ALLOWED_CARGO_LICENSE_IDS = {
+    "0bsd",
+    "apache-2.0",
+    "bsd-1-clause",
+    "bsd-2-clause",
+    "bsd-3-clause",
+    "bsl-1.0",
+    "mit",
+    "unicode-3.0",
+    "unlicense",
+    "zlib",
+}
+ALLOWED_CARGO_LICENSE_EXCEPTIONS = {"llvm-exception"}
 
 
 def normalized_license(value: str) -> str:
@@ -45,6 +57,7 @@ def cargo_metadata() -> dict:
             str(CARGO_MANIFEST),
             "--format-version",
             "1",
+            "--all-features",
             "--locked",
         ],
         check=False,
@@ -67,7 +80,20 @@ def normalized_cargo_name(value: str) -> str:
 
 def check_cargo_license_expression(name: str, version: str, expression: str) -> str | None:
     atoms = re.findall(r"[A-Za-z0-9][A-Za-z0-9.+-]*", expression)
-    license_ids = [atom for atom in atoms if atom.lower() not in {"and", "or", "with"}]
+    license_ids = []
+    index = 0
+    while index < len(atoms):
+        atom = atoms[index]
+        normalized = atom.lower()
+        if normalized == "with":
+            exception = atoms[index + 1].lower() if index + 1 < len(atoms) else ""
+            if exception not in ALLOWED_CARGO_LICENSE_EXCEPTIONS:
+                return f"Unreviewed Rust license exception for {name}=={version}: {exception or expression!r}"
+            index += 2
+            continue
+        if normalized not in {"and", "or"}:
+            license_ids.append(atom)
+        index += 1
     if not license_ids:
         return f"Rust dependency has no parseable license expression: {name}=={version}"
     disallowed = sorted({normalized_license(atom) for atom in license_ids} - ALLOWED_CARGO_LICENSE_IDS)

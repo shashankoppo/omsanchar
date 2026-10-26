@@ -1,0 +1,26 @@
+{
+  "classification": "measured",
+  "scope": "bounded gateway state registry lifecycle; WSL2 development-only, not a native Linux capacity claim",
+  "date_utc": "2026-10-25",
+  "command": "wsl.exe -d Ubuntu --cd \"/mnt/c/Users/Shashank patel/Desktop/Evolucentsphere_DB/Evolucentsphere Pvt Ltd/omsanchar\" python3 -m unittest gateway.tests.test_bounded_state.BoundedStateTests.test_million_open_then_abandoned_streams_stay_under_memory_ceiling -v",
+  "exit_code": 0,
+  "duration_seconds": 235.329,
+  "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+  "python": "3.12.3",
+  "streams_opened_and_abandoned": 1000000,
+  "accounting_budget_bytes": 134217728,
+  "accounted_retained_bytes_after_soak": 134210286,
+  "retained_entries_after_soak": 252,
+  "retained_streams_after_soak": 126,
+  "max_sampled_retained_streams": 126,
+  "tracemalloc_peak_bytes_above_start": 316421,
+  "process_peak_rss_bytes": 25554944,
+  "assertions": [
+    "accounted retained bytes did not exceed 128 MiB",
+    "retained entry count stayed within configured store limits",
+    "tracemalloc peak stayed below 128 MiB",
+    "Linux process peak RSS stayed below 128 MiB",
+    "stream eviction counter increased"
+  ],
+  "method_limit": "The test drives one million real EventStream registrations through the production BoundedState registry, then marks each stream complete without a reader. It does not create one million TCP connections or measure production server RSS under network load."
+}

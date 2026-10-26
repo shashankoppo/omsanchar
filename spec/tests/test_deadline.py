@@ -2,7 +2,12 @@ import json
 import unittest
 from pathlib import Path
 
-from spec.reference.deadline import DeadlineError, effective_deadline_ms, remaining_deadline_ms
+from spec.reference.deadline import (
+    DeadlineError,
+    effective_deadline_ms,
+    forwarded_deadline_ms,
+    remaining_deadline_ms,
+)
 
 VECTORS = Path(__file__).parents[1] / "conformance" / "deadline-vectors.json"
 
@@ -41,6 +46,30 @@ class DeadlineConformanceTests(unittest.TestCase):
             with self.assertRaises(DeadlineError) as caught:
                 remaining_deadline_ms(initial_ms, initial_ms * 1_000_000 - 1)
             self.assertEqual(caught.exception.code, "OS-0500")
+
+    def test_hop_margin_vectors(self):
+        vectors = json.loads((VECTORS.parent / "deadline-margin-vectors.json").read_text(encoding="utf-8"))
+        for vector in vectors:
+            with self.subTest(name=vector["name"]):
+                if "error" in vector:
+                    with self.assertRaises(DeadlineError) as caught:
+                        forwarded_deadline_ms(
+                            vector["receivedMs"],
+                            vector["elapsedMonotonicNs"],
+                            safety_margin_ms=vector["safetyMarginMs"],
+                            minimum_useful_ms=vector["minimumUsefulMs"],
+                        )
+                    self.assertEqual(caught.exception.code, vector["error"])
+                else:
+                    self.assertEqual(
+                        forwarded_deadline_ms(
+                            vector["receivedMs"],
+                            vector["elapsedMonotonicNs"],
+                            safety_margin_ms=vector["safetyMarginMs"],
+                            minimum_useful_ms=vector["minimumUsefulMs"],
+                        ),
+                        vector["forwardedMs"],
+                    )
 
 
 if __name__ == "__main__":

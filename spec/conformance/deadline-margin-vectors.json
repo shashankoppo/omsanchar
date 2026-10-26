@@ -1,0 +1,36 @@
+[
+  {
+    "name": "subtract-ceiling-rounded-hop-elapsed-and-margin",
+    "receivedMs": 100,
+    "elapsedMonotonicNs": 7000001,
+    "safetyMarginMs": 5,
+    "minimumUsefulMs": 1,
+    "forwardedMs": 87,
+    "wallClockJumpNs": 3600000000000
+  },
+  {
+    "name": "allow-exact-minimum-useful-budget",
+    "receivedMs": 100,
+    "elapsedMonotonicNs": 0,
+    "safetyMarginMs": 5,
+    "minimumUsefulMs": 95,
+    "forwardedMs": 95
+  },
+  {
+    "name": "fail-when-rounded-elapsed-and-margin-fall-below-minimum",
+    "receivedMs": 20,
+    "elapsedMonotonicNs": 1000001,
+    "safetyMarginMs": 5,
+    "minimumUsefulMs": 15,
+    "error": "OS-0500"
+  },
+  {
+    "name": "fail-when-safety-margin-alone-consumes-useful-budget",
+    "receivedMs": 10,
+    "elapsedMonotonicNs": 0,
+    "safetyMarginMs": 8,
+    "minimumUsefulMs": 3,
+    "error": "OS-0500",
+    "wallClockJumpNs": -86400000000000
+  }
+]

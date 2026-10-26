@@ -7,6 +7,7 @@ trace propagation, and resumable SSE delivery against a deterministic mock model
 
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import re
@@ -16,8 +17,19 @@ import time
 import uuid
 from dataclasses import dataclass, field
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-from typing import Any
+from typing import Any, Protocol
 from urllib.parse import parse_qs, urlsplit
+
+from gateway.state import (
+    MAX_ACTIVE_STREAMS,
+    MAX_STREAM_EVENT_BYTES,
+    MAX_STREAM_EVENTS,
+    STREAM_EVENT_RESERVATION_BYTES,
+    BoundedState,
+    StateCapacityError,
+    StoreView,
+    deep_size,
+)
 
 I64_MAX = (1 << 63) - 1
 TRACEPARENT_RE = re.compile(r"^00-[0-9a-f]{32}-[0-9a-f]{16}-0[0-9a-f]$")
@@ -39,6 +51,24 @@ class StreamEvent:
     seq: int
     event: str
     data: dict[str, Any]
+
+
+class Authenticator(Protocol):
+    """Replaceable ingress authentication boundary for the request pipeline."""
+
+    def authenticate(self, authorization: str | None) -> bool: ...
+
+
+class StaticBearerAuthenticator:
+    """P0 local credential adapter; replaceable by SPIFFE/OAuth plus DPoP later."""
+
+    def __init__(self, bearer_token: str):
+        if not bearer_token:
+            raise ValueError("bearer_token must be non-empty")
+        self._expected = f"Bearer {bearer_token}"
+
+    def authenticate(self, authorization: str | None) -> bool:
+        return authorization == self._expected
 
 
 class EventStream:
@@ -63,6 +93,13 @@ class EventStream:
                 return previous
             if self._state != "OPEN":
                 raise RuntimeError("cannot publish to a terminal stream")
+            if len(self._events) >= MAX_STREAM_EVENTS:
+                raise RuntimeError("stream event limit reached")
+            if (
+                len(json.dumps(data, separators=(",", ":")).encode("utf-8")) > MAX_STREAM_EVENT_BYTES
+                or deep_size(data) > MAX_STREAM_EVENT_BYTES
+            ):
+                raise RuntimeError("stream event exceeds its byte limit")
             item = StreamEvent(len(self._events) + 1, event, data)
             self._events.append(item)
             self._idempotency[key] = item
@@ -142,20 +179,21 @@ class GatewayService:
         allowance_microcredits: int = 1_000_000,
         prices: dict[str, dict[str, Price]] | None = None,
         model_delay_seconds: float = 0.01,
+        authenticator: Authenticator | None = None,
+        bounded_state: BoundedState | None = None,
     ):
         if not bearer_token:
             raise ValueError("bearer_token must be non-empty")
         if not 0 <= allowance_microcredits <= I64_MAX:
             raise ValueError("tenant allowance must be a signed 64-bit non-negative integer")
-        self.bearer_token = bearer_token
+        self.authenticator = authenticator or StaticBearerAuthenticator(bearer_token)
         self.tenant = tenant
         self.prices = prices or DEFAULT_PRICES
         self.model_delay_seconds = max(0.0, model_delay_seconds)
         self.meter = TenantMeter(allowance_microcredits)
-        self.streams: dict[str, EventStream] = {}
-        self.requests: dict[tuple[str, str], tuple[bytes, EventStream]] = {}
-        self.audit_events: list[dict[str, Any]] = []
-        self.trace_events: list[dict[str, Any]] = []
+        self.state = bounded_state or BoundedState()
+        self.streams = StoreView(self.state, "streams")
+        self.requests = StoreView(self.state, "requests")
         self._lock = threading.RLock()
         self._metrics = {
             "requests": 0,
@@ -166,24 +204,28 @@ class GatewayService:
         }
 
     def authenticate(self, authorization: str | None) -> bool:
-        return authorization == f"Bearer {self.bearer_token}"
+        return self.authenticator.authenticate(authorization)
+
+    @property
+    def audit_events(self) -> tuple[dict[str, Any], ...]:
+        return self.state.values("audit")
+
+    @property
+    def trace_events(self) -> tuple[dict[str, Any], ...]:
+        return self.state.values("trace")
 
     def price_for(self, tenant: str, model: str) -> Price | None:
         return self.prices.get(tenant, {}).get(model)
 
     def audit(self, action: str, **details: Any) -> None:
         with self._lock:
-            self.audit_events.append({"time_unix_ms": time.time_ns() // 1_000_000, "action": action, **details})
+            self.state.append("audit", {"time_unix_ms": time.time_ns() // 1_000_000, "action": action, **details})
 
     def trace(self, name: str, traceparent: str, **attributes: Any) -> None:
         with self._lock:
-            self.trace_events.append(
-                {
-                    "time_unix_ns": time.time_ns(),
-                    "name": name,
-                    "traceparent": traceparent,
-                    **attributes,
-                }
+            self.state.append(
+                "trace",
+                {"time_unix_ns": time.time_ns(), "name": name, "traceparent": traceparent, **attributes},
             )
 
     def increment(self, metric: str, amount: int = 1) -> None:
@@ -195,7 +237,15 @@ class GatewayService:
             values = dict(self._metrics)
         values["tenant_used_microcredits"] = self.meter.used_microcredits
         values["tenant_remaining_microcredits"] = self.meter.remaining()
-        return "".join(f"om_gateway_{name}_total {value}\n" for name, value in values.items())
+        output = [f"om_gateway_{name}_total {value}\n" for name, value in values.items()]
+        output.append(f"om_gateway_state_memory_bytes {self.state.used_bytes}\n")
+        output.append(f"om_gateway_state_entries {self.state.entry_count}\n")
+        output.append(f"om_gateway_state_memory_budget_bytes {self.state.memory_budget_bytes}\n")
+        output.extend(
+            f'om_gateway_state_evictions_total{{store="{store}"}} {count}\n'
+            for store, count in self.state.eviction_counts().items()
+        )
+        return "".join(output)
 
     def new_traceparent(self, incoming: str | None) -> str | None:
         if incoming:
@@ -216,12 +266,18 @@ class GatewayService:
         traceparent: str,
     ) -> tuple[EventStream, int, bool]:
         cache_key = (self.tenant, request_idempotency_key)
+        body_digest = hashlib.sha256(raw_body).digest()
         with self._lock:
             previous = self.requests.get(cache_key)
             if previous is not None:
-                if previous[0] != raw_body:
+                if previous[0] != body_digest or previous[1] != len(raw_body):
                     raise GatewayError(409, "OS-2009", "idempotency key was reused with a different request body")
-                return previous[1], 0, True
+                cached = self.state.get("streams", previous[2])
+                if cached is not None:
+                    return cached, 0, True
+                if self.state.was_stream_evicted(previous[2]):
+                    raise GatewayError(410, "OS-0400", "stream state expired or was evicted")
+                self.state.delete("requests", cache_key)
 
         model = body.get("model")
         if not isinstance(model, str):
@@ -259,17 +315,36 @@ class GatewayService:
                 "request cost budget cannot cover input tokens",
                 cause="OS-0201",
             )
-        if not self.meter.debit(input_cost):
-            raise GatewayError(429, "OS-3029", "tenant microcredit quota is exhausted", cause="OS-0200")
-        self.meter.record_tokens(input_tokens=input_tokens)
         remaining_request_budget = I64_MAX if budget is None else budget - input_cost
 
         stream_id = uuid.uuid4().hex
         request_id = uuid.uuid4().hex
         stream = EventStream(stream_id, request_id, traceparent, remaining_request_budget)
         with self._lock:
-            self.streams[stream_id] = stream
-            self.requests[cache_key] = (raw_body, stream)
+            previous = self.requests.get(cache_key)
+            if previous is not None:
+                if previous[0] != body_digest or previous[1] != len(raw_body):
+                    raise GatewayError(409, "OS-2009", "idempotency key was reused with a different request body")
+                cached = self.state.get("streams", previous[2])
+                if cached is not None:
+                    return cached, 0, True
+                if self.state.was_stream_evicted(previous[2]):
+                    raise GatewayError(410, "OS-0400", "stream state expired or was evicted")
+                self.state.delete("requests", cache_key)
+            if self.state.active_stream_count() >= MAX_ACTIVE_STREAMS:
+                raise GatewayError(503, "OS-0503", "active stream capacity is full")
+            try:
+                self.state.put("streams", stream_id, stream, reserved_bytes=STREAM_EVENT_RESERVATION_BYTES)
+                self.state.put("requests", cache_key, (body_digest, len(raw_body), stream_id))
+            except StateCapacityError as exc:
+                self.state.delete("streams", stream_id)
+                self.state.delete("requests", cache_key)
+                raise GatewayError(503, "OS-0503", "gateway retained-state capacity is full") from exc
+            if not self.meter.debit(input_cost):
+                self.state.delete("streams", stream_id)
+                self.state.delete("requests", cache_key)
+                raise GatewayError(429, "OS-3029", "tenant microcredit quota is exhausted", cause="OS-0200")
+            self.meter.record_tokens(input_tokens=input_tokens)
             self._metrics["streams"] += 1
             self._metrics["requests"] += 1
             self._metrics["cost_microcredits"] += input_cost
@@ -514,10 +589,13 @@ class GatewayRequestHandler(BaseHTTPRequestHandler):
         return False
 
     def _resume(self, stream_id: str, query: dict[str, list[str]]) -> None:
-        with self.server.service._lock:
-            stream = self.server.service.streams.get(stream_id)
+        service = self.server.service
+        stream = service.streams.get(stream_id)
         if stream is None:
-            self._json(404, {"code": "OS-2004", "message": "stream not found"})
+            if service.state.was_stream_evicted(stream_id):
+                self._json(410, {"code": "OS-0400", "message": "stream state expired or was evicted"})
+            else:
+                self._json(404, {"code": "OS-2004", "message": "stream not found"})
             return
         try:
             cursor = _parse_cursor(query.get("cursor", ["0"])[0])

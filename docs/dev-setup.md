@@ -45,36 +45,27 @@ make lint
 make dev-native
 ```
 
-The commands work from this Windows-mounted workspace. For sustained Rust builds, keep a checkout under `~/src` on the WSL Linux filesystem to avoid Windows filesystem I/O overhead. The Rust core currently pins toolchain 1.75.0 in CI; Ubuntu's packaged compiler should match that release line.
+The commands work from this Windows-mounted workspace. For sustained Rust builds, keep a checkout under `~/src` on the WSL Linux filesystem to avoid Windows filesystem I/O overhead. CI pins Rust 1.85.0, which supports the edition and syntax used by the pinned Rust research dependencies.
 
-## Optional Docker Compose stack
+## Integrated development stack
 
-Docker Compose builds the same Python gateway in a local development image. It is not required for native development:
+The D3 stack starts the Python reference gateway, Envoy, the Rust mock model, NATS with JetStream enabled, and an OpenTelemetry Collector. Envoy forwards HTTP traffic to the mock model and exports sampled traces to the collector. NATS JetStream is available for integration work; the gateway does not yet use it for durable stream storage.
 
-```powershell
-docker compose -f deploy/dev.yml up --build
-```
-
-The service listens on host port 8080 by default. Set `OM_GATEWAY_PORT` before Compose to change both the host and container port. Compose binds the gateway to all container interfaces so Docker can publish the port; native runs stay on loopback by default. Stop it with `Ctrl+C`; run `docker compose -f deploy/dev.yml down` after a detached launch.
-
-The separate `deploy/Dockerfile.verify` image runs reference checks in CI. `deploy/Dockerfile.dev` is for local Compose use; neither image is a production deployment image.
-
-## Podman in WSL2 when Docker Desktop is unavailable
-
-Install Podman and use it to build and exercise both local images:
+With Docker Engine and the Compose plugin installed, one command starts the native-engine stack:
 
 ```bash
-sudo apt-get install -y podman
-podman info
-podman build -f deploy/Dockerfile.verify -t om-sanchar-verify:local .
-podman run --rm om-sanchar-verify:local
-podman build -f deploy/Dockerfile.dev -t om-sanchar-dev:local .
-podman run --rm -d --name om-sanchar-dev -p 127.0.0.1:8080:8080 om-sanchar-dev:local
-curl http://localhost:8080/healthz
-podman stop om-sanchar-dev
+make dev-stack
 ```
 
-The development image binds to the container interface; native `make dev-native` stays on loopback. CI continues to build the Compose file with Docker Compose.
+With Podman and a Compose provider installed, one command starts the Podman stack:
+
+```bash
+make dev-stack-podman
+```
+
+These are container-engine modes. `make dev-native` still runs only the Python gateway directly on the host. The default published ports are gateway 8080, Rust mock 8081, Envoy 10000, Envoy admin 9901, NATS client 4222, NATS monitor 8222, and OTLP gRPC/HTTP 4317/4318. Override them with `OM_GATEWAY_PORT`, `OM_MOCK_PORT`, `OM_ENVOY_PORT`, `OM_ENVOY_ADMIN_PORT`, `OM_NATS_CLIENT_PORT`, `OM_NATS_MONITOR_PORT`, `OM_OTEL_GRPC_PORT`, and `OM_OTEL_HTTP_PORT`.
+
+Stop the foreground stack with `Ctrl+C`, or stop a detached stack with `make dev-stack-down` for Docker Compose and `make dev-stack-down-podman` for Podman Compose. `deploy/Dockerfile.verify` is used for reference checks; `deploy/Dockerfile.dev` and `deploy/Dockerfile.mock-model` are development images. None is a production deployment image.
 
 ## Checks and security reports
 
@@ -93,4 +84,4 @@ The CI workflow generates a source inventory and a dependency SBOM, audits the S
 
 ## Environment check recorded for this workspace
 
-The Windows host has Python 3.12.8 and Docker CLI 29.6.2, but its Docker engine is unavailable. WSL2 Ubuntu 24.04 is installed and was verified. Rust/Cargo 1.75.0, rustfmt, Clippy, GNU Make 4.3, Python venv support, and Podman were installed there. The Python/Rust test and lint targets passed in WSL; both Podman images built, and the verification image tests and gateway health route passed. No hosted CI run is available because this checkout has no Git remote.
+The Windows host has Python 3.12.8 and Docker CLI 29.6.2, but its Docker engine is unavailable. WSL2 Ubuntu is installed with Rust/Cargo 1.75.0, rustfmt, Clippy, GNU Make 4.3, Python venv support, and Podman. Install the pinned Rust 1.85.0 toolchain for the capability-token research binary. Results in WSL2 are development-only. Hosted CI has not run because this checkout has no Git remote.

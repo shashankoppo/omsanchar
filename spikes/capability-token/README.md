@@ -13,6 +13,12 @@ Version 0.1.0 is a bounded Python prototype for the Om Sanchar D6 research spike
 
 The prototype must not be used to authorize production traffic. In particular, Python timing does not establish the upstream handbook's target of 50 microseconds verification or 1.5 KB at depth 4 on a Rust data plane.
 
+## Rust comparison
+
+The Rust research binary compares this HMAC-chain trust model with `biscuit-auth` 6.0.0 and a public-key Ed25519 attenuation chain at depths 1 through 8. It reports token bytes, uncached verification, and token-hash cache-hit timing. The cache includes token hashing, a 10-minute monotonic TTL, and an issuer-key version check; it does not include internal-credential minting.
+
+Rust 1.85.0 is required by `biscuit-auth` 6.0.0. To run the default matrix with Cargo, use `make bench-token-rust`; override `TOKEN_BENCH_ITERATIONS`, `TOKEN_BENCH_RUNS`, and `TOKEN_BENCH_OUTPUT` for local work. A WSL2 development-only sample and raw samples are under `bench/results/`; see the corresponding `*-summary.md` and `adr/005-capability-token-verification.md` for interpretation. Do not treat WSL2 timing as the final Linux target result.
+
 ## Run
 
 From the repository root, using Python 3.12 or later:
@@ -29,4 +35,5 @@ The tests use a seeded standard-library generator for property-style attenuation
 - `capability_token.py`: mint, attenuate, and full-chain verify API.
 - `tests/test_capability_token.py`: validity, malformed-token, and non-widening property tests.
 - `benchmark.py`: verifier benchmark at attenuation depths 1–8.
+- `summarize_rust_results.py`: computes run-level bootstrap intervals and Markdown from the Rust raw sample JSON.
 - `results/`: raw output captured during this spike.

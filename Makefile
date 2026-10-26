@@ -1,15 +1,31 @@
-.PHONY: dev-native test test-spec test-sim test-gateway test-token test-rust lint proto sbom source-sbom dependency-sbom vuln-scan container compose-build deps
+.PHONY: dev-native dev-stack dev-stack-podman dev-stack-down dev-stack-down-podman test test-spec test-sim test-gateway test-token test-rust test-token-rust test-mock bench-token-rust lint proto sbom source-sbom dependency-sbom vuln-scan container compose-build deps
 
 PYTHON ?= python3
+CARGO ?= cargo
 BUF ?= buf
 DOCKER ?= docker
 SYFT ?= syft
 GRYPE ?= grype
+TOKEN_BENCH_ITERATIONS ?= 1000
+TOKEN_BENCH_RUNS ?= 10
+TOKEN_BENCH_OUTPUT ?= bench/results/capability-token-rust.json
 
 dev-native:
 	$(PYTHON) -m gateway.server
 
-test: test-spec test-sim test-gateway test-token test-rust
+dev-stack:
+	$(DOCKER) compose -f deploy/dev.yml up --build
+
+dev-stack-podman:
+	podman compose -f deploy/dev.yml up --build
+
+dev-stack-down:
+	$(DOCKER) compose -f deploy/dev.yml down
+
+dev-stack-down-podman:
+	podman compose -f deploy/dev.yml down
+
+test: test-spec test-sim test-gateway test-token test-rust test-token-rust test-mock
 
 test-spec:
 	$(PYTHON) -m unittest discover -s spec/tests -v
@@ -24,15 +40,25 @@ test-token:
 	$(PYTHON) -m unittest discover -s spikes/capability-token/tests -v
 
 test-rust:
-	cargo test --locked --manifest-path dataplane/sanchar-core/Cargo.toml
+	$(CARGO) test --locked --manifest-path dataplane/sanchar-core/Cargo.toml
+
+test-token-rust:
+	$(CARGO) test --locked --manifest-path dataplane/sanchar-core/Cargo.toml --features token-bench --bin capability_token_bench
+
+test-mock:
+	$(CARGO) build --locked --manifest-path dataplane/sanchar-core/Cargo.toml --bin mock_model
+	$(PYTHON) scripts/test_mock_model.py dataplane/sanchar-core/target/debug/mock_model
+
+bench-token-rust:
+	$(CARGO) run --release --locked --manifest-path dataplane/sanchar-core/Cargo.toml --features token-bench --bin capability_token_bench -- $(TOKEN_BENCH_ITERATIONS) $(TOKEN_BENCH_RUNS) $(TOKEN_BENCH_OUTPUT)
 
 lint:
 	$(PYTHON) scripts/check_style.py
 	$(PYTHON) scripts/check_dependencies.py --check-installed --check-rust
 	$(PYTHON) -m ruff check .
 	$(PYTHON) -m ruff format --check .
-	cargo fmt --manifest-path dataplane/sanchar-core/Cargo.toml -- --check
-	cargo clippy --locked --manifest-path dataplane/sanchar-core/Cargo.toml -- -D warnings
+	$(CARGO) fmt --manifest-path dataplane/sanchar-core/Cargo.toml -- --check
+	$(CARGO) clippy --locked --manifest-path dataplane/sanchar-core/Cargo.toml -- -D warnings
 
 deps:
 	$(PYTHON) scripts/check_dependencies.py --check-installed --check-rust

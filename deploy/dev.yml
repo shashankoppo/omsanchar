@@ -8,3 +8,41 @@ services:
       OM_GATEWAY_PORT: "${OM_GATEWAY_PORT:-8080}"
     ports:
       - "${OM_GATEWAY_PORT:-8080}:${OM_GATEWAY_PORT:-8080}"
+  mock-model:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.mock-model
+    environment:
+      OM_MOCK_PORT: 8081
+    ports:
+      - "${OM_MOCK_PORT:-8081}:8081"
+  envoy:
+    image: envoyproxy/envoy:v1.40.0
+    command: ["-c", "/etc/envoy/envoy.yaml", "--service-cluster", "om-sanchar-dev"]
+    volumes:
+      - ./envoy-dev.yaml:/etc/envoy/envoy.yaml:ro
+    depends_on:
+      - mock-model
+      - otel-collector
+    ports:
+      - "${OM_ENVOY_PORT:-10000}:10000"
+      - "${OM_ENVOY_ADMIN_PORT:-9901}:9901"
+  nats:
+    image: nats:2.15.1-alpine
+    command: ["-js", "-m", "8222", "-sd", "/data"]
+    volumes:
+      - nats-data:/data
+    ports:
+      - "${OM_NATS_CLIENT_PORT:-4222}:4222"
+      - "${OM_NATS_MONITOR_PORT:-8222}:8222"
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.163.0
+    command: ["--config=/etc/otelcol-contrib/config.yaml"]
+    volumes:
+      - ./otel-collector-dev.yaml:/etc/otelcol-contrib/config.yaml:ro
+    ports:
+      - "${OM_OTEL_GRPC_PORT:-4317}:4317"
+      - "${OM_OTEL_HTTP_PORT:-4318}:4318"
+
+volumes:
+  nats-data:

@@ -1,0 +1,13 @@
+FROM rust:1.85.0-bookworm AS build
+
+WORKDIR /build
+COPY dataplane/sanchar-core/Cargo.toml dataplane/sanchar-core/Cargo.lock ./
+COPY dataplane/sanchar-core/src ./src
+RUN cargo build --release --locked --manifest-path Cargo.toml --bin mock_model
+
+FROM debian:bookworm-slim
+COPY --from=build /build/target/release/mock_model /usr/local/bin/mock-model
+ENV OM_MOCK_PORT=8081
+EXPOSE 8081
+USER 65532:65532
+ENTRYPOINT ["/usr/local/bin/mock-model"]

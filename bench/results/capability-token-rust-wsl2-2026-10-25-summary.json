@@ -1,0 +1,719 @@
+{
+  "classification": "measured",
+  "confidence_method": "percentile bootstrap over 10 independent run medians, 20,000 resamples; reported intervals are estimates",
+  "metadata": {
+    "allowed_cpu_list": "0-11",
+    "architecture": "x86_64",
+    "cache_definition": "SHA-256 token hash plus in-process hash-map lookup, monotonic 10-minute TTL, and issuer-key version check; excludes cache insertion and internal-credential minting",
+    "chain_depth_definition": "number of appended attenuation caveats/blocks after the authority claim",
+    "classification": "measured",
+    "cpu_model": "AMD Ryzen 5 5600H with Radeon Graphics",
+    "iterations_per_run": 1000,
+    "kernel": "6.18.33.2-microsoft-standard-WSL2",
+    "os": "linux",
+    "platform_scope": "WSL2 development-only; not a qualifying native Linux host result",
+    "runs_per_cell": 10,
+    "rustc": "rustc 1.85.0 (4d91de4e4 2025-02-17)",
+    "timing_unit": "nanoseconds per verification; raw sample arrays retained",
+    "warmup_iterations_per_run": 100
+  },
+  "platform_scope": "WSL2 development-only; not a qualifying native Linux host result",
+  "results": [
+    {
+      "cached": {
+        "confidence_method": "percentile bootstrap over 10 independent run medians, 20,000 resamples; WSL2 development-only",
+        "median_95pct_bootstrap_ci_ns": [
+          129,
+          129
+        ],
+        "median_ns": 129,
+        "p95_ns": 138,
+        "p99_ns": 138,
+        "run_median_max_ns": 129,
+        "run_median_min_ns": 129
+      },
+      "depth": 1,
+      "scheme": "hmac-chain",
+      "token_size_bytes": 109,
+      "uncached": {
+        "confidence_method": "percentile bootstrap over 10 independent run medians, 20,000 resamples; WSL2 development-only",
+        "median_95pct_bootstrap_ci_ns": [
+          716,
+          721
+        ],
+        "median_ns": 716,
+        "p95_ns": 726,
+        "p99_ns": 744,
+        "run_median_max_ns": 725,
+        "run_median_min_ns": 707
+      }
+    },
+    {
+      "cached": {
+        "confidence_method": "percentile bootstrap over 10 independent run medians, 20,000 resamples; WSL2 development-only",
+        "median_95pct_bootstrap_ci_ns": [
+          243,
+          248
+        ],
+        "median_ns": 248,
+        "p95_ns": 258,
+        "p99_ns": 285,
+        "run_median_max_ns": 257,
+        "run_median_min_ns": 239
+      },
+      "depth": 1,
+      "scheme": "biscuit-auth-6.0.0",
+      "token_size_bytes": 365,
+      "uncached": {
+        "confidence_method": "percentile bootstrap over 10 independent run medians, 20,000 resamples; WSL2 development-only",
+        "median_95pct_bootstrap_ci_ns": [
+          96782,
+          97278
+        ],
+        "median_ns": 97031,
+        "p95_ns": 127568,
+        "p99_ns": 153843,
+        "run_median_max_ns": 97673,
+        "run_median_min_ns": 96736
+      }
+    },
+    {
+      "cached": {
+        "confidence_method": "percentile bootstrap over 10 independent run medians, 20,000 resamples; WSL2 development-only",
+        "median_95pct_bootstrap_ci_ns": [
+          220,
+          220
+        ],
+        "median_ns": 220,
+        "p95_ns": 221,
+        "p99_ns": 239,
+        "run_median_max_ns": 220,
+        "run_median_min_ns": 220
+      },
+      "depth": 1,
+      "scheme": "ed25519-attenuation-chain",
+      "token_size_bytes": 269,
+      "uncached": {
+        "confidence_method": "percentile bootstrap over 10 independent run medians, 20,000 resamples; WSL2 development-only",
+        "median_95pct_bootstrap_ci_ns": [
+          59614,
+          61005
+        ],
+        "median_ns": 60138,
+        "p95_ns": 74199,
+        "p99_ns": 89324,
+        "run_median_max_ns": 62186,
+        "run_median_min_ns": 59422
+      }
+    },
+    {
+      "cached": {
+        "confidence_method": "percentile bootstrap over 10 independent run medians, 20,000 resamples; WSL2 development-only",
+        "median_95pct_bootstrap_ci_ns": [
+          161,
+          165
+        ],
+        "median_ns": 165,
+        "p95_ns": 166,
+        "p99_ns": 175,
+        "run_median_max_ns": 165,
+        "run_median_min_ns": 157
+      },
+      "depth": 2,
+      "scheme": "hmac-chain",
+      "token_size_bytes": 126,
+      "uncached": {
+        "confidence_method": "percentile bootstrap over 10 independent run medians, 20,000 resamples; WSL2 development-only",
+        "median_95pct_bootstrap_ci_ns": [
+          872,
+          877
+        ],
+        "median_ns": 873,
+        "p95_ns": 909,
+        "p99_ns": 1148,
+        "run_median_max_ns": 881,
+        "run_median_min_ns": 872
+      }
+    },
+    {
+      "cached": {
+        "confidence_method": "percentile bootstrap over 10 independent run medians, 20,000 resamples; WSL2 development-only",
+        "median_95pct_bootstrap_ci_ns": [
+          331,
+          331
+        ],
+        "median_ns": 331,
+        "p95_ns": 331,
+        "p99_ns": 340,
+        "run_median_max_ns": 331,
+        "run_median_min_ns": 331
+      },
+      "depth": 2,
+      "scheme": "biscuit-auth-6.0.0",
+      "token_size_bytes": 516,
+      "uncached": {
+        "confidence_method": "percentile bootstrap over 10 independent run medians, 20,000 resamples; WSL2 development-only",
+        "median_95pct_bootstrap_ci_ns": [
+          135934,
+          136815
+        ],
+        "median_ns": 136329,
+        "p95_ns": 172267,
+        "p99_ns": 207038,
+        "run_median_max_ns": 136898,
+        "run_median_min_ns": 135612
+      }
+    },
+    {
+      "cached": {
+        "confidence_method": "percentile bootstrap over 10 independent run medians, 20,000 resamples; WSL2 development-only",
+        "median_95pct_bootstrap_ci_ns": [
+          275,
+          275
+        ],
+        "median_ns": 275,
+        "p95_ns": 276,
+        "p99_ns": 276,
+        "run_median_max_ns": 276,
+        "run_median_min_ns": 275
+      },
+      "depth": 2,
+      "scheme": "ed25519-attenuation-chain",
+      "token_size_bytes": 382,
+      "uncached": {
+        "confidence_method": "percentile bootstrap over 10 independent run medians, 20,000 resamples; WSL2 development-only",
+        "median_95pct_bootstrap_ci_ns": [
+          88929,
+          89270
+        ],
+        "median_ns": 89150,
+        "p95_ns": 102661,
+        "p99_ns": 122792,
+        "run_median_max_ns": 89425,
+        "run_median_min_ns": 88792
+      }
+    },
+    {
+      "cached": {
+        "confidence_method": "percentile bootstrap over 10 independent run medians, 20,000 resamples; WSL2 development-only",
+        "median_95pct_bootstrap_ci_ns": [
+          156,
+          156
+        ],
+        "median_ns": 156,
+        "p95_ns": 166,
+        "p99_ns": 166,
+        "run_median_max_ns": 156,
+        "run_median_min_ns": 156
+      },
+      "depth": 3,
+      "scheme": "hmac-chain",
+      "token_size_bytes": 143,
+      "uncached": {
+        "confidence_method": "percentile bootstrap over 10 independent run medians, 20,000 resamples; WSL2 development-only",
+        "median_95pct_bootstrap_ci_ns": [
+          1037,
+          1042
+        ],
+        "median_ns": 1038,
+        "p95_ns": 1056,
+        "p99_ns": 1194,
+        "run_median_max_ns": 1047,
+        "run_median_min_ns": 1029
+      }
+    },
+    {
+      "cached": {
+        "confidence_method": "percentile bootstrap over 10 independent run medians, 20,000 resamples; WSL2 development-only",
+        "median_95pct_bootstrap_ci_ns": [
+          386,
+          386
+        ],
+        "median_ns": 386,
+        "p95_ns": 386,
+        "p99_ns": 404,
+        "run_median_max_ns": 386,
+        "run_median_min_ns": 386
+      },
+      "depth": 3,
+      "scheme": "biscuit-auth-6.0.0",
+      "token_size_bytes": 667,
+      "uncached": {
+        "confidence_method": "percentile bootstrap over 10 independent run medians, 20,000 resamples; WSL2 development-only",
+        "median_95pct_bootstrap_ci_ns": [
+          173736,
+          174259
+        ],
+        "median_ns": 174012,
+        "p95_ns": 210363,
+        "p99_ns": 248422,
+        "run_median_max_ns": 174480,
+        "run_median_min_ns": 172882
+      }
+    },
+    {
+      "cached": {
+        "confidence_method": "percentile bootstrap over 10 independent run medians, 20,000 resamples; WSL2 development-only",
+        "median_95pct_bootstrap_ci_ns": [
+          294,
+          298
+        ],
+        "median_ns": 294,
+        "p95_ns": 303,
+        "p99_ns": 304,
+        "run_median_max_ns": 303,
+        "run_median_min_ns": 294
+      },
+      "depth": 3,
+      "scheme": "ed25519-attenuation-chain",
+      "token_size_bytes": 495,
+      "uncached": {
+        "confidence_method": "percentile bootstrap over 10 independent run medians, 20,000 resamples; WSL2 development-only",
+        "median_95pct_bootstrap_ci_ns": [
+          118516,
+          119183
+        ],
+        "median_ns": 118962,
+        "p95_ns": 133684,
+        "p99_ns": 154119,
+        "run_median_max_ns": 119504,
+        "run_median_min_ns": 118356
+      }
+    },
+    {
+      "cached": {
+        "confidence_method": "percentile bootstrap over 10 independent run medians, 20,000 resamples; WSL2 development-only",
+        "median_95pct_bootstrap_ci_ns": [
+          156,
+          156
+        ],
+        "median_ns": 156,
+        "p95_ns": 157,
+        "p99_ns": 157,
+        "run_median_max_ns": 156,
+        "run_median_min_ns": 156
+      },
+      "depth": 4,
+      "scheme": "hmac-chain",
+      "token_size_bytes": 160,
+      "uncached": {
+        "confidence_method": "percentile bootstrap over 10 independent run medians, 20,000 resamples; WSL2 development-only",
+        "median_95pct_bootstrap_ci_ns": [
+          1176,
+          1194
+        ],
+        "median_ns": 1185,
+        "p95_ns": 1203,
+        "p99_ns": 1231,
+        "run_median_max_ns": 1194,
+        "run_median_min_ns": 1176
+      }
+    },
+    {
+      "cached": {
+        "confidence_method": "percentile bootstrap over 10 independent run medians, 20,000 resamples; WSL2 development-only",
+        "median_95pct_bootstrap_ci_ns": [
+          432,
+          432
+        ],
+        "median_ns": 432,
+        "p95_ns": 441,
+        "p99_ns": 468,
+        "run_median_max_ns": 432,
+        "run_median_min_ns": 432
+      },
+      "depth": 4,
+      "scheme": "biscuit-auth-6.0.0",
+      "token_size_bytes": 818,
+      "uncached": {
+        "confidence_method": "percentile bootstrap over 10 independent run medians, 20,000 resamples; WSL2 development-only",
+        "median_95pct_bootstrap_ci_ns": [
+          214927,
+          216002
+        ],
+        "median_ns": 215368,
+        "p95_ns": 255741,
+        "p99_ns": 306176,
+        "run_median_max_ns": 216654,
+        "run_median_min_ns": 214009
+      }
+    },
+    {
+      "cached": {
+        "confidence_method": "percentile bootstrap over 10 independent run medians, 20,000 resamples; WSL2 development-only",
+        "median_95pct_bootstrap_ci_ns": [
+          349,
+          358
+        ],
+        "median_ns": 349,
+        "p95_ns": 359,
+        "p99_ns": 377,
+        "run_median_max_ns": 358,
+        "run_median_min_ns": 349
+      },
+      "depth": 4,
+      "scheme": "ed25519-attenuation-chain",
+      "token_size_bytes": 608,
+      "uncached": {
+        "confidence_method": "percentile bootstrap over 10 independent run medians, 20,000 resamples; WSL2 development-only",
+        "median_95pct_bootstrap_ci_ns": [
+          148085,
+          148727
+        ],
+        "median_ns": 148444,
+        "p95_ns": 169364,
+        "p99_ns": 205265,
+        "run_median_max_ns": 149159,
+        "run_median_min_ns": 147525
+      }
+    },
+    {
+      "cached": {
+        "confidence_method": "percentile bootstrap over 10 independent run medians, 20,000 resamples; WSL2 development-only",
+        "median_95pct_bootstrap_ci_ns": [
+          156,
+          156
+        ],
+        "median_ns": 156,
+        "p95_ns": 165,
+        "p99_ns": 166,
+        "run_median_max_ns": 156,
+        "run_median_min_ns": 156
+      },
+      "depth": 5,
+      "scheme": "hmac-chain",
+      "token_size_bytes": 177,
+      "uncached": {
+        "confidence_method": "percentile bootstrap over 10 independent run medians, 20,000 resamples; WSL2 development-only",
+        "median_95pct_bootstrap_ci_ns": [
+          1345,
+          1354
+        ],
+        "median_ns": 1350,
+        "p95_ns": 1369,
+        "p99_ns": 1754,
+        "run_median_max_ns": 1359,
+        "run_median_min_ns": 1341
+      }
+    },
+    {
+      "cached": {
+        "confidence_method": "percentile bootstrap over 10 independent run medians, 20,000 resamples; WSL2 development-only",
+        "median_95pct_bootstrap_ci_ns": [
+          523,
+          523
+        ],
+        "median_ns": 523,
+        "p95_ns": 524,
+        "p99_ns": 560,
+        "run_median_max_ns": 523,
+        "run_median_min_ns": 523
+      },
+      "depth": 5,
+      "scheme": "biscuit-auth-6.0.0",
+      "token_size_bytes": 969,
+      "uncached": {
+        "confidence_method": "percentile bootstrap over 10 independent run medians, 20,000 resamples; WSL2 development-only",
+        "median_95pct_bootstrap_ci_ns": [
+          254221,
+          257055
+        ],
+        "median_ns": 255406,
+        "p95_ns": 308440,
+        "p99_ns": 386634,
+        "run_median_max_ns": 258423,
+        "run_median_min_ns": 253786
+      }
+    },
+    {
+      "cached": {
+        "confidence_method": "percentile bootstrap over 10 independent run medians, 20,000 resamples; WSL2 development-only",
+        "median_95pct_bootstrap_ci_ns": [
+          413,
+          413
+        ],
+        "median_ns": 413,
+        "p95_ns": 423,
+        "p99_ns": 450,
+        "run_median_max_ns": 413,
+        "run_median_min_ns": 413
+      },
+      "depth": 5,
+      "scheme": "ed25519-attenuation-chain",
+      "token_size_bytes": 721,
+      "uncached": {
+        "confidence_method": "percentile bootstrap over 10 independent run medians, 20,000 resamples; WSL2 development-only",
+        "median_95pct_bootstrap_ci_ns": [
+          177850,
+          178806
+        ],
+        "median_ns": 178300,
+        "p95_ns": 206413,
+        "p99_ns": 247853,
+        "run_median_max_ns": 179421,
+        "run_median_min_ns": 177557
+      }
+    },
+    {
+      "cached": {
+        "confidence_method": "percentile bootstrap over 10 independent run medians, 20,000 resamples; WSL2 development-only",
+        "median_95pct_bootstrap_ci_ns": [
+          184,
+          184
+        ],
+        "median_ns": 184,
+        "p95_ns": 193,
+        "p99_ns": 193,
+        "run_median_max_ns": 184,
+        "run_median_min_ns": 184
+      },
+      "depth": 6,
+      "scheme": "hmac-chain",
+      "token_size_bytes": 194,
+      "uncached": {
+        "confidence_method": "percentile bootstrap over 10 independent run medians, 20,000 resamples; WSL2 development-only",
+        "median_95pct_bootstrap_ci_ns": [
+          1492,
+          1515
+        ],
+        "median_ns": 1497,
+        "p95_ns": 1525,
+        "p99_ns": 1570,
+        "run_median_max_ns": 1524,
+        "run_median_min_ns": 1488
+      }
+    },
+    {
+      "cached": {
+        "confidence_method": "percentile bootstrap over 10 independent run medians, 20,000 resamples; WSL2 development-only",
+        "median_95pct_bootstrap_ci_ns": [
+          578,
+          587
+        ],
+        "median_ns": 579,
+        "p95_ns": 588,
+        "p99_ns": 615,
+        "run_median_max_ns": 588,
+        "run_median_min_ns": 570
+      },
+      "depth": 6,
+      "scheme": "biscuit-auth-6.0.0",
+      "token_size_bytes": 1120,
+      "uncached": {
+        "confidence_method": "percentile bootstrap over 10 independent run medians, 20,000 resamples; WSL2 development-only",
+        "median_95pct_bootstrap_ci_ns": [
+          294283,
+          296606
+        ],
+        "median_ns": 295086,
+        "p95_ns": 337003,
+        "p99_ns": 381288,
+        "run_median_max_ns": 296996,
+        "run_median_min_ns": 293332
+      }
+    },
+    {
+      "cached": {
+        "confidence_method": "percentile bootstrap over 10 independent run medians, 20,000 resamples; WSL2 development-only",
+        "median_95pct_bootstrap_ci_ns": [
+          468,
+          468
+        ],
+        "median_ns": 468,
+        "p95_ns": 469,
+        "p99_ns": 505,
+        "run_median_max_ns": 468,
+        "run_median_min_ns": 468
+      },
+      "depth": 6,
+      "scheme": "ed25519-attenuation-chain",
+      "token_size_bytes": 834,
+      "uncached": {
+        "confidence_method": "percentile bootstrap over 10 independent run medians, 20,000 resamples; WSL2 development-only",
+        "median_95pct_bootstrap_ci_ns": [
+          206720,
+          207896
+        ],
+        "median_ns": 207451,
+        "p95_ns": 228667,
+        "p99_ns": 261225,
+        "run_median_max_ns": 208186,
+        "run_median_min_ns": 206175
+      }
+    },
+    {
+      "cached": {
+        "confidence_method": "percentile bootstrap over 10 independent run medians, 20,000 resamples; WSL2 development-only",
+        "median_95pct_bootstrap_ci_ns": [
+          184,
+          184
+        ],
+        "median_ns": 184,
+        "p95_ns": 193,
+        "p99_ns": 193,
+        "run_median_max_ns": 184,
+        "run_median_min_ns": 184
+      },
+      "depth": 7,
+      "scheme": "hmac-chain",
+      "token_size_bytes": 211,
+      "uncached": {
+        "confidence_method": "percentile bootstrap over 10 independent run medians, 20,000 resamples; WSL2 development-only",
+        "median_95pct_bootstrap_ci_ns": [
+          1653,
+          1653
+        ],
+        "median_ns": 1653,
+        "p95_ns": 1672,
+        "p99_ns": 1708,
+        "run_median_max_ns": 1662,
+        "run_median_min_ns": 1644
+      }
+    },
+    {
+      "cached": {
+        "confidence_method": "percentile bootstrap over 10 independent run medians, 20,000 resamples; WSL2 development-only",
+        "median_95pct_bootstrap_ci_ns": [
+          633,
+          638
+        ],
+        "median_ns": 634,
+        "p95_ns": 799,
+        "p99_ns": 809,
+        "run_median_max_ns": 799,
+        "run_median_min_ns": 625
+      },
+      "depth": 7,
+      "scheme": "biscuit-auth-6.0.0",
+      "token_size_bytes": 1271,
+      "uncached": {
+        "confidence_method": "percentile bootstrap over 10 independent run medians, 20,000 resamples; WSL2 development-only",
+        "median_95pct_bootstrap_ci_ns": [
+          333788,
+          337572
+        ],
+        "median_ns": 335496,
+        "p95_ns": 382051,
+        "p99_ns": 451042,
+        "run_median_max_ns": 340152,
+        "run_median_min_ns": 333494
+      }
+    },
+    {
+      "cached": {
+        "confidence_method": "percentile bootstrap over 10 independent run medians, 20,000 resamples; WSL2 development-only",
+        "median_95pct_bootstrap_ci_ns": [
+          496,
+          496
+        ],
+        "median_ns": 496,
+        "p95_ns": 505,
+        "p99_ns": 533,
+        "run_median_max_ns": 505,
+        "run_median_min_ns": 487
+      },
+      "depth": 7,
+      "scheme": "ed25519-attenuation-chain",
+      "token_size_bytes": 947,
+      "uncached": {
+        "confidence_method": "percentile bootstrap over 10 independent run medians, 20,000 resamples; WSL2 development-only",
+        "median_95pct_bootstrap_ci_ns": [
+          237226,
+          237883
+        ],
+        "median_ns": 237474,
+        "p95_ns": 265063,
+        "p99_ns": 311554,
+        "run_median_max_ns": 238292,
+        "run_median_min_ns": 236216
+      }
+    },
+    {
+      "cached": {
+        "confidence_method": "percentile bootstrap over 10 independent run medians, 20,000 resamples; WSL2 development-only",
+        "median_95pct_bootstrap_ci_ns": [
+          184,
+          184
+        ],
+        "median_ns": 184,
+        "p95_ns": 184,
+        "p99_ns": 184,
+        "run_median_max_ns": 184,
+        "run_median_min_ns": 184
+      },
+      "depth": 8,
+      "scheme": "hmac-chain",
+      "token_size_bytes": 228,
+      "uncached": {
+        "confidence_method": "percentile bootstrap over 10 independent run medians, 20,000 resamples; WSL2 development-only",
+        "median_95pct_bootstrap_ci_ns": [
+          1809,
+          1823
+        ],
+        "median_ns": 1810,
+        "p95_ns": 1846,
+        "p99_ns": 1883,
+        "run_median_max_ns": 1846,
+        "run_median_min_ns": 1809
+      }
+    },
+    {
+      "cached": {
+        "confidence_method": "percentile bootstrap over 10 independent run medians, 20,000 resamples; WSL2 development-only",
+        "median_95pct_bootstrap_ci_ns": [
+          716,
+          716
+        ],
+        "median_ns": 716,
+        "p95_ns": 717,
+        "p99_ns": 753,
+        "run_median_max_ns": 716,
+        "run_median_min_ns": 716
+      },
+      "depth": 8,
+      "scheme": "biscuit-auth-6.0.0",
+      "token_size_bytes": 1422,
+      "uncached": {
+        "confidence_method": "percentile bootstrap over 10 independent run medians, 20,000 resamples; WSL2 development-only",
+        "median_95pct_bootstrap_ci_ns": [
+          373463,
+          377201
+        ],
+        "median_ns": 375309,
+        "p95_ns": 424289,
+        "p99_ns": 499507,
+        "run_median_max_ns": 382088,
+        "run_median_min_ns": 372968
+      }
+    },
+    {
+      "cached": {
+        "confidence_method": "percentile bootstrap over 10 independent run medians, 20,000 resamples; WSL2 development-only",
+        "median_95pct_bootstrap_ci_ns": [
+          551,
+          551
+        ],
+        "median_ns": 551,
+        "p95_ns": 560,
+        "p99_ns": 588,
+        "run_median_max_ns": 551,
+        "run_median_min_ns": 542
+      },
+      "depth": 8,
+      "scheme": "ed25519-attenuation-chain",
+      "token_size_bytes": 1060,
+      "uncached": {
+        "confidence_method": "percentile bootstrap over 10 independent run medians, 20,000 resamples; WSL2 development-only",
+        "median_95pct_bootstrap_ci_ns": [
+          266478,
+          267239
+        ],
+        "median_ns": 266891,
+        "p95_ns": 297438,
+        "p99_ns": 363058,
+        "run_median_max_ns": 268553,
+        "run_median_min_ns": 266156
+      }
+    }
+  ]
+}

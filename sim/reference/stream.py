@@ -57,12 +57,22 @@ class MonotonicDeadline:
         if isinstance(remaining_ms, bool) or not isinstance(remaining_ms, int) or not 1 <= remaining_ms <= _UINT64_MAX:
             raise DeadlineError("OS-0001", "wire deadline must be a positive unsigned 64-bit duration")
         self.deadline_at_ns = clock.monotonic_ns + remaining_ms * _NANOS_PER_MILLISECOND
+        self.started_at_ns = clock.monotonic_ns
+        self.initial_remaining_ms = remaining_ms
 
     def remaining_ms(self, clock: SimulatedClock) -> int:
         remaining_ms = (self.deadline_at_ns - clock.monotonic_ns) // _NANOS_PER_MILLISECOND
         if remaining_ms < 1:
             raise DeadlineError("OS-0500", "deadline expired before another hop")
         return remaining_ms
+
+    def forwarded_ms(self, clock: SimulatedClock, *, safety_margin_ms: int, minimum_useful_ms: int) -> int:
+        elapsed_ns = clock.monotonic_ns - self.started_at_ns
+        elapsed_ms = (elapsed_ns + _NANOS_PER_MILLISECOND - 1) // _NANOS_PER_MILLISECOND
+        forwarded_ms = self.initial_remaining_ms - elapsed_ms - safety_margin_ms
+        if forwarded_ms < minimum_useful_ms:
+            raise DeadlineError("OS-0500", "deadline is below the minimum useful downstream budget")
+        return forwarded_ms
 
 
 @dataclass(frozen=True, slots=True)

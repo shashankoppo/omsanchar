@@ -21,6 +21,7 @@ Errors use stable codes of the form `OS-xxxx`. Human-readable messages may chang
 | OS-0403 | STREAM_BACKPRESSURE | After capacity | A bounded stream buffer is full. Retry after consumer acknowledgement or close the stream. |
 | OS-0404 | STREAM_LIMIT_REACHED | No | A stream reached its configured event or dedupe-record limit and must be rotated. |
 | OS-0500 | DEADLINE_EXCEEDED | No | The propagated relative deadline has expired according to a hop's monotonic clock. |
+| OS-0503 | SERVICE_CAPACITY | After capacity | A configured in-memory stream or retained-state bound is full; the gateway failed admission before upstream work. |
 | OS-0600 | INTERNAL | Conditional | Unexpected internal failure. Return a trace ID; retry only when explicitly marked retryable. |
 
 Retryable errors may carry `retry_after_ms`, but clients must also honor their original deadline and remaining budget. A retry must reuse the same idempotency key. No error response itself implies that a side effect did not occur; callers must resolve ambiguous upstream outcomes with idempotency or status lookup.
