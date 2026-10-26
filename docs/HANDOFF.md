@@ -4,7 +4,7 @@ Updated: 2026-10-27 (Asia/Calcutta)
 
 ## Preserved state
 
-- Working branch: `wip/session3`; latest committed checkpoint `4ae9363` records the token investigation. The D5 harness, matrix driver, and WSL2 raw smoke reports are validated and ready for a checkpoint commit.
+- Working branch: `wip/session3`; latest checkpoint `76e6ab2` (`feat(bench): add Rust open-loop D5 harness`) commits the D5 harness, matrix driver, paired summarizer, and WSL2 raw smoke reports.
 - No Git remote is configured. The GitHub repository `om-sanchar` and hosted CI have not been created/run.
 - The Session 3 handoff reports a release-mode verification failure, but the failing scheme/depth/token and complete log were not saved. A seeded-RNG byte reproducibility test failed before and passes after deterministic Biscuit key generation. This identifies token construction nondeterminism, not the verifier-failure cause. The old timing report was moved to `bench/quarantine/` and is not accepted evidence.
 - Security reports currently describe an older Cargo lockfile and are stale after the bytes/Tokio pin changes. Rerun Syft, Grype, and cargo-audit before reporting them as current.
