@@ -12,20 +12,28 @@ ed25519-dalek = { version = "=2.1.1", features = ["rand_core"], optional = true 
 futures-util = "=0.3.31"
 hmac = { version = "=0.12.1", optional = true }
 http-body-util = "=0.1.2"
-hyper = { version = "=1.5.2", default-features = false, features = ["http1", "server"] }
-hyper-util = { version = "=0.1.10", default-features = false, features = ["http1", "server", "tokio"] }
+hdrhistogram = { version = "=7.5.4", optional = true }
+hyper = { version = "=1.6.0", default-features = false, features = ["http1", "server"] }
+hyper-util = { version = "=0.1.12", default-features = false, features = ["http1", "server", "tokio"] }
 rand = { version = "=0.8.8", optional = true }
+reqwest = { version = "=0.12.28", default-features = false, features = ["json", "rustls-tls"], optional = true }
 serde_json = "=1.0.140"
 serde = { version = "=1.0.229", features = ["derive"], optional = true }
 sha2 = { version = "=0.10.8", optional = true }
-tokio = { version = "=1.53.3", default-features = false, features = ["macros", "net", "rt-multi-thread"] }
+tokio = { version = "=1.53.3", default-features = false, features = ["macros", "net", "rt-multi-thread", "time"] }
 
 [features]
 token-bench = ["dep:biscuit-auth", "dep:ed25519-dalek", "dep:hmac", "dep:rand", "dep:serde", "dep:sha2"]
+d5-bench = ["dep:hdrhistogram", "dep:reqwest", "dep:serde"]
 
 [[bin]]
 name = "capability_token_bench"
 path = "src/bin/capability_token_bench.rs"
 required-features = ["token-bench"]
+
+[[bin]]
+name = "d5_loadgen"
+path = "src/bin/d5_loadgen.rs"
+required-features = ["d5-bench"]
 
 [dev-dependencies]

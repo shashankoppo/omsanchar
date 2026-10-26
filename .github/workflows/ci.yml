@@ -28,6 +28,7 @@ jobs:
           cargo clippy --locked --manifest-path dataplane/sanchar-core/Cargo.toml -- -D warnings
           cargo test --locked --manifest-path dataplane/sanchar-core/Cargo.toml
           cargo test --locked --manifest-path dataplane/sanchar-core/Cargo.toml --features token-bench --bin capability_token_bench
+          cargo test --locked --manifest-path dataplane/sanchar-core/Cargo.toml --features d5-bench --bin d5_loadgen
           cargo build --locked --manifest-path dataplane/sanchar-core/Cargo.toml --bin mock_model
           python3 scripts/test_mock_model.py dataplane/sanchar-core/target/debug/mock_model
 

@@ -1,7 +1,7 @@
 # ADR-001: Envoy versus a Rust fast path
 
-- **Status:** Proposed; decision deferred until a hosted Linux benchmark is available.
-- **Date:** 2026-10-25
+- **Status:** Proposed; D5 harness has WSL2 mock smoke evidence, but the equal-feature native Linux matrix is not available.
+- **Date:** 2026-10-27
 - **Scope:** D5 equal-feature comparison only. This is the pre-registration and must be committed before collecting any D5 measurements.
 
 ## Decision rule (pre-registered)
@@ -29,7 +29,9 @@ The decision host must be a native Linux machine. Record model and stepping, mic
 
 ## Evidence and limits
 
-The existing D4 Python/Windows loopback result is a smoke test, not D5 evidence. It has no feature-matched proxies, open-loop arrival process, TLS matrix, or native Linux host. It cannot prove or disprove the Rust target. No D5 decision measurements have been collected for this ADR.
+The D4 Python/Windows loopback result is not D5 evidence. A Rust open-loop/HdrHistogram harness and paired-run summarizer now cover the registered workloads and matrix dimensions. On WSL2, each mock workload completed a small direct-path smoke with zero errors; these are harness checks only, not overhead measurements.
+
+The current Envoy development config provides routing and trace export but no AI-gateway filters, token verification, quota, metering, or ext_proc/WASM extension. The Rust core has no feature-matched D5 proxy. There is no qualifying native Linux host in this workspace evidence. Therefore no D5 overhead, CPU/request, RSS, confidence-interval, or decision measurement has been collected. ADR-001 remains **undecided**; WSL2 smoke results cannot prove or disprove either path.
 
 ## Consequences
 

@@ -1,0 +1,4147 @@
+{
+  "classification": "measured",
+  "platform_scope": "WSL2 development-only; not native Linux decision evidence",
+  "date_utc": "2026-10-26T19:29:45Z",
+  "host": "DESKTOP-S3HB9HC",
+  "rustc_version": "rustc 1.85.0 (4d91de4e4 2025-02-17)",
+  "cargo_version": "cargo 1.85.0 (d73d2caf9 2024-12-31)",
+  "reqwest_version": "0.12.28",
+  "hdrhistogram_version": "7.5.4",
+  "endpoint": "http://127.0.0.1:8081/",
+  "workload": "mcp",
+  "offered_rate_rps": 10,
+  "planned_duration_seconds": 1,
+  "max_in_flight": 100,
+  "tls": false,
+  "offered_arrivals": 10,
+  "started_requests": 10,
+  "peak_in_flight_observed": 1,
+  "completed_requests": 10,
+  "dropped_at_concurrency_cap": 0,
+  "late_dispatches_over_1ms": 10,
+  "http_or_transport_errors": 0,
+  "hdrhistogram_significant_digits": 3,
+  "hdrhistogram_total_count": 10,
+  "hdrhistogram_percentiles": [
+    {
+      "percentile": 0.5,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.9,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.95,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.99,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.999,
+      "value_ns": 10543103
+    }
+  ],
+  "hdrhistogram_percentile_distribution": [
+    {
+      "percentile": 0.0,
+      "value_ns": 2174976
+    },
+    {
+      "percentile": 0.001,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.002,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.003,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.004,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.005,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.006,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.007,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.008,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.009,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.01,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.011,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.012,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.013,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.014,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.015,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.016,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.017,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.018,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.019,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.02,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.021,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.022,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.023,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.024,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.025,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.026,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.027,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.028,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.029,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.03,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.031,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.032,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.033,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.034,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.035,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.036,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.037,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.038,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.039,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.04,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.041,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.042,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.043,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.044,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.045,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.046,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.047,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.048,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.049,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.05,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.051,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.052,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.053,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.054,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.055,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.056,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.057,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.058,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.059,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.06,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.061,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.062,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.063,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.064,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.065,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.066,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.067,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.068,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.069,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.07,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.071,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.072,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.073,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.074,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.075,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.076,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.077,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.078,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.079,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.08,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.081,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.082,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.083,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.084,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.085,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.086,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.087,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.088,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.089,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.09,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.091,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.092,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.093,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.094,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.095,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.096,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.097,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.098,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.099,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.1,
+      "value_ns": 2177023
+    },
+    {
+      "percentile": 0.101,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.102,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.103,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.104,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.105,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.106,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.107,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.108,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.109,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.11,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.111,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.112,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.113,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.114,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.115,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.116,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.117,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.118,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.119,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.12,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.121,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.122,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.123,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.124,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.125,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.126,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.127,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.128,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.129,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.13,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.131,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.132,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.133,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.134,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.135,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.136,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.137,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.138,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.139,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.14,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.141,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.142,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.143,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.144,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.145,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.146,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.147,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.148,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.149,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.15,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.151,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.152,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.153,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.154,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.155,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.156,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.157,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.158,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.159,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.16,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.161,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.162,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.163,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.164,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.165,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.166,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.167,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.168,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.169,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.17,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.171,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.172,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.173,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.174,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.175,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.176,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.177,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.178,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.179,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.18,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.181,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.182,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.183,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.184,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.185,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.186,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.187,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.188,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.189,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.19,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.191,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.192,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.193,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.194,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.195,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.196,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.197,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.198,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.199,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.2,
+      "value_ns": 2252799
+    },
+    {
+      "percentile": 0.201,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.202,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.203,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.204,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.205,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.206,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.207,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.208,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.209,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.21,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.211,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.212,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.213,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.214,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.215,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.216,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.217,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.218,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.219,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.22,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.221,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.222,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.223,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.224,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.225,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.226,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.227,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.228,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.229,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.23,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.231,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.232,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.233,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.234,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.235,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.236,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.237,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.238,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.239,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.24,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.241,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.242,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.243,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.244,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.245,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.246,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.247,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.248,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.249,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.25,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.251,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.252,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.253,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.254,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.255,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.256,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.257,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.258,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.259,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.26,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.261,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.262,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.263,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.264,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.265,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.266,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.267,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.268,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.269,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.27,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.271,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.272,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.273,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.274,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.275,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.276,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.277,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.278,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.279,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.28,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.281,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.282,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.283,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.284,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.285,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.286,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.287,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.288,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.289,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.29,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.291,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.292,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.293,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.294,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.295,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.296,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.297,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.298,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.299,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.3,
+      "value_ns": 2291711
+    },
+    {
+      "percentile": 0.301,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.302,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.303,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.304,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.305,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.306,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.307,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.308,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.309,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.31,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.311,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.312,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.313,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.314,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.315,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.316,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.317,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.318,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.319,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.32,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.321,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.322,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.323,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.324,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.325,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.326,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.327,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.328,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.329,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.33,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.331,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.332,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.333,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.334,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.335,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.336,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.337,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.338,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.339,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.34,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.341,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.342,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.343,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.344,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.345,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.346,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.347,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.348,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.349,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.35,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.351,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.352,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.353,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.354,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.355,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.356,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.357,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.358,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.359,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.36,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.361,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.362,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.363,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.364,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.365,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.366,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.367,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.368,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.369,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.37,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.371,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.372,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.373,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.374,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.375,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.376,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.377,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.378,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.379,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.38,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.381,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.382,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.383,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.384,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.385,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.386,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.387,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.388,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.389,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.39,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.391,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.392,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.393,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.394,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.395,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.396,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.397,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.398,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.399,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.4,
+      "value_ns": 2449407
+    },
+    {
+      "percentile": 0.401,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.402,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.403,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.404,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.405,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.406,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.407,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.408,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.409,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.41,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.411,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.412,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.413,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.414,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.415,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.416,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.417,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.418,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.419,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.42,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.421,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.422,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.423,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.424,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.425,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.426,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.427,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.428,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.429,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.43,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.431,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.432,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.433,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.434,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.435,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.436,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.437,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.438,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.439,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.44,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.441,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.442,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.443,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.444,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.445,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.446,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.447,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.448,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.449,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.45,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.451,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.452,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.453,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.454,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.455,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.456,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.457,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.458,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.459,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.46,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.461,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.462,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.463,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.464,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.465,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.466,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.467,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.468,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.469,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.47,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.471,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.472,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.473,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.474,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.475,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.476,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.477,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.478,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.479,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.48,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.481,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.482,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.483,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.484,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.485,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.486,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.487,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.488,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.489,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.49,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.491,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.492,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.493,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.494,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.495,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.496,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.497,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.498,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.499,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.5,
+      "value_ns": 2549759
+    },
+    {
+      "percentile": 0.501,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.502,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.503,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.504,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.505,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.506,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.507,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.508,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.509,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.51,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.511,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.512,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.513,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.514,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.515,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.516,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.517,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.518,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.519,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.52,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.521,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.522,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.523,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.524,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.525,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.526,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.527,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.528,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.529,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.53,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.531,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.532,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.533,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.534,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.535,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.536,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.537,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.538,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.539,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.54,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.541,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.542,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.543,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.544,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.545,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.546,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.547,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.548,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.549,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.55,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.551,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.552,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.553,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.554,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.555,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.556,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.557,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.558,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.559,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.56,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.561,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.562,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.563,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.564,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.565,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.566,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.567,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.568,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.569,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.57,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.571,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.572,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.573,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.574,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.575,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.576,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.577,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.578,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.579,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.58,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.581,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.582,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.583,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.584,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.585,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.586,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.587,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.588,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.589,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.59,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.591,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.592,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.593,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.594,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.595,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.596,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.597,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.598,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.599,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.6,
+      "value_ns": 2736127
+    },
+    {
+      "percentile": 0.601,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.602,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.603,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.604,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.605,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.606,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.607,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.608,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.609,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.61,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.611,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.612,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.613,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.614,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.615,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.616,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.617,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.618,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.619,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.62,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.621,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.622,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.623,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.624,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.625,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.626,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.627,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.628,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.629,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.63,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.631,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.632,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.633,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.634,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.635,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.636,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.637,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.638,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.639,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.64,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.641,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.642,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.643,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.644,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.645,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.646,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.647,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.648,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.649,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.65,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.651,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.652,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.653,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.654,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.655,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.656,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.657,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.658,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.659,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.66,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.661,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.662,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.663,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.664,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.665,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.666,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.667,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.668,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.669,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.67,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.671,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.672,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.673,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.674,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.675,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.676,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.677,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.678,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.679,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.68,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.681,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.682,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.683,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.684,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.685,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.686,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.687,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.688,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.689,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.69,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.691,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.692,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.693,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.694,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.695,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.696,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.697,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.698,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.699,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.7,
+      "value_ns": 2813951
+    },
+    {
+      "percentile": 0.701,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.702,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.703,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.704,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.705,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.706,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.707,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.708,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.709,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.71,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.711,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.712,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.713,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.714,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.715,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.716,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.717,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.718,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.719,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.72,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.721,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.722,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.723,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.724,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.725,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.726,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.727,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.728,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.729,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.73,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.731,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.732,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.733,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.734,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.735,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.736,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.737,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.738,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.739,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.74,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.741,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.742,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.743,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.744,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.745,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.746,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.747,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.748,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.749,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.75,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.751,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.752,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.753,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.754,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.755,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.756,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.757,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.758,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.759,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.76,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.761,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.762,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.763,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.764,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.765,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.766,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.767,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.768,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.769,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.77,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.771,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.772,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.773,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.774,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.775,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.776,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.777,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.778,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.779,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.78,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.781,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.782,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.783,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.784,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.785,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.786,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.787,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.788,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.789,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.79,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.791,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.792,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.793,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.794,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.795,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.796,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.797,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.798,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.799,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.8,
+      "value_ns": 2985983
+    },
+    {
+      "percentile": 0.801,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.802,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.803,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.804,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.805,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.806,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.807,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.808,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.809,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.81,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.811,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.812,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.813,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.814,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.815,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.816,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.817,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.818,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.819,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.82,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.821,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.822,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.823,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.824,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.825,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.826,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.827,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.828,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.829,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.83,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.831,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.832,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.833,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.834,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.835,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.836,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.837,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.838,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.839,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.84,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.841,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.842,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.843,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.844,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.845,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.846,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.847,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.848,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.849,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.85,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.851,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.852,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.853,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.854,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.855,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.856,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.857,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.858,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.859,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.86,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.861,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.862,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.863,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.864,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.865,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.866,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.867,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.868,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.869,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.87,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.871,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.872,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.873,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.874,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.875,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.876,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.877,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.878,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.879,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.88,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.881,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.882,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.883,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.884,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.885,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.886,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.887,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.888,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.889,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.89,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.891,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.892,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.893,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.894,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.895,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.896,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.897,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.898,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.899,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.9,
+      "value_ns": 3317759
+    },
+    {
+      "percentile": 0.901,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.902,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.903,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.904,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.905,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.906,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.907,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.908,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.909,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.91,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.911,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.912,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.913,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.914,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.915,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.916,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.917,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.918,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.919,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.92,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.921,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.922,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.923,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.924,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.925,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.926,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.927,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.928,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.929,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.93,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.931,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.932,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.933,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.934,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.935,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.936,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.937,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.938,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.939,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.94,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.941,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.942,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.943,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.944,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.945,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.946,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.947,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.948,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.949,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.95,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.951,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.952,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.953,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.954,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.955,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.956,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.957,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.958,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.959,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.96,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.961,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.962,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.963,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.964,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.965,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.966,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.967,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.968,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.969,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.97,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.971,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.972,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.973,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.974,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.975,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.976,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.977,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.978,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.979,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.98,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.981,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.982,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.983,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.984,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.985,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.986,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.987,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.988,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.989,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.99,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.991,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.992,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.993,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.994,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.995,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.996,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.997,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.998,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 0.999,
+      "value_ns": 10543103
+    },
+    {
+      "percentile": 1.0,
+      "value_ns": 10543103
+    }
+  ],
+  "client_process_peak_rss_bytes": 8962048,
+  "target_cpu_seconds_per_completed_request": null,
+  "target_resident_memory_bytes": null,
+  "kernel": "6.18.33.2-microsoft-standard-WSL2",
+  "cpu_model": "model name\t: AMD Ryzen 5 5600H with Radeon Graphics",
+  "cpu_frequency_mhz_snapshot": "cpu MHz\t\t: 3293.723",
+  "allowed_cpu_list": "Cpus_allowed_list:\t0-11",
+  "cpu_governor": "unavailable",
+  "cgroup_cpu_max": "unavailable",
+  "cgroup_memory_max": "unavailable",
+  "pinning": "not pinned by harness; use taskset/cgroup cpuset and record IRQ policy for decision-grade runs",
+  "exact_command": "dataplane/sanchar-core/target/debug/d5_loadgen http://127.0.0.1:8081 mcp 10 1 100 bench/results/d5/wsl2-development-smoke/mcp.json",
+  "raw_samples": [
+    {
+      "sequence": 1,
+      "scheduled_offset_ns": 0,
+      "dispatch_lag_ns": 1290926,
+      "response_latency_from_schedule_ns": 10540034,
+      "status": 200,
+      "error": null
+    },
+    {
+      "sequence": 2,
+      "scheduled_offset_ns": 100000000,
+      "dispatch_lag_ns": 2227259,
+      "response_latency_from_schedule_ns": 3317457,
+      "status": 200,
+      "error": null
+    },
+    {
+      "sequence": 3,
+      "scheduled_offset_ns": 200000000,
+      "dispatch_lag_ns": 1761604,
+      "response_latency_from_schedule_ns": 2736045,
+      "status": 200,
+      "error": null
+    },
+    {
+      "sequence": 4,
+      "scheduled_offset_ns": 300000000,
+      "dispatch_lag_ns": 1235709,
+      "response_latency_from_schedule_ns": 2252737,
+      "status": 200,
+      "error": null
+    },
+    {
+      "sequence": 5,
+      "scheduled_offset_ns": 400000000,
+      "dispatch_lag_ns": 1709351,
+      "response_latency_from_schedule_ns": 2448192,
+      "status": 200,
+      "error": null
+    },
+    {
+      "sequence": 6,
+      "scheduled_offset_ns": 500000000,
+      "dispatch_lag_ns": 2015134,
+      "response_latency_from_schedule_ns": 2984373,
+      "status": 200,
+      "error": null
+    },
+    {
+      "sequence": 7,
+      "scheduled_offset_ns": 600000000,
+      "dispatch_lag_ns": 1494448,
+      "response_latency_from_schedule_ns": 2290776,
+      "status": 200,
+      "error": null
+    },
+    {
+      "sequence": 8,
+      "scheduled_offset_ns": 700000000,
+      "dispatch_lag_ns": 1911463,
+      "response_latency_from_schedule_ns": 2812817,
+      "status": 200,
+      "error": null
+    },
+    {
+      "sequence": 9,
+      "scheduled_offset_ns": 800000000,
+      "dispatch_lag_ns": 1351685,
+      "response_latency_from_schedule_ns": 2176586,
+      "status": 200,
+      "error": null
+    },
+    {
+      "sequence": 10,
+      "scheduled_offset_ns": 900000000,
+      "dispatch_lag_ns": 1731004,
+      "response_latency_from_schedule_ns": 2549407,
+      "status": 200,
+      "error": null
+    }
+  ]
+}

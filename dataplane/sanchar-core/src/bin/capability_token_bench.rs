@@ -8,8 +8,8 @@ use biscuit_auth::macros::{authorizer, biscuit, block};
 use biscuit_auth::{Algorithm, Biscuit, KeyPair};
 use ed25519_dalek::{Signature, Signer, SigningKey, Verifier, VerifyingKey};
 use hmac::{Hmac, Mac};
-use rand::SeedableRng;
 use rand::rngs::StdRng;
+use rand::SeedableRng;
 use serde::Serialize;
 use sha2::{Digest, Sha256};
 
@@ -329,11 +329,7 @@ fn build_biscuit(depth: usize) -> (Vec<u8>, biscuit_auth::PublicKey) {
     let mut rng = StdRng::from_seed(BENCH_SEED);
     let root = KeyPair::new_with_rng(Algorithm::Ed25519, &mut rng);
     let mut token = biscuit!(r#"right("om-sanchar", "invoke"); request_tokens(900);"#)
-        .build_with_rng(
-            &root,
-            biscuit_auth::datalog::SymbolTable::new(),
-            &mut rng,
-        )
+        .build_with_rng(&root, biscuit_auth::datalog::SymbolTable::new(), &mut rng)
         .expect("build Biscuit authority block");
     for index in 1..=depth {
         let limit = (1000 - index) as i64;
@@ -342,8 +338,8 @@ fn build_biscuit(depth: usize) -> (Vec<u8>, biscuit_auth::PublicKey) {
             .append_with_keypair(
                 &next_key,
                 block!(
-                r#"check if request_tokens($n), $n <= {limit};"#,
-                limit = limit
+                    r#"check if request_tokens($n), $n <= {limit};"#,
+                    limit = limit
                 ),
             )
             .expect("append Biscuit attenuation block");

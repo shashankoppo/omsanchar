@@ -1,4 +1,4 @@
-.PHONY: dev-native dev-stack dev-stack-podman dev-stack-down dev-stack-down-podman test test-spec test-sim test-gateway test-token test-rust test-token-rust test-mock bench-token-rust lint proto sbom source-sbom dependency-sbom vuln-scan container compose-build deps
+.PHONY: dev-native dev-stack dev-stack-podman dev-stack-down dev-stack-down-podman test test-spec test-sim test-gateway test-token test-rust test-token-rust test-d5-loadgen test-mock bench-token-rust bench-d5 lint proto sbom source-sbom dependency-sbom vuln-scan container compose-build deps
 
 PYTHON ?= python3
 CARGO ?= cargo
@@ -9,6 +9,12 @@ GRYPE ?= grype
 TOKEN_BENCH_ITERATIONS ?= 1000
 TOKEN_BENCH_RUNS ?= 10
 TOKEN_BENCH_OUTPUT ?= bench/results/capability-token-rust.json
+D5_ENDPOINT ?= http://127.0.0.1:8081
+D5_WORKLOAD ?= sse500
+D5_RATE_RPS ?= 10
+D5_DURATION_SECS ?= 1
+D5_MAX_IN_FLIGHT ?= 100
+D5_OUTPUT ?= bench/results/d5-development-run.json
 
 dev-native:
 	$(PYTHON) -m gateway.server
@@ -25,7 +31,7 @@ dev-stack-down:
 dev-stack-down-podman:
 	podman compose -f deploy/dev.yml down
 
-test: test-spec test-sim test-gateway test-token test-rust test-token-rust test-mock
+test: test-spec test-sim test-gateway test-token test-rust test-token-rust test-d5-loadgen test-mock
 
 test-spec:
 	$(PYTHON) -m unittest discover -s spec/tests -v
@@ -45,12 +51,18 @@ test-rust:
 test-token-rust:
 	$(CARGO) test --locked --manifest-path dataplane/sanchar-core/Cargo.toml --features token-bench --bin capability_token_bench
 
+test-d5-loadgen:
+	$(CARGO) test --locked --manifest-path dataplane/sanchar-core/Cargo.toml --features d5-bench --bin d5_loadgen
+
 test-mock:
 	$(CARGO) build --locked --manifest-path dataplane/sanchar-core/Cargo.toml --bin mock_model
 	$(PYTHON) scripts/test_mock_model.py dataplane/sanchar-core/target/debug/mock_model
 
 bench-token-rust:
 	$(CARGO) run --release --locked --manifest-path dataplane/sanchar-core/Cargo.toml --features token-bench --bin capability_token_bench -- $(TOKEN_BENCH_ITERATIONS) $(TOKEN_BENCH_RUNS) $(TOKEN_BENCH_OUTPUT)
+
+bench-d5:
+	$(CARGO) run --release --locked --manifest-path dataplane/sanchar-core/Cargo.toml --features d5-bench --bin d5_loadgen -- $(D5_ENDPOINT) $(D5_WORKLOAD) $(D5_RATE_RPS) $(D5_DURATION_SECS) $(D5_MAX_IN_FLIGHT) $(D5_OUTPUT) $(D5_CA_CERT)
 
 lint:
 	$(PYTHON) scripts/check_style.py
