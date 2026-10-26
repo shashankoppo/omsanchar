@@ -1,18 +1,19 @@
 # Session handoff
 
-Updated: 2026-10-26 (Asia/Calcutta)
+Updated: 2026-10-27 (Asia/Calcutta)
 
 ## Preserved state
 
-- Starting branch: `master`, HEAD `688425b` (`docs: record v0.1 compatibility result`). The Session 3 work was present as 34 changed/untracked paths and had not yet been committed at handoff. Preserve it on `wip/session3` before making further changes.
+- Working branch: `wip/session3`; checkpoint `2d31921` (`checkpoint: preserve session 3 prototype and evidence`) committed all 47 paths present at the handoff. Subsequent token-investigation changes are currently uncommitted and must be checkpointed at the next milestone.
 - No Git remote is configured. The GitHub repository `om-sanchar` and hosted CI have not been created/run.
-- The current token benchmark source and WSL2 raw result are present, but the Session 3 handoff reports a release-mode verification failure. Do not treat any timing output as accepted until the failure is reproduced, diagnosed, regression-tested, fixed, and the complete matrix rerun.
+- The Session 3 handoff reports a release-mode verification failure, but the failing scheme/depth/token and complete log were not saved. A seeded-RNG byte reproducibility test failed before and passes after deterministic Biscuit key generation. This identifies token construction nondeterminism, not the verifier-failure cause. The old timing report was moved to `bench/quarantine/` and is not accepted evidence.
 - Security reports currently describe an older Cargo lockfile and are stale after the bytes/Tokio pin changes. Rerun Syft, Grype, and cargo-audit before reporting them as current.
 
 ## Current implementation
 
 - Bounded process-local gateway retention, TTL/count caps, FIFO eviction, eviction metrics, expired resume behavior, static bearer auth interface, deadline margin policy, D3 compose/config files, Rust mock model, Rust token-format benchmark, ADRs 001/005/008, soak and benchmark artifacts are in the working tree.
 - The million-admission soak is registry-path evidence; it did not open one million gateway sockets. The original stream reservation is about 1 MiB per stream, so the 128 MiB budget retains only about 126 streams. This must be reduced and separately measured.
+- Token tests pass in WSL2 debug and release: three tests, including verification across depths 1-8, tamper rejection, and byte-for-byte deterministic token construction. The original verifier failure is still unreproduced and has no preserved token/log; no new token timing is publishable until its cause is resolved.
 - Existing raw token results are WSL2 development-only; they cannot decide ADR-005's native Linux target.
 - D5 has no eligible measurements. ADR-001's pre-registered decision rule remains: Rust requires at least 20% lower CPU/request or lower p99 at equal features, with confidence excluding no improvement and no material p99.9/correctness/memory regression; otherwise keep Envoy.
 
@@ -47,9 +48,9 @@ The benchmark command's existing artifact is not accepted until its release veri
 
 ## Next three actions
 
-1. Reproduce and diagnose the release token-verifier failure; add a regression test, fix it, and regenerate the complete 10-run Rust matrix only after the test passes.
-2. Correct stream memory accounting/resume-window size, add real-socket Linux concurrency evidence, and publish bytes per retained stream/connection and estimated streams per GiB with platform labels.
-3. Refresh all-feature dependency inventory and local security scans; then prepare the D5 open-loop HdrHistogram harness and record that ADR-001 remains undecided if no native Linux host is available.
+1. The fixed-seed token correctness suite passed in release. The earlier verification failure remains unreproduced and its cause unknown; collect detailed failure output if it recurs, and withhold timing meanwhile.
+2. Implement the D5 open-loop HdrHistogram harness and document the equal-feature/native-host blockers; keep ADR-001 undecided without native Linux evidence.
+3. Replace the 1 MiB stream reservation with actual retained-byte accounting and a small resume window, then add real-socket concurrency evidence and refresh the all-feature security scans.
 
 ## Pending failures and known limits
 

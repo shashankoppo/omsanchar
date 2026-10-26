@@ -5,9 +5,11 @@ use std::process::Command;
 use std::time::{Duration, Instant};
 
 use biscuit_auth::macros::{authorizer, biscuit, block};
-use biscuit_auth::{Biscuit, KeyPair};
+use biscuit_auth::{Algorithm, Biscuit, KeyPair};
 use ed25519_dalek::{Signature, Signer, SigningKey, Verifier, VerifyingKey};
 use hmac::{Hmac, Mac};
+use rand::SeedableRng;
+use rand::rngs::StdRng;
 use serde::Serialize;
 use sha2::{Digest, Sha256};
 
@@ -15,6 +17,7 @@ type HmacSha256 = Hmac<Sha256>;
 
 const CLAIMS: &[u8] = b"tenant=demo;model=om://demo/model/default;budget=100000";
 const HMAC_ROOT: [u8; 32] = [0x35; 32];
+const BENCH_SEED: [u8; 32] = [0x42; 32];
 
 #[derive(Serialize)]
 struct Metadata {
@@ -26,6 +29,7 @@ struct Metadata {
     cpu_model: String,
     allowed_cpu_list: String,
     rustc: String,
+    deterministic_seed: &'static str,
     iterations_per_run: usize,
     warmup_iterations_per_run: usize,
     runs_per_cell: usize,
@@ -322,17 +326,26 @@ fn verify_ed25519(bytes: &[u8], root_public_key: &VerifyingKey) -> bool {
 }
 
 fn build_biscuit(depth: usize) -> (Vec<u8>, biscuit_auth::PublicKey) {
-    let root = KeyPair::new();
+    let mut rng = StdRng::from_seed(BENCH_SEED);
+    let root = KeyPair::new_with_rng(Algorithm::Ed25519, &mut rng);
     let mut token = biscuit!(r#"right("om-sanchar", "invoke"); request_tokens(900);"#)
-        .build(&root)
+        .build_with_rng(
+            &root,
+            biscuit_auth::datalog::SymbolTable::new(),
+            &mut rng,
+        )
         .expect("build Biscuit authority block");
     for index in 1..=depth {
         let limit = (1000 - index) as i64;
+        let next_key = KeyPair::new_with_rng(Algorithm::Ed25519, &mut rng);
         token = token
-            .append(block!(
+            .append_with_keypair(
+                &next_key,
+                block!(
                 r#"check if request_tokens($n), $n <= {limit};"#,
                 limit = limit
-            ))
+                ),
+            )
             .expect("append Biscuit attenuation block");
     }
     (token.to_vec().expect("serialize Biscuit"), root.public())
@@ -358,19 +371,43 @@ fn percentile(sorted: &[u64], numerator: usize, denominator: usize) -> u64 {
     sorted[((sorted.len() - 1) * numerator) / denominator]
 }
 
-fn measure<F>(label: &str, mut verify: F, iterations: usize, run_count: usize) -> Vec<Run>
+fn token_hex(bytes: &[u8]) -> String {
+    const HEX: &[u8; 16] = b"0123456789abcdef";
+    let mut encoded = String::with_capacity(bytes.len() * 2);
+    for byte in bytes {
+        encoded.push(HEX[(byte >> 4) as usize] as char);
+        encoded.push(HEX[(byte & 0x0f) as usize] as char);
+    }
+    encoded
+}
+
+fn measure<F>(
+    label: &str,
+    token: &[u8],
+    mut verify: F,
+    iterations: usize,
+    run_count: usize,
+) -> Vec<Run>
 where
     F: FnMut() -> bool,
 {
     let mut runs = Vec::with_capacity(run_count);
     for _ in 0..run_count {
         for _ in 0..100 {
-            assert!(verify(), "token verification failed during warmup: {label}");
+            assert!(
+                verify(),
+                "token verification failed during warmup: {label}; token_hex={}",
+                token_hex(token)
+            );
         }
         let mut samples_ns = Vec::with_capacity(iterations);
         for _ in 0..iterations {
             let started = Instant::now();
-            assert!(verify(), "token verification failed during measurement: {label}");
+            assert!(
+                verify(),
+                "token verification failed during measurement: {label}; token_hex={}",
+                token_hex(token)
+            );
             samples_ns.push(started.elapsed().as_nanos() as u64);
         }
         let mut sorted = samples_ns.clone();
@@ -397,6 +434,7 @@ fn cached_measure(label: &str, bytes: &[u8], iterations: usize, run_count: usize
     );
     measure(
         label,
+        bytes,
         || {
             cache.get(&hash_token(bytes)).is_some_and(|entry| {
                 entry.issuer_key_version == 1 && Instant::now() < entry.expires_at
@@ -458,6 +496,7 @@ fn main() {
             token_size_bytes: hmac.bytes.len(),
             uncached: measure(
                 &format!("hmac-chain depth={depth} uncached"),
+                &hmac.bytes,
                 || verify_hmac(&hmac.bytes),
                 iterations,
                 run_count,
@@ -477,6 +516,7 @@ fn main() {
             token_size_bytes: biscuit_bytes.len(),
             uncached: measure(
                 &format!("biscuit-auth depth={depth} uncached"),
+                &biscuit_bytes,
                 || verify_biscuit(&biscuit_bytes, &biscuit_root),
                 iterations,
                 run_count,
@@ -496,6 +536,7 @@ fn main() {
             token_size_bytes: ed25519.bytes.len(),
             uncached: measure(
                 &format!("ed25519-chain depth={depth} uncached"),
+                &ed25519.bytes,
                 || verify_ed25519(&ed25519.bytes, &ed25519.root_public_key),
                 iterations,
                 run_count,
@@ -518,6 +559,7 @@ fn main() {
         cpu_model: read_first_line("/proc/cpuinfo", "model name"),
         allowed_cpu_list: read_first_line("/proc/self/status", "Cpus_allowed_list"),
         rustc: command_output("rustc", &["--version"]),
+        deterministic_seed: "Biscuit uses StdRng seeded with 0x42 repeated to 32 bytes for issuer and attenuation keys; Ed25519 keys are SHA-256-derived; HMAC root is 0x35 repeated to 32 bytes",
         iterations_per_run: iterations,
         warmup_iterations_per_run: 100,
         runs_per_cell: run_count,
@@ -565,5 +607,22 @@ mod tests {
         let mut tampered_ed25519 = ed25519.bytes.clone();
         *tampered_ed25519.last_mut().expect("Ed25519 signature") ^= 1;
         assert!(!verify_ed25519(&tampered_ed25519, &ed25519.root_public_key));
+    }
+
+    #[test]
+    fn fixed_seed_produces_byte_for_byte_reproducible_tokens() {
+        for depth in 1..=8 {
+            let first_hmac = build_hmac(depth);
+            let second_hmac = build_hmac(depth);
+            assert_eq!(first_hmac.bytes, second_hmac.bytes);
+
+            let (first_biscuit, _) = build_biscuit(depth);
+            let (second_biscuit, _) = build_biscuit(depth);
+            assert_eq!(first_biscuit, second_biscuit);
+
+            let first_ed25519 = build_ed25519(depth);
+            let second_ed25519 = build_ed25519(depth);
+            assert_eq!(first_ed25519.bytes, second_ed25519.bytes);
+        }
     }
 }

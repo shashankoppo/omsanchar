@@ -37,3 +37,9 @@ The tests use a seeded standard-library generator for property-style attenuation
 - `benchmark.py`: verifier benchmark at attenuation depths 1–8.
 - `summarize_rust_results.py`: computes run-level bootstrap intervals and Markdown from the Rust raw sample JSON.
 - `results/`: raw output captured during this spike.
+# Benchmark status
+
+The 2026-10-25 Rust timing artifact is quarantined in [`bench/quarantine`](../../bench/quarantine/README.md): a release run reported a token verification failure, but its failing scheme/depth/token and complete log were not retained. Do not use its timing or size values as accepted evidence. The root cause of the verifier failure remains unknown.
+
+The benchmark now seeds Biscuit issuer and attenuation key generation, and the byte-for-byte token determinism test passes. This fixed a separate reproducibility flaw; it does not prove that the prior verifier failure is fixed. Re-run timing only after the fixed-seed release correctness check passes and the failure investigation is complete.
+
