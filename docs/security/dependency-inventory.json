@@ -34,6 +34,14 @@
     },
     {
       "ecosystem": "cargo",
+      "name": "atomic-waker",
+      "version": "1.1.2",
+      "license": "Apache-2.0 OR MIT",
+      "purpose": "Transitive dependency of the pinned Rust async mock and protocol test stack",
+      "source": "registry+https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "ecosystem": "cargo",
       "name": "autocfg",
       "version": "1.5.1",
       "license": "Apache-2.0 OR MIT",
@@ -354,6 +362,22 @@
     },
     {
       "ecosystem": "cargo",
+      "name": "equivalent",
+      "version": "1.0.3",
+      "license": "Apache-2.0 OR MIT",
+      "purpose": "Transitive dependency of the pinned Rust async mock and protocol test stack",
+      "source": "registry+https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "ecosystem": "cargo",
+      "name": "errno",
+      "version": "0.3.14",
+      "license": "MIT OR Apache-2.0",
+      "purpose": "Transitive dependency of the pinned Rust async mock and protocol test stack",
+      "source": "registry+https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "ecosystem": "cargo",
       "name": "ff",
       "version": "0.13.1",
       "license": "MIT/Apache-2.0",
@@ -386,6 +410,14 @@
     },
     {
       "ecosystem": "cargo",
+      "name": "fnv",
+      "version": "1.0.7",
+      "license": "Apache-2.0 / MIT",
+      "purpose": "Transitive dependency of the pinned Rust async mock and protocol test stack",
+      "source": "registry+https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "ecosystem": "cargo",
       "name": "form_urlencoded",
       "version": "1.2.2",
       "license": "MIT OR Apache-2.0",
@@ -412,6 +444,14 @@
       "ecosystem": "cargo",
       "name": "futures-macro",
       "version": "0.3.31",
+      "license": "MIT OR Apache-2.0",
+      "purpose": "Transitive dependency of the pinned Rust async mock and protocol test stack",
+      "source": "registry+https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "ecosystem": "cargo",
+      "name": "futures-sink",
+      "version": "0.3.34",
       "license": "MIT OR Apache-2.0",
       "purpose": "Transitive dependency of the pinned Rust async mock and protocol test stack",
       "source": "registry+https://github.com/rust-lang/crates.io-index"
@@ -461,6 +501,22 @@
       "name": "group",
       "version": "0.13.0",
       "license": "MIT/Apache-2.0",
+      "purpose": "Transitive dependency of the pinned Rust async mock and protocol test stack",
+      "source": "registry+https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "ecosystem": "cargo",
+      "name": "h2",
+      "version": "0.4.20",
+      "license": "MIT",
+      "purpose": "Transitive dependency of the pinned Rust async mock and protocol test stack",
+      "source": "registry+https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "ecosystem": "cargo",
+      "name": "hashbrown",
+      "version": "0.17.1",
+      "license": "MIT OR Apache-2.0",
       "purpose": "Transitive dependency of the pinned Rust async mock and protocol test stack",
       "source": "registry+https://github.com/rust-lang/crates.io-index"
     },
@@ -620,6 +676,14 @@
       "ecosystem": "cargo",
       "name": "idna_adapter",
       "version": "1.2.1",
+      "license": "Apache-2.0 OR MIT",
+      "purpose": "Transitive dependency of the pinned Rust async mock and protocol test stack",
+      "source": "registry+https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "ecosystem": "cargo",
+      "name": "indexmap",
+      "version": "2.14.2",
       "license": "Apache-2.0 OR MIT",
       "purpose": "Transitive dependency of the pinned Rust async mock and protocol test stack",
       "source": "registry+https://github.com/rust-lang/crates.io-index"
@@ -1178,6 +1242,14 @@
     },
     {
       "ecosystem": "cargo",
+      "name": "signal-hook-registry",
+      "version": "1.4.8",
+      "license": "MIT OR Apache-2.0",
+      "purpose": "Transitive dependency of the pinned Rust async mock and protocol test stack",
+      "source": "registry+https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "ecosystem": "cargo",
       "name": "signature",
       "version": "2.2.0",
       "license": "Apache-2.0 OR MIT",
@@ -1389,6 +1461,14 @@
       "name": "tokio-rustls",
       "version": "0.26.6",
       "license": "MIT OR Apache-2.0",
+      "purpose": "Transitive dependency of the pinned Rust async mock and protocol test stack",
+      "source": "registry+https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "ecosystem": "cargo",
+      "name": "tokio-util",
+      "version": "0.7.20",
+      "license": "MIT",
       "purpose": "Transitive dependency of the pinned Rust async mock and protocol test stack",
       "source": "registry+https://github.com/rust-lang/crates.io-index"
     },

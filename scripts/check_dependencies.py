@@ -9,14 +9,20 @@ import shutil
 import subprocess
 import sys
 import tomllib
+from datetime import date, datetime, timezone
 from importlib import metadata
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 REQUIREMENTS = ROOT / "requirements-dev.txt"
 INVENTORY = ROOT / "docs" / "security" / "dependency-inventory.json"
+SECURITY_EXCEPTIONS = ROOT / "docs" / "security" / "security-exceptions.json"
 CARGO_MANIFEST = ROOT / "dataplane" / "sanchar-core" / "Cargo.toml"
 CARGO_LOCK = ROOT / "dataplane" / "sanchar-core" / "Cargo.lock"
+CARGO_PROJECTS = (
+    (CARGO_MANIFEST, CARGO_LOCK),
+    (ROOT / "crates" / "Cargo.toml", ROOT / "crates" / "Cargo.lock"),
+)
 PIN = re.compile(r"([A-Za-z0-9_.-]+)==([A-Za-z0-9_.+-]+)\Z")
 LICENSE_ALIASES = {
     "apache license 2.0": "apache-2.0",
@@ -48,7 +54,7 @@ def normalized_license(value: str) -> str:
     return LICENSE_ALIASES.get(value.strip().lower(), value.strip().lower())
 
 
-def cargo_metadata() -> dict:
+def cargo_metadata(manifest: Path) -> dict:
     if shutil.which("cargo") is None:
         raise RuntimeError("cargo is required for Rust dependency/license checks")
     result = subprocess.run(
@@ -56,7 +62,7 @@ def cargo_metadata() -> dict:
             "cargo",
             "metadata",
             "--manifest-path",
-            str(CARGO_MANIFEST),
+            str(manifest),
             "--format-version",
             "1",
             "--all-features",
@@ -74,6 +80,21 @@ def cargo_metadata() -> dict:
 
 def rust_packages(metadata_json: dict) -> list[dict]:
     return [package for package in metadata_json.get("packages", []) if package.get("source")]
+
+
+def all_rust_packages() -> dict[tuple[str, str], dict]:
+    packages: dict[tuple[str, str], dict] = {}
+    for manifest, _ in CARGO_PROJECTS:
+        for package in rust_packages(cargo_metadata(manifest)):
+            key = (normalized_cargo_name(package["name"]), package["version"])
+            previous = packages.get(key)
+            if previous and (previous.get("source"), previous.get("license")) != (
+                package.get("source"),
+                package.get("license"),
+            ):
+                raise RuntimeError(f"Cargo projects disagree on metadata for {key}")
+            packages[key] = package
+    return packages
 
 
 def normalized_cargo_name(value: str) -> str:
@@ -222,7 +243,7 @@ def main() -> int:
                             "license": package.get("license"),
                             "source": package.get("source"),
                         }
-                        for package in rust_packages(cargo_metadata())
+                        for package in all_rust_packages().values()
                     ],
                     indent=2,
                 )
@@ -270,12 +291,27 @@ def main() -> int:
 
     if args.check_rust:
         try:
-            lock = tomllib.loads(CARGO_LOCK.read_text(encoding="utf-8"))
-            locked = {
-                (normalized_cargo_name(package["name"]), package["version"]): package
-                for package in lock.get("package", [])
-                if package.get("source")
-            }
+            locked: dict[tuple[str, str], dict] = {}
+            for manifest, lock_path in CARGO_PROJECTS:
+                lock = tomllib.loads(lock_path.read_text(encoding="utf-8"))
+                project_locked = {
+                    (normalized_cargo_name(package["name"]), package["version"]): package
+                    for package in lock.get("package", [])
+                    if package.get("source")
+                }
+                project_actual = {
+                    (normalized_cargo_name(package["name"]), package["version"]): package
+                    for package in rust_packages(cargo_metadata(manifest))
+                }
+                if set(project_actual) != set(project_locked):
+                    print(f"cargo metadata for {manifest.relative_to(ROOT)} differs from its lockfile", file=sys.stderr)
+                    return 1
+                for key, package in project_locked.items():
+                    previous = locked.get(key)
+                    if previous and previous.get("source") != package.get("source"):
+                        print(f"Cargo lockfiles disagree on source for {key}", file=sys.stderr)
+                        return 1
+                    locked[key] = package
             reviewed = inventory_entries["cargo"]
             if set(locked) != set(reviewed):
                 print(
@@ -290,10 +326,45 @@ def main() -> int:
                     print(f"Cargo source mismatch for {package_key}: {package.get('source')}", file=sys.stderr)
                     return 1
 
-            actual_packages = {
-                (normalized_cargo_name(package["name"]), package["version"]): package
-                for package in rust_packages(cargo_metadata())
-            }
+            exception_data = json.loads(SECURITY_EXCEPTIONS.read_text(encoding="utf-8"))
+            if exception_data.get("schema_version") != 1:
+                print("Unsupported security exception schema", file=sys.stderr)
+                return 1
+            seen_exceptions: set[tuple[str, str, str]] = set()
+            today = datetime.now(timezone.utc).date()
+            for exception in exception_data.get("exceptions", []):
+                advisory = str(exception.get("advisory", ""))
+                package_name = normalized_cargo_name(str(exception.get("package", "")))
+                package_version = str(exception.get("version", ""))
+                identity = (advisory, package_name, package_version)
+                if not all(identity) or identity in seen_exceptions:
+                    print(f"Invalid or duplicate security exception: {exception!r}", file=sys.stderr)
+                    return 1
+                seen_exceptions.add(identity)
+                try:
+                    expires = date.fromisoformat(str(exception["expires"]))
+                except (KeyError, ValueError):
+                    print(f"Security exception has an invalid expiry: {identity}", file=sys.stderr)
+                    return 1
+                required_text = ("scope", "reason", "source", "remediation")
+                if any(not str(exception.get(field, "")).strip() for field in required_text):
+                    print(f"Security exception is missing rationale or remediation: {identity}", file=sys.stderr)
+                    return 1
+                if exception.get("scanner_suppression") is not False:
+                    print(f"Security exception must not suppress scanner output: {identity}", file=sys.stderr)
+                    return 1
+                package_key = (package_name, package_version)
+                if package_key not in locked or package_key not in reviewed:
+                    print(
+                        f"Security exception does not match a locked, inventoried package: {identity}",
+                        file=sys.stderr,
+                    )
+                    return 1
+                if expires < today:
+                    print(f"Security exception expired on {expires.isoformat()}: {identity}", file=sys.stderr)
+                    return 1
+
+            actual_packages = all_rust_packages()
             if set(actual_packages) != set(locked):
                 print("cargo metadata resolved package set differs from Cargo.lock", file=sys.stderr)
                 return 1
@@ -321,7 +392,11 @@ def main() -> int:
     if requirements or inventory_entries["cargo"]:
         suffix = " including installed Python license metadata" if args.check_installed else ""
         if args.check_rust:
-            suffix += f" and Rust lock/metadata/license policy ({len(inventory_entries['cargo'])} packages)"
+            exception_count = len(exception_data["exceptions"])
+            suffix += (
+                f" and Rust lock/metadata/license policy ({len(inventory_entries['cargo'])} packages; "
+                f"{exception_count} dated security exceptions checked)"
+            )
         print(f"Dependency pin and license inventory checks passed{suffix}.")
     else:
         print("Dependency pin and license inventory checks passed (no packages).")

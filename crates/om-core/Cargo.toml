@@ -1,0 +1,10 @@
+[package]
+name = "om-core"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.88"
+license = "Apache-2.0"
+description = "Shared request identity and address types for Om Sanchar services"
+
+[dependencies]
+serde.workspace = true

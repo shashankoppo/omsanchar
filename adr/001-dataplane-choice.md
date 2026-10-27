@@ -1,17 +1,21 @@
-# ADR-001: Envoy versus a Rust fast path
+# ADR-001: Envoy edge and Rust AI gateway
 
-- **Status:** Proposed; D5 harness has WSL2 mock smoke evidence, but the equal-feature native Linux matrix is not available.
+- **Status:** Accepted for initial service boundaries; comparative performance question remains pending.
 - **Date:** 2026-10-27
-- **Scope:** D5 equal-feature comparison only. This is the pre-registration and must be committed before collecting any D5 measurements.
+- **Scope:** Initial architecture and the pre-registered D5 comparison for any future Envoy AI-filter fast path.
 
-## Decision rule (pre-registered)
+## Initial architecture decision
 
-Keep Envoy as the default data plane unless the Rust proxy, with the same token verification, quota checks, metering, and trace propagation, demonstrates either:
+Use Envoy at the network edge for TLS termination, routing, and coarse request limits. Route AI requests to the Rust `om-gateway` service, which owns token verification, quota and metering stages as they are implemented. Defer an Envoy AI-gateway filter plus Rust ext_proc/WASM adapter until the equal-feature comparison below can justify its additional integration surface. This sets the initial architecture and does not claim that either implementation has a measured performance advantage.
+
+## Decision rule (pre-registered for a future fast-path decision)
+
+Keep the Rust gateway service as the AI request path unless an Envoy AI-filter plus Rust ext_proc/WASM implementation, with the same token verification, quota checks, metering, and trace propagation, demonstrates either:
 
 1. at least **20% lower CPU time per completed request**, or
 2. a lower p99 end-to-end proxy overhead,
 
-with a 95% confidence interval excluding no improvement and no material regression at p99.9, correctness, or memory. If neither condition is established, choose Envoy. A result whose interval overlaps no improvement is inconclusive, not a Rust win. A lower p99 with a worse p99.9 is not sufficient.
+with a 95% confidence interval excluding no improvement and no material regression at p99.9, correctness, or memory. If neither condition is established, keep the Rust service path. A result whose interval overlaps no improvement is inconclusive, not an Envoy fast-path win. A lower p99 with a worse p99.9 is not sufficient.
 
 ## Registered protocol
 
@@ -29,10 +33,10 @@ The decision host must be a native Linux machine. Record model and stepping, mic
 
 ## Evidence and limits
 
-The D4 Python/Windows loopback result is not D5 evidence. A Rust open-loop/HdrHistogram harness and paired-run summarizer now cover the registered workloads and matrix dimensions. On WSL2, each mock workload completed a small direct-path smoke with zero errors; these are harness checks only, not overhead measurements.
+The D4 Python/Windows loopback result is not D5 evidence. A Rust open-loop/HdrHistogram harness and paired-run summarizer cover the registered workloads and matrix dimensions. On WSL2, each mock workload completed a small direct-path smoke with zero errors; these are harness checks only, not overhead measurements.
 
-The current Envoy development config provides routing and trace export but no AI-gateway filters, token verification, quota, metering, or ext_proc/WASM extension. The Rust core has no feature-matched D5 proxy. There is no qualifying native Linux host in this workspace evidence. Therefore no D5 overhead, CPU/request, RSS, confidence-interval, or decision measurement has been collected. ADR-001 remains **undecided**; WSL2 smoke results cannot prove or disprove either path.
+The current Envoy development config provides routing and trace export but no AI-gateway filters, token verification, quota, metering, or ext_proc/WASM extension. The Rust gateway now provides an initial streamed AI request path, but it does not yet have feature parity with the registered D5 comparison. No qualifying native Linux host is available in this workspace evidence. Therefore no D5 overhead, CPU/request, RSS, confidence-interval, or performance-decision measurement has been collected. The architecture boundary is accepted; the comparative performance question remains **inconclusive**. WSL2 smoke results cannot prove or disprove either implementation's performance.
 
 ## Consequences
 
-The benchmark harness, mock model, Envoy configuration, Rust proxy, exact run matrix, and raw data must be versioned. The Rust proxy remains a research branch until this decision rule is met. The ADR is amended only after the complete registered matrix or an explicitly documented infrastructure blocker.
+The benchmark harness, mock model, Envoy configuration, Rust gateway, exact run matrix, and raw data must be versioned. Do not replace the chosen Rust service boundary with an Envoy fast path until this decision rule is met. Revisit the performance question only after equal-feature implementations and a qualifying Linux host are available.

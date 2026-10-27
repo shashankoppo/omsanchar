@@ -10,25 +10,28 @@ from pathlib import Path
 from check_dependencies import check_cargo_license_expression, normalized_cargo_name
 
 ROOT = Path(__file__).resolve().parents[1]
-MANIFEST = ROOT / "dataplane" / "sanchar-core" / "Cargo.toml"
+MANIFESTS = (
+    ROOT / "dataplane" / "sanchar-core" / "Cargo.toml",
+    ROOT / "crates" / "Cargo.toml",
+)
 INVENTORY = ROOT / "docs" / "security" / "dependency-inventory.json"
 
 DIRECT_PURPOSES = {
     "biscuit-auth": "Biscuit capability-token verification comparison in the optional research binary",
-    "bytes": "HTTP body buffers for the Rust mock model",
+    "bytes": "HTTP body buffers for the Rust gateway and mock model",
     "ed25519-dalek": "Ed25519 attenuation-chain capability-token comparison",
-    "futures-util": "Asynchronous HTTP response stream composition",
+    "futures-util": "Asynchronous SSE response stream composition",
     "hdrhistogram": "HdrHistogram distributions for the D5 open-loop load generator",
     "hmac": "HMAC attenuation-chain capability-token comparison",
-    "http-body-util": "HTTP full and streaming body adapters for the mock model",
-    "hyper": "HTTP/1 server for the Rust mock model",
-    "hyper-util": "Tokio transport integration for Hyper",
+    "http-body-util": "Bounded request-body and streaming response adapters",
+    "hyper": "HTTP/1 server and upstream client for the Rust gateway and mock model",
+    "hyper-util": "Tokio transport integration for Hyper servers and client",
     "rand": "Deterministic random number generation for token benchmark reproducibility",
     "reqwest": "Asynchronous HTTP and TLS client for the D5 open-loop load generator",
-    "serde": "Serialization of Rust benchmark reports",
-    "serde_json": "MCP JSON-RPC fixture responses and Rust conformance vectors",
+    "serde": "Serialization of gateway route configuration and protocol types",
+    "serde_json": "Gateway route configuration, structured logs, and mock responses",
     "sha2": "SHA-256 token hashing and HMAC capability-token comparison",
-    "tokio": "Asynchronous runtime and TCP listener for the Rust mock model",
+    "tokio": "Asynchronous runtime, HTTP listeners, signals, and bounded shutdown",
     "webpki-roots": "Mozilla root-certificate data for Reqwest Rustls TLS in the D5 harness",
 }
 
@@ -37,33 +40,46 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--write", action="store_true", help="replace Cargo inventory records after license checks")
     args = parser.parse_args()
-    result = subprocess.run(
-        [
-            "cargo",
-            "metadata",
-            "--manifest-path",
-            str(MANIFEST),
-            "--format-version",
-            "1",
-            "--all-features",
-            "--locked",
-        ],
-        cwd=ROOT,
-        capture_output=True,
-        text=True,
-        encoding="utf-8",
-        check=False,
-    )
-    if result.returncode:
-        raise SystemExit(result.stderr)
-    metadata = json.loads(result.stdout)
+    packages_by_key = {}
+    for manifest in MANIFESTS:
+        result = subprocess.run(
+            [
+                "cargo",
+                "metadata",
+                "--manifest-path",
+                str(manifest),
+                "--format-version",
+                "1",
+                "--all-features",
+                "--locked",
+            ],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            check=False,
+        )
+        if result.returncode:
+            raise SystemExit(result.stderr)
+        metadata = json.loads(result.stdout)
+        for package in metadata["packages"]:
+            if not package.get("source"):
+                continue
+            key = (normalized_cargo_name(package["name"]), package["version"])
+            previous = packages_by_key.get(key)
+            if previous and (previous.get("source"), previous.get("license")) != (
+                package.get("source"),
+                package.get("license"),
+            ):
+                raise SystemExit(f"Cargo projects disagree on metadata for {key}")
+            packages_by_key[key] = package
     inventory = json.loads(INVENTORY.read_text(encoding="utf-8"))
     existing = {
         (normalized_cargo_name(entry["name"]), entry["version"]): entry
         for entry in inventory["dependencies"]
         if entry.get("ecosystem") == "cargo"
     }
-    packages = [package for package in metadata["packages"] if package.get("source")]
+    packages = list(packages_by_key.values())
     candidate = []
     for package in sorted(packages, key=lambda entry: (normalized_cargo_name(entry["name"]), entry["version"])):
         key = (normalized_cargo_name(package["name"]), package["version"])

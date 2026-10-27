@@ -1,0 +1,16 @@
+[package]
+name = "om-mock-model"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.88"
+license = "Apache-2.0"
+description = "Deterministic streaming model upstream for Om Sanchar development"
+
+[dependencies]
+bytes.workspace = true
+futures-util.workspace = true
+http-body-util.workspace = true
+hyper.workspace = true
+hyper-util.workspace = true
+serde_json.workspace = true
+tokio.workspace = true

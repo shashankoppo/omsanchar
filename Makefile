@@ -1,4 +1,4 @@
-.PHONY: dev-native dev-stack dev-stack-podman dev-stack-down dev-stack-down-podman test test-spec test-sim test-gateway test-token test-rust test-token-rust test-d5-loadgen test-mock bench-token-rust bench-d5 lint proto sbom source-sbom dependency-sbom vuln-scan container compose-build deps
+.PHONY: dev-native dev-stack dev-stack-podman dev-stack-down dev-stack-down-podman test test-spec test-sim test-gateway test-token test-rust test-token-rust test-d5-loadgen test-mock bench-token-rust bench-d5 lint proto sbom source-sbom dependency-sbom vuln-scan container compose-build deps s1-check demo-s1
 
 PYTHON ?= python3
 CARGO ?= cargo
@@ -15,6 +15,7 @@ D5_RATE_RPS ?= 10
 D5_DURATION_SECS ?= 1
 D5_MAX_IN_FLIGHT ?= 100
 D5_OUTPUT ?= bench/results/d5-development-run.json
+CRATES_MANIFEST ?= crates/Cargo.toml
 
 dev-native:
 	$(PYTHON) -m gateway.server
@@ -32,6 +33,15 @@ dev-stack-down-podman:
 	podman compose -f deploy/dev.yml down
 
 test: test-spec test-sim test-gateway test-token test-rust test-token-rust test-d5-loadgen test-mock
+
+s1-check:
+	$(CARGO) fmt --manifest-path $(CRATES_MANIFEST) --all -- --check
+	$(CARGO) clippy --locked --manifest-path $(CRATES_MANIFEST) --workspace --all-targets -- -D warnings
+	$(CARGO) test --locked --manifest-path $(CRATES_MANIFEST) --workspace
+	$(MAKE) demo-s1
+
+demo-s1:
+	bash scripts/demo_s1.sh
 
 test-spec:
 	$(PYTHON) -m unittest discover -s spec/tests -v

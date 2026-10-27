@@ -32,6 +32,9 @@ jobs:
           cargo build --locked --manifest-path dataplane/sanchar-core/Cargo.toml --bin mock_model
           python3 scripts/test_mock_model.py dataplane/sanchar-core/target/debug/mock_model
 
+      - name: Check and demonstrate the S1 Rust gateway
+        run: make s1-check
+
       - name: Run dependency-free reference tests
         run: |
           python3 -m unittest discover -s spec/tests -v
