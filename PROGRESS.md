@@ -20,7 +20,7 @@ S1 Rust gateway streaming proxy. The runnable demo starts the Rust mock model an
 
 ## Decisions and constraints
 
-- Initial deployment uses Envoy for edge TLS, routing, and coarse limits; the Rust `om-gateway` service owns the AI-specific request path. The ext_proc/WASM adapter is deferred. ADR-001's feature-matched performance rule remains registered for future replacement decisions.
+- Initial development topology uses Envoy for edge TLS, routing, and coarse limits; the Rust `om-gateway` service owns the AI-specific request path. The ext_proc/WASM adapter is deferred. ADR-001's original feature-matched performance rule still governs eventual Envoy-versus-Rust data-plane selection.
 - Only implemented S1 crates are workspace members. Add `om-token`, `om-control`, and `om-sdk-gen` when their slices contain working behavior.
 - Keep the Python reference gateway until the Rust path covers the required authentication, quota, and resume behavior in S2-S4; Python remains available for tooling and reference checks.
 - Keep every demo local and deterministic. A slice is complete only when its documented command runs and shows its behavior.

@@ -6,16 +6,16 @@
 
 ## Initial architecture decision
 
-Use Envoy at the network edge for TLS termination, routing, and coarse request limits. Route AI requests to the Rust `om-gateway` service, which owns token verification, quota and metering stages as they are implemented. Defer an Envoy AI-gateway filter plus Rust ext_proc/WASM adapter until the equal-feature comparison below can justify its additional integration surface. This sets the initial architecture and does not claim that either implementation has a measured performance advantage.
+For the initial implementation, use Envoy at the network edge for TLS termination, routing, and coarse request limits, then route AI requests to the Rust `om-gateway` service for the AI-specific pipeline. Defer an Envoy AI-gateway filter plus Rust ext_proc/WASM adapter while the equal-feature comparison is frozen. This implementation direction makes no performance claim and does not replace the pre-registered data-plane selection rule below.
 
 ## Decision rule (pre-registered for a future fast-path decision)
 
-Keep the Rust gateway service as the AI request path unless an Envoy AI-filter plus Rust ext_proc/WASM implementation, with the same token verification, quota checks, metering, and trace propagation, demonstrates either:
+Keep Envoy as the default AI data plane unless the Rust proxy, with the same token verification, quota checks, metering, and trace propagation, demonstrates either:
 
 1. at least **20% lower CPU time per completed request**, or
 2. a lower p99 end-to-end proxy overhead,
 
-with a 95% confidence interval excluding no improvement and no material regression at p99.9, correctness, or memory. If neither condition is established, keep the Rust service path. A result whose interval overlaps no improvement is inconclusive, not an Envoy fast-path win. A lower p99 with a worse p99.9 is not sufficient.
+with a 95% confidence interval excluding no improvement and no material regression at p99.9, correctness, or memory. If neither condition is established, choose Envoy. A result whose interval overlaps no improvement is inconclusive, not a Rust win. A lower p99 with a worse p99.9 is not sufficient.
 
 ## Registered protocol
 
@@ -39,4 +39,4 @@ The current Envoy development config provides routing and trace export but no AI
 
 ## Consequences
 
-The benchmark harness, mock model, Envoy configuration, Rust gateway, exact run matrix, and raw data must be versioned. Do not replace the chosen Rust service boundary with an Envoy fast path until this decision rule is met. Revisit the performance question only after equal-feature implementations and a qualifying Linux host are available.
+The benchmark harness, mock model, Envoy configuration, Rust gateway, exact run matrix, and raw data must be versioned. Keep the current Rust service as the implementation path while this work is in progress; use Envoy as the selected AI data plane if the registered Rust performance rule is not met. Revisit the performance question only after equal-feature implementations and a qualifying Linux host are available.
