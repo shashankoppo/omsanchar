@@ -4,13 +4,13 @@
 
 **P0 - foundations and spikes**
 
-Estimated P0 completion: **about 55%**. This is a rough deliverable-coverage estimate, not an effort measure. D1 has local scan evidence and a passing hosted run for tag `v0.1.0`; this docs-as-code branch still needs its own hosted CI result. D2 is tagged; D3's stack configuration exists but runtime was not verified; D4 state bounds and WSL2 soaks are measured; D5 has a tested harness but no feature-matched paths or native Linux decision data; D6 correctness tests pass but the verifier failure remains unexplained and timing is withheld. No P0 exit criterion is met yet.
+Estimated P0 completion: **about 55%**. This is a rough deliverable-coverage estimate, not an effort measure. D1 has local scan evidence and passing hosted runs for tag `v0.1.0` and the docs-as-code branch. D2 is tagged; D3's stack configuration exists but runtime was not verified; D4 state bounds and WSL2 soaks are measured; D5 has a tested harness but no feature-matched paths or native Linux decision data; D6 correctness tests pass but the verifier failure remains unexplained and timing is withheld. No P0 exit criterion is met yet.
 
 ## Deliverable status
 
 | ID | Status | Evidence / remaining work |
 |---|---|---|
-| D1 Repository scaffold and CI | Remote configured; tag CI passed; current branch CI pending | `origin` points to `shashankoppo/omsanchar`. GitHub Actions run [40471610379](https://github.com/shashankoppo/omsanchar/actions/runs/40471610379) passed for `v0.1.0`. Current WSL2 scans: Syft 1.55.0 (228 SPDX records), Grype 0 matches, cargo-audit 1 finding across 220 Rust packages. `RUSTSEC-2026-0387` remains open in optional Biscuit/P256 dependencies. |
+| D1 Repository scaffold and CI | Remote configured; hosted CI passed | `origin` points to `shashankoppo/omsanchar`. GitHub Actions run [40520340760](https://github.com/shashankoppo/omsanchar/actions/runs/40520340760) passed on Ubuntu and Windows; tag run [40471610379](https://github.com/shashankoppo/omsanchar/actions/runs/40471610379) passed for `v0.1.0`. Current WSL2 scans: Syft 1.55.0 (228 SPDX records), Grype 0 matches, cargo-audit 1 finding across 220 Rust packages. `RUSTSEC-2026-0387` remains open in optional Biscuit/P256 dependencies. |
 | D2 Protocol spec v0.1 | Tagged; compatibility check previously passed | Relative deadlines, signed i64 microcredits, rational price and cumulative ceiling rounding, checked overflow, and cutoff behavior are specified. The deadline binding now subtracts rounded-up hop elapsed time plus a configurable safety margin and fails below minimum useful time. Rust and Python use shared vectors. |
 | D3 One-command integrated dev environment | Configured; runtime unverified | Compose files and one-command Docker/Podman targets include Envoy, NATS JetStream, the Rust mock, and OTel Collector. Windows Docker engine is unavailable and the WSL2 Podman Compose provider is absent. |
 | D4 First end-to-end resumable model slice | Bounded local reference; WSL2 soaks measured | Shared retained-state ceiling is 128 MiB with TTL/count caps, FIFO eviction, per-store eviction metrics, bounded rolling event windows, and `410 OS-0400` for evicted/expired cursors. The 300-second stream TTL fails/removes an open stream when expiry is observed. The one-million registry soak retained 10,000 streams with 18.8 MB accounted state and 81.8 MB process peak RSS. The separate 10k-client socket attempt had 9,114 accepted handler threads; this is below target and WSL2-only. Restart resume remains unsupported. |
@@ -28,7 +28,7 @@ Estimated P0 completion: **about 55%**. This is a rough deliverable-coverage est
 - Added first-party Markdown link/anchor checks, language-aware fenced-block validation, a Windows PowerShell parse job, and an executable quickstart smoke. The example test starts the actual reference gateway and runs the documented health and authenticated SSE commands.
 - Local WSL2 `make docs` passed: links/fences across 24 Markdown files, quickstart response checks (health, two tokens, terminal event), and MkDocs strict build. Windows PowerShell parsed seven documented blocks; exact Python pin/inventory consistency and `git diff --check` passed. These are local/development results; hosted CI for this branch is pending.
 - Updated ADR-001/005/008 with the selected P1 defaults and explicitly retained inconclusive performance classifications. WP8 remains incomplete until SDK/OpenAPI generation and execution of all runnable published examples are covered.
-- Repository `origin` is configured and the `v0.1.0` tag workflow passed as run [40471610379](https://github.com/shashankoppo/omsanchar/actions/runs/40471610379). The docs branch has not yet been pushed at this checkpoint.
+- Repository `origin` is configured; the docs branch was pushed at `fb74644`. Hosted Ubuntu and Windows CI passed as run [40520340760](https://github.com/shashankoppo/omsanchar/actions/runs/40520340760); the `v0.1.0` tag workflow also passed as run [40471610379](https://github.com/shashankoppo/omsanchar/actions/runs/40471610379).
 
 ## Session 3 continuation (2026-10-27 local; historical baseline before the remote was configured)
 
@@ -92,6 +92,6 @@ Raw samples and host metadata: `spikes/capability-token/results/windows-python31
 
 ## Next actions
 
-1. Push the docs-as-code branch and resolve any hosted Linux/Windows CI failures; record an expiry-dated disposition for the remaining cargo-audit advisory after reachability review.
-2. Obtain a qualified native Linux host, complete D5 feature parity, and run its preregistered open-loop matrix; repeat the 10,000 accepted-handler retention test there.
-3. Reproduce and diagnose the historical token verifier failure before collecting token timings. Keep D7 deferred until priorities 1-5 are complete.
+1. Record an expiry-dated disposition for the remaining cargo-audit advisory after production-feature reachability review.
+2. Reproduce and diagnose the historical token verifier failure before collecting qualified native Linux token timings.
+3. Complete remaining P0 exit evidence and the P1 JetStream durable-resume implementation. Keep the preregistered D5 matrix in Phase 5 and D7 deferred until priorities 1-5 are complete.
