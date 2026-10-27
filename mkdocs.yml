@@ -1,0 +1,41 @@
+site_name: Om Sanchar
+site_description: Protocols, development workflow, and operational limits for the Om Sanchar gateway.
+repo_url: https://github.com/shashankoppo/omsanchar
+edit_uri: edit/main/docs/
+docs_dir: docs
+site_dir: site
+strict: true
+use_directory_urls: true
+
+theme:
+  name: readthedocs
+
+exclude_docs: |
+  /HANDOFF.md
+  /upstream/
+  /security/reports/
+
+nav:
+  - Home: index.md
+  - Quickstart: quickstart.md
+  - Development setup: dev-setup.md
+  - Documentation authoring: authoring.md
+  - Stream retention: stream-retention.md
+  - Security:
+      - Dependency policy: security/dependency-policy.md
+  - Planning:
+      - P0 execution plan: plan/p0-execution-plan.md
+      - Phase 1 work packages: plan/phase1-execution-plan.md
+  - Protocol specifications: https://github.com/shashankoppo/omsanchar/tree/main/spec
+  - Architecture decisions: https://github.com/shashankoppo/omsanchar/tree/main/adr
+  - Project status: https://github.com/shashankoppo/omsanchar/blob/main/PROGRESS.md
+
+validation:
+  nav:
+    omitted_files: warn
+    not_found: warn
+  links:
+    not_found: warn
+    anchors: warn
+    absolute_links: info
+    unrecognized_links: info

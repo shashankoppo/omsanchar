@@ -13,7 +13,7 @@ from importlib import metadata
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-REQUIREMENTS = ROOT / "requirements-dev.txt"
+REQUIREMENTS_FILES = (ROOT / "requirements-dev.txt", ROOT / "requirements-docs.txt")
 INVENTORY = ROOT / "docs" / "security" / "dependency-inventory.json"
 CARGO_MANIFEST = ROOT / "dataplane" / "sanchar-core" / "Cargo.toml"
 CARGO_LOCK = ROOT / "dataplane" / "sanchar-core" / "Cargo.lock"
@@ -21,9 +21,11 @@ PIN = re.compile(r"([A-Za-z0-9_.-]+)==([A-Za-z0-9_.+-]+)\Z")
 LICENSE_ALIASES = {
     "apache license 2.0": "apache-2.0",
     "apache license, version 2.0": "apache-2.0",
+    "apache software license": "apache-2.0",
     "apache-2.0": "apache-2.0",
     "bsd 3-clause license": "bsd-3-clause",
     "bsd-3-clause": "bsd-3-clause",
+    "dual license": "apache-2.0 or bsd-3-clause",
     "mit license": "mit",
     "mit": "mit",
 }
@@ -170,21 +172,23 @@ def main() -> int:
     args = parser.parse_args()
 
     requirements: dict[str, str] = {}
-    for line_no, raw in enumerate(REQUIREMENTS.read_text(encoding="utf-8").splitlines(), start=1):
-        line = raw.strip()
-        if not line or line.startswith("#"):
-            continue
-        match = PIN.fullmatch(line)
-        if match is None:
-            print(f"requirements-dev.txt:{line_no}: dependency must use an exact == version pin", file=sys.stderr)
-            return 1
-        name = re.sub(r"[-_.]+", "-", match.group(1).lower())
-        version = match.group(2)
-        if name in requirements:
-            print(f"requirements-dev.txt:{line_no}: duplicate dependency {name}", file=sys.stderr)
-            return 1
-        # Keep this small first-pass gate scoped to the reviewed Python tools.
-        requirements[name] = version
+    for requirement_file in REQUIREMENTS_FILES:
+        for line_no, raw in enumerate(requirement_file.read_text(encoding="utf-8").splitlines(), start=1):
+            line = raw.strip()
+            if not line or line.startswith("#"):
+                continue
+            match = PIN.fullmatch(line)
+            if match is None:
+                print(
+                    f"{requirement_file.name}:{line_no}: dependency must use an exact == version pin", file=sys.stderr
+                )
+                return 1
+            name = re.sub(r"[-_.]+", "-", match.group(1).lower())
+            version = match.group(2)
+            if name in requirements:
+                print(f"{requirement_file.name}:{line_no}: duplicate dependency {name}", file=sys.stderr)
+                return 1
+            requirements[name] = version
 
     inventory_data = json.loads(INVENTORY.read_text(encoding="utf-8"))
     if inventory_data.get("schema_version") != 1:
@@ -236,7 +240,7 @@ def main() -> int:
 
     if requirements != python_reviewed:
         print(
-            f"Pinned Python dependencies differ from reviewed license inventory: pins={requirements}, inventory={python_reviewed}",
+            f"Pinned Python dependencies in requirements-dev.txt and requirements-docs.txt differ from the reviewed license inventory: pins={requirements}, inventory={python_reviewed}",
             file=sys.stderr,
         )
         return 1
@@ -257,10 +261,16 @@ def main() -> int:
                 return 1
             actual_license = distribution.metadata.get("License-Expression") or distribution.metadata.get("License")
             expected_license = str(entries[name]["license"])
-            if not actual_license:
-                print(f"Installed dependency has no license metadata: {name}=={expected_version}", file=sys.stderr)
-                return 1
-            if normalized_license(actual_license) != normalized_license(expected_license):
+            reviewed_fallback = entries[name].get("license_metadata_review")
+            if not actual_license or actual_license.strip().lower() in {"unknown", "n/a"}:
+                if not reviewed_fallback:
+                    print(
+                        f"Installed dependency has no usable license metadata: {name}=={expected_version}",
+                        file=sys.stderr,
+                    )
+                    return 1
+                print(f"Using reviewed upstream license record for {name}: {reviewed_fallback}")
+            elif normalized_license(actual_license) != normalized_license(expected_license):
                 print(
                     f"Installed license mismatch for {name}: inventory={expected_license!r}, "
                     f"metadata={actual_license!r}",

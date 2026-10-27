@@ -1,6 +1,6 @@
 # Dependency and artifact policy
 
-The Python reference gateway uses only the standard library. `requirements-dev.txt` contains pinned developer tooling; the Rust conformance crate has a locked test dependency tree in `dataplane/sanchar-core/Cargo.lock`.
+The Python reference gateway uses only the standard library. `requirements-dev.txt` contains pinned developer tooling; `requirements-docs.txt` locks the MkDocs build tool and its complete resolved dependency set. The Rust conformance crate has a locked test dependency tree in `dataplane/sanchar-core/Cargo.lock`.
 
 Before adding a third-party dependency:
 
@@ -11,4 +11,4 @@ Before adding a third-party dependency:
 
 The source SBOM generator inventories repository files and hashes; it is not a dependency SBOM. The Syft SBOM is uploaded as a CI artifact and scanned before the build passes. Container-image SBOM generation and image vulnerability policy remain separate release-hardening work.
 
-Only exact-pinned Python packages and locked Cargo packages listed in `docs/security/dependency-inventory.json` are accepted. The reviewed Cargo allowlist includes Apache-2.0, BSD-1-Clause, BSD-2-Clause, BSD-3-Clause, BSL-1.0, MIT, Unicode-3.0, Unlicense, 0BSD, and Zlib. `LLVM-exception` is accepted only as an SPDX exception attached to an otherwise allowed license expression, such as `Apache-2.0 WITH LLVM-exception`; unreviewed exceptions still fail. When a package introduces transitive dependencies, inventory the full resolved set so each package has a reviewed purpose, source, and license record.
+Only exact-pinned Python packages and locked Cargo packages listed in `docs/security/dependency-inventory.json` are accepted. The reviewed Cargo allowlist includes Apache-2.0, BSD-1-Clause, BSD-2-Clause, BSD-3-Clause, BSL-1.0, MIT, Unicode-3.0, Unlicense, 0BSD, and Zlib. `LLVM-exception` is accepted only as an SPDX exception attached to an otherwise allowed license expression, such as `Apache-2.0 WITH LLVM-exception`; unreviewed exceptions still fail. The docs-only build toolchain includes `pathspec` under MPL-2.0; it is used by MkDocs to interpret exclusion patterns and is not included in the gateway runtime or service images. When a package introduces transitive dependencies, inventory the full resolved set so each package has a reviewed purpose, source, and license record.

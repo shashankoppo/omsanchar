@@ -1,10 +1,14 @@
 # ADR-001: Envoy versus a Rust fast path
 
-- **Status:** Proposed; D5 harness has WSL2 mock smoke evidence, but the equal-feature native Linux matrix is not available.
+- **Status:** Accepted for the Phase 1 default (Envoy plus Rust ext_proc); the D5 performance comparison is deferred to Phase 5 and remains inconclusive.
 - **Date:** 2026-10-27
 - **Scope:** D5 equal-feature comparison only. This is the pre-registration and must be committed before collecting any D5 measurements.
 
-## Decision rule (pre-registered)
+## Phase 1 decision
+
+Use Envoy with a Rust `ext_proc` extension for Phase 1. This is the default architecture decision; it is not a claim that a performance comparison has been measured. D5 is a Phase 5 research comparison and does not block the Phase 1 Gateway MVP.
+
+## Decision rule (pre-registered for the Phase 5 comparison)
 
 Keep Envoy as the default data plane unless the Rust proxy, with the same token verification, quota checks, metering, and trace propagation, demonstrates either:
 
@@ -31,8 +35,8 @@ The decision host must be a native Linux machine. Record model and stepping, mic
 
 The D4 Python/Windows loopback result is not D5 evidence. A Rust open-loop/HdrHistogram harness and paired-run summarizer now cover the registered workloads and matrix dimensions. On WSL2, each mock workload completed a small direct-path smoke with zero errors; these are harness checks only, not overhead measurements.
 
-The current Envoy development config provides routing and trace export but no AI-gateway filters, token verification, quota, metering, or ext_proc/WASM extension. The Rust core has no feature-matched D5 proxy. There is no qualifying native Linux host in this workspace evidence. Therefore no D5 overhead, CPU/request, RSS, confidence-interval, or decision measurement has been collected. ADR-001 remains **undecided**; WSL2 smoke results cannot prove or disprove either path.
+The current Envoy development config provides routing and trace export but no AI-gateway filters, token verification, quota, metering, or ext_proc/WASM extension. The Rust core has no feature-matched D5 proxy. There is no qualifying native Linux host in this workspace evidence. Therefore no D5 overhead, CPU/request, RSS, confidence-interval, or decision measurement has been collected. The Phase 5 comparison is **inconclusive**; WSL2 smoke results cannot prove or disprove either path.
 
 ## Consequences
 
-The benchmark harness, mock model, Envoy configuration, Rust proxy, exact run matrix, and raw data must be versioned. The Rust proxy remains a research branch until this decision rule is met. The ADR is amended only after the complete registered matrix or an explicitly documented infrastructure blocker.
+The benchmark harness, mock model, Envoy configuration, Rust proxy, exact run matrix, and raw data must be versioned. The Rust proxy remains a research branch until this decision rule is met. The ADR is amended only after the complete registered matrix or an explicitly documented infrastructure blocker. CI and WSL2 measurements are development-only and do not decide this ADR.

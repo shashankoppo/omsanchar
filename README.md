@@ -19,6 +19,8 @@ The repository is in **P0: foundations and spikes**. `/docs/upstream/04-om-sanch
 - `/docs` — plans, security, operations, and developer documentation.
 - `/adr` — architecture decision records.
 
+The [documentation portal](docs/index.md) is built and link-checked by `make docs`. Protocol and ADR contracts remain canonical under `/spec` and `/adr`.
+
 ## Current local checks
 
 Use WSL2 Ubuntu for Rust development and Linux integration work. Python 3.12 or newer runs the native gateway and reference checks:

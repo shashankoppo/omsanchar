@@ -9,6 +9,6 @@
 - Use deny-by-default authorization, mTLS, capability attenuation, and explicit resource bounds. Keep the data plane functional with last-known-good configuration during control-plane outages.
 - Do not invent benchmark numbers, API behavior, or library features. Run code before claiming it works and label unverified assumptions.
 - Definition of done includes relevant unit/property/conformance/simulation tests, benchmark evidence, observability, docs/changelog updates, and a rollback path.
-- Planned commands: `make dev`, `make test`, `make bench`, `make lint`, and `make docs`. `make dev`, `make bench`, and `make docs` are roadmap targets and must not be reported as working until implemented and run.
+- Planned commands: `make dev` and `make bench` remain roadmap targets. `make docs` is implemented: it checks Markdown links and fenced examples, executes the quickstart HTTP/SSE example, and builds the site in strict mode. Install `requirements-docs.txt` before running it.
 - Current local reference checks: `python -m unittest discover -s spec/tests -v`, `python -m unittest discover -s sim/tests -v`, and `python scripts/check_style.py`.
 - Each working turn reports Status, Done, Evidence, Decisions and assumptions, Risks and open questions, and Next step.

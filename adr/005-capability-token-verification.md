@@ -1,6 +1,6 @@
 # ADR-005: Capability token verification profile
 
-- **Status:** Proposed; verification timing withheld pending resolution of a release-run failure.
+- **Status:** Accepted for the P1 trust topology; Rust performance targets remain inconclusive pending qualified measurements.
 - **Date:** 2026-10-27
 
 ## Question
@@ -31,6 +31,8 @@ The previously captured correctness checks ran on Rust 1.85.0 under WSL2 Ubuntu,
 
 ## Decision
 
-Keep the public-key two-tier design as the preferred candidate for native Linux validation because it avoids placing issuer minting secrets in gateways. Do not revise the 50 microsecond target yet: the unaccepted WSL2 timing artifact cannot justify that change. Size and cold/cached verification classifications remain **inconclusive** until the benchmark failure is resolved and fresh results are reviewed. The earlier Python miss is explicitly prototype-only; no Rust miss or success is treated as established by the quarantined artifact.
+Use a public-key attenuation chain (Biscuit-style) at ingress, cache verified authorization by token hash with bounded TTL and issuer-key version checks, then issue short-lived audience-bound internal credentials. HMAC chains are not accepted across a gateway trust boundary: each verifier would hold the root minting secret, so compromise of any gateway would expose minting authority.
+
+Keep the 50 microsecond target unchanged until uncached and cached Rust measurements are available from a qualified native Linux host. The target classification is **inconclusive**; no miss or success is claimed. The CPython prototype miss is not evidence about Rust performance. The quarantined WSL2 timing artifact is not accepted evidence. Token size, cold verification, cache-hit verification, and the full internal-credential path must each be reported separately with confidence intervals and platform/tool versions.
 
 Keep the token interface replaceable and do not treat HMAC as a production delegation format. Before production selection, measure the complete internal-credential issue/verify path, expiry propagation, bounded cache eviction, and revocation/key-rotation behavior on the native host.

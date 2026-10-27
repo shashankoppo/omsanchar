@@ -1,6 +1,6 @@
 # Process-local stream and request retention
 
-The P0 Python gateway is a development reference. Its resumable state is bounded and process-local; a restart loses it. A resume request for an evicted stream, or a cursor older than that stream's retained event window, returns HTTP `410` with `OS-0400` (`STREAM_CURSOR_EXPIRED`). Once the bounded tombstone expires or is itself evicted to honor its count/byte limits, the gateway returns `404 OS-2004` because it can no longer distinguish an unknown ID from an old ID. Resume after process restart is not supported. See [ADR-008](../adr/008-durable-stream-log.md) for the P1 durable-log proposal.
+The P0 Python gateway is a development reference. Its resumable state is bounded and process-local; a restart loses it. A resume request for an evicted stream, or a cursor older than that stream's retained event window, returns HTTP `410` with `OS-0400` (`STREAM_CURSOR_EXPIRED`). Once the bounded tombstone expires or is itself evicted to honor its count/byte limits, the gateway returns `404 OS-2004` because it can no longer distinguish an unknown ID from an old ID. Resume after process restart is not supported. See [ADR-008](https://github.com/shashankoppo/omsanchar/blob/main/adr/008-durable-stream-log.md) for the P1 JetStream design.
 
 ## Limits and accounting
 
@@ -47,4 +47,4 @@ Exact commands from the repository root (the WSL2 socket run temporarily raised 
 ulimit -n 30000 && .venv-wsl/bin/python scripts/soak_gateway_connections.py --connections 10000 --batch-size 100 --thread-stack-bytes 131072 --output bench/results/bounded-state-socket-soak-wsl2.json
 ```
 
-Reports: [`bench/results/bounded-state-registry-soak-wsl2.json`](../bench/results/bounded-state-registry-soak-wsl2.json) and [`bench/results/bounded-state-socket-soak-wsl2.json`](../bench/results/bounded-state-socket-soak-wsl2.json). Neither result substitutes for the requested native Linux run with CPU pinning and documented kernel settings.
+Reports: [`bounded-state-registry-soak-wsl2.json`](https://github.com/shashankoppo/omsanchar/blob/main/bench/results/bounded-state-registry-soak-wsl2.json) and [`bounded-state-socket-soak-wsl2.json`](https://github.com/shashankoppo/omsanchar/blob/main/bench/results/bounded-state-socket-soak-wsl2.json). Neither result substitutes for the requested native Linux run with CPU pinning and documented kernel settings.

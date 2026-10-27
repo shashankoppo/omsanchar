@@ -1,4 +1,4 @@
-.PHONY: dev-native dev-stack dev-stack-podman dev-stack-down dev-stack-down-podman test test-spec test-sim test-gateway test-token test-rust test-token-rust test-d5-loadgen test-mock bench-token-rust bench-d5 lint proto sbom source-sbom dependency-sbom vuln-scan container compose-build deps
+.PHONY: dev-native dev-stack dev-stack-podman dev-stack-down dev-stack-down-podman test test-spec test-sim test-gateway test-token test-rust test-token-rust test-d5-loadgen test-mock test-docs docs docs-serve bench-token-rust bench-d5 lint proto sbom source-sbom dependency-sbom vuln-scan container compose-build deps
 
 PYTHON ?= python3
 CARGO ?= cargo
@@ -6,6 +6,7 @@ BUF ?= buf
 DOCKER ?= docker
 SYFT ?= syft
 GRYPE ?= grype
+MKDOCS ?= $(PYTHON) -m mkdocs
 TOKEN_BENCH_ITERATIONS ?= 1000
 TOKEN_BENCH_RUNS ?= 10
 TOKEN_BENCH_OUTPUT ?= bench/results/capability-token-rust.json
@@ -32,6 +33,16 @@ dev-stack-down-podman:
 	podman compose -f deploy/dev.yml down
 
 test: test-spec test-sim test-gateway test-token test-rust test-token-rust test-d5-loadgen test-mock
+
+test-docs:
+	$(PYTHON) scripts/check_docs.py --strict-tools
+	$(PYTHON) scripts/test_docs_examples.py
+
+docs: test-docs
+	$(MKDOCS) build --strict
+
+docs-serve:
+	$(MKDOCS) serve
 
 test-spec:
 	$(PYTHON) -m unittest discover -s spec/tests -v

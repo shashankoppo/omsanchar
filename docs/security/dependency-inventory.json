@@ -9,6 +9,128 @@
       "source": "https://github.com/astral-sh/ruff"
     },
     {
+      "name": "click",
+      "version": "8.5.0",
+      "license": "BSD-3-Clause",
+      "purpose": "MkDocs command-line interface dependency",
+      "source": "https://github.com/pallets/click"
+    },
+    {
+      "name": "ghp-import",
+      "version": "2.1.0",
+      "license": "Apache-2.0",
+      "purpose": "MkDocs build dependency; publishing command is not used by CI",
+      "source": "https://github.com/c-w/ghp-import"
+    },
+    {
+      "name": "Jinja2",
+      "version": "3.1.6",
+      "license": "BSD-3-Clause",
+      "purpose": "MkDocs built-in theme rendering dependency",
+      "source": "https://github.com/pallets/jinja",
+      "license_metadata_review": "Distribution metadata omits its SPDX expression; reviewed the upstream BSD-3-Clause license file."
+    },
+    {
+      "name": "Markdown",
+      "version": "3.11.2",
+      "license": "BSD-3-Clause",
+      "purpose": "MkDocs Markdown parser",
+      "source": "https://github.com/Python-Markdown/markdown"
+    },
+    {
+      "name": "MarkupSafe",
+      "version": "3.0.4",
+      "license": "BSD-3-Clause",
+      "purpose": "MkDocs/Jinja template escaping dependency",
+      "source": "https://github.com/pallets/markupsafe"
+    },
+    {
+      "name": "mergedeep",
+      "version": "1.3.4",
+      "license": "MIT",
+      "purpose": "MkDocs configuration merge dependency",
+      "source": "https://github.com/clarketm/mergedeep",
+      "license_metadata_review": "Distribution metadata reports UNKNOWN; reviewed the upstream MIT license file."
+    },
+    {
+      "name": "mkdocs",
+      "version": "1.6.1",
+      "license": "BSD-2-Clause",
+      "purpose": "Strict documentation site builder",
+      "source": "https://github.com/mkdocs/mkdocs"
+    },
+    {
+      "name": "mkdocs-get-deps",
+      "version": "0.2.2",
+      "license": "MIT",
+      "purpose": "MkDocs project dependency discovery",
+      "source": "https://github.com/mkdocs/get-deps"
+    },
+    {
+      "name": "packaging",
+      "version": "26.3",
+      "license": "Apache-2.0 OR BSD-2-Clause",
+      "purpose": "MkDocs dependency version and environment parsing",
+      "source": "https://github.com/pypa/packaging"
+    },
+    {
+      "name": "pathspec",
+      "version": "1.1.1",
+      "license": "MPL-2.0",
+      "purpose": "MkDocs exclusion-pattern matching; build-time only",
+      "source": "https://github.com/cpburnz/python-pathspec",
+      "license_metadata_review": "Distribution metadata omits its SPDX expression; reviewed the upstream MPL-2.0 license file."
+    },
+    {
+      "name": "platformdirs",
+      "version": "4.13.5",
+      "license": "MIT",
+      "purpose": "MkDocs platform-specific cache paths",
+      "source": "https://github.com/tox-dev/platformdirs"
+    },
+    {
+      "name": "python-dateutil",
+      "version": "3.0.0",
+      "license": "Apache-2.0 OR BSD-3-Clause",
+      "purpose": "MkDocs timezone and date handling dependency",
+      "source": "https://github.com/dateutil/dateutil"
+    },
+    {
+      "name": "PyYAML",
+      "version": "6.0.3",
+      "license": "MIT",
+      "purpose": "MkDocs YAML configuration parser",
+      "source": "https://github.com/yaml/pyyaml"
+    },
+    {
+      "name": "pyyaml-env-tag",
+      "version": "1.1",
+      "license": "MIT",
+      "purpose": "MkDocs environment-variable YAML tag support",
+      "source": "https://github.com/waylan/pyyaml-env-tag"
+    },
+    {
+      "name": "six",
+      "version": "1.17.0",
+      "license": "MIT",
+      "purpose": "Transitive Python compatibility dependency of MkDocs date handling",
+      "source": "https://github.com/benjaminp/six"
+    },
+    {
+      "name": "tzdata",
+      "version": "2026.5",
+      "license": "Apache-2.0",
+      "purpose": "MkDocs timezone database dependency",
+      "source": "https://github.com/python/tzdata"
+    },
+    {
+      "name": "watchdog",
+      "version": "6.0.0",
+      "license": "Apache-2.0",
+      "purpose": "MkDocs live preview file watcher",
+      "source": "https://github.com/gorakhargosh/watchdog"
+    },
+    {
       "ecosystem": "cargo",
       "name": "adler2",
       "version": "2.0.1",

@@ -8,6 +8,15 @@ permissions:
   contents: read
 
 jobs:
+  docs-powershell:
+    runs-on: windows-2022
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Parse documented PowerShell examples
+        shell: pwsh
+        run: ./scripts/check_docs_powershell.ps1
+
   reference-and-protocol:
     runs-on: ubuntu-24.04
     steps:
@@ -49,7 +58,9 @@ jobs:
         run: python3 scripts/check_dependencies.py --check-rust
 
       - name: Install pinned Python lint tooling
-        run: python3 -m pip install --disable-pip-version-check --no-deps --target "${RUNNER_TEMP}/om-sanchar-ci-python" -r requirements-dev.txt
+        run: |
+          python3 -m pip install --disable-pip-version-check --no-deps --target "${RUNNER_TEMP}/om-sanchar-ci-python" -r requirements-dev.txt
+          python3 -m pip install --disable-pip-version-check --no-deps --target "${RUNNER_TEMP}/om-sanchar-ci-python" -r requirements-docs.txt
 
       - name: Check installed dependency versions and licenses
         env:
@@ -62,6 +73,11 @@ jobs:
         run: |
           python3 -m ruff check .
           python3 -m ruff format --check .
+
+      - name: Validate, execute, and build documentation
+        env:
+          PYTHONPATH: ${{ runner.temp }}/om-sanchar-ci-python
+        run: make docs PYTHON=python3
 
       - name: Generate source SBOM
         run: python3 scripts/generate_source_sbom.py --output artifacts/source-sbom.spdx.json

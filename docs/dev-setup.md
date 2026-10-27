@@ -14,7 +14,7 @@ python -m pip install --disable-pip-version-check -r requirements-dev.txt
 python -m gateway.server
 ```
 
-If GNU Make is installed, `make dev-native` runs the same server command in WSL. On Windows, use `make PYTHON=python dev-native` when Make is installed, or run the Python command directly. The server uses port 8080 by default; set `OM_GATEWAY_PORT` before launching to choose another port:
+The server uses port 8080 by default; set `OM_GATEWAY_PORT` before launching to choose another port:
 
 ```powershell
 $env:OM_GATEWAY_PORT = '8081'
@@ -31,21 +31,25 @@ WSL2 Ubuntu is the primary development environment for Rust and Linux integratio
 wsl --install -d Ubuntu
 ```
 
-In the Ubuntu shell, install the native build, Rust, formatter, linter, and Python tools, then enter the working tree and run the checks:
+In the Ubuntu shell, install native build tools and Python, then use rustup to install the repository's Rust toolchain. Replace the example path with the checkout's actual Windows path:
 
 ```bash
 sudo apt-get update
-sudo apt-get install -y build-essential git python3 python3-venv cargo rustc rustfmt rust-clippy
-cd "/mnt/c/Users/Shashank patel/Desktop/Evolucentsphere_DB/Evolucentsphere Pvt Ltd/omsanchar"
+sudo apt-get install -y build-essential git curl python3 python3-venv
+cd "$(wslpath 'C:\\path\\to\\omsanchar')"
+rustup toolchain install 1.88.0 --component rustfmt --component clippy
+rustup default 1.88.0
 python3 -m venv .venv-wsl
 source .venv-wsl/bin/activate
 python -m pip install --disable-pip-version-check -r requirements-dev.txt
+python -m pip install --disable-pip-version-check --no-deps -r requirements-docs.txt
 make test
 make lint
+make docs
 make dev-native
 ```
 
-The commands work from this Windows-mounted workspace. For sustained Rust builds, keep a checkout under `~/src` on the WSL Linux filesystem to avoid Windows filesystem I/O overhead. CI pins Rust 1.88.0, the minimum supported by the security-patched `time` 0.3.47 dependency.
+Install rustup before the `rustup toolchain` commands if it is not already available. These commands work from a Windows-mounted workspace. For sustained Rust builds, keep a checkout under `~/src` on the WSL Linux filesystem to avoid Windows filesystem I/O overhead. CI pins Rust 1.88.0, the minimum supported by the security-patched `time` 0.3.47 dependency.
 
 ## Integrated development stack
 
@@ -74,14 +78,15 @@ From an environment with GNU Make and the named tools on `PATH`:
 ```bash
 make test
 make lint
+make docs       # requires the pinned requirements-docs.txt toolchain
 make proto       # requires Buf CLI 1.73.0
 make dev-native
 make sbom        # requires Syft; writes source and dependency SBOMs
 make vuln-scan   # requires Syft and Grype; fails on high severity or above
 ```
 
-The CI workflow generates a source inventory and a dependency SBOM, audits the SBOM for known vulnerabilities, checks exact Python pins plus the locked Rust dependency versions and licenses, validates protobuf compatibility against `v0.1.0`, and builds both the verification image and the Compose development image. The Python reference gateway has no runtime package dependencies. The Rust conformance tests use the reviewed Cargo dependency tree. Third-party dependencies must be added to `docs/security/dependency-inventory.json` and pass `scripts/check_dependencies.py --check-installed --check-rust`.
+The CI workflow generates a source inventory and a dependency SBOM, audits the SBOM for known vulnerabilities, checks exact Python pins plus the locked Rust dependency versions and licenses, validates protobuf compatibility against `v0.1.0`, builds the strict documentation site, and builds both the verification image and the Compose development image. A Windows job parses PowerShell examples. The Python reference gateway has no runtime package dependencies. The Rust conformance tests use the reviewed Cargo dependency tree. Third-party dependencies must be added to `docs/security/dependency-inventory.json` and pass `scripts/check_dependencies.py --check-installed --check-rust`.
 
 ## Environment check recorded for this workspace
 
-The Windows host has Python 3.12.8 and Docker CLI 29.6.2, but its Docker engine is unavailable. WSL2 Ubuntu is installed with Rust/Cargo 1.75.0, rustfmt, Clippy, GNU Make 4.3, Python venv support, and Podman. Install the pinned Rust 1.88.0 toolchain for Rust checks and research binaries. Results in WSL2 are development-only. Hosted CI has not run because this checkout has no Git remote.
+The Windows host has Python 3.12.8 and Docker CLI 29.6.2, but its Docker engine is unavailable. WSL2 Ubuntu is installed with Rust/Cargo, rustfmt, Clippy, GNU Make 4.3, Python venv support, and Podman. Use the pinned Rust 1.88.0 toolchain for Rust checks and research binaries. Results in WSL2 are development-only. The `v0.1.0` tag workflow has passed on GitHub; hosted CI for a pushed working branch must be checked per commit.
