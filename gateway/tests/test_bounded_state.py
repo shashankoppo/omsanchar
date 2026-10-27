@@ -5,6 +5,7 @@ import http.client
 import json
 import platform
 import sys
+import threading
 import tracemalloc
 import unittest
 
@@ -18,7 +19,6 @@ from gateway.state import (
     MAX_STREAM_EVENTS,
     STATE_MEMORY_BUDGET_BYTES,
     STORE_LIMITS,
-    STREAM_EVENT_RESERVATION_BYTES,
     BoundedState,
 )
 
@@ -39,8 +39,8 @@ class BoundedStateTests(unittest.TestCase):
         first = completed_stream("a" * 32)
         second = completed_stream("b" * 32)
 
-        state.put("streams", first.stream_id, first, reserved_bytes=STREAM_EVENT_RESERVATION_BYTES)
-        state.put("streams", second.stream_id, second, reserved_bytes=STREAM_EVENT_RESERVATION_BYTES)
+        state.put("streams", first.stream_id, first)
+        state.put("streams", second.stream_id, second)
 
         self.assertIsNone(state.get("streams", first.stream_id))
         self.assertTrue(state.was_stream_evicted(first.stream_id))
@@ -54,31 +54,100 @@ class BoundedStateTests(unittest.TestCase):
         now = [100.0]
         state = BoundedState(clock=lambda: now[0])
         stream = completed_stream("c" * 32)
-        state.put("streams", stream.stream_id, stream, reserved_bytes=STREAM_EVENT_RESERVATION_BYTES)
+        state.put("streams", stream.stream_id, stream)
 
         now[0] += 301
         self.assertIsNone(state.get("streams", stream.stream_id))
         self.assertTrue(state.was_stream_evicted(stream.stream_id))
         now[0] += 301
         self.assertFalse(state.was_stream_evicted(stream.stream_id))
+        self.assertEqual(state.eviction_counts()["evicted"], 1)
+
+    def test_ttl_fails_and_evicts_an_open_stream(self):
+        now = [100.0]
+        state = BoundedState(clock=lambda: now[0])
+        stream = EventStream("c" * 32, "request-open", TRACEPARENT, 0)
+        state.put("streams", stream.stream_id, stream)
+
+        now[0] += 301
+        self.assertIsNone(state.get("streams", stream.stream_id))
+        self.assertEqual(stream.state, "FAILED")
+        self.assertTrue(state.was_stream_evicted(stream.stream_id))
+        self.assertEqual(state.active_stream_count(), 0)
 
     def test_event_log_has_fixed_per_stream_count_and_byte_limits(self):
         stream = EventStream("d" * 32, "request", TRACEPARENT, 0)
-        for index in range(MAX_STREAM_EVENTS):
+        for index in range(MAX_STREAM_EVENTS + 2):
             stream.publish("delta", {"delta": str(index)}, f"key-{index}")
-        with self.assertRaisesRegex(RuntimeError, "event limit"):
-            stream.publish("delta", {"delta": "overflow"}, "overflow")
+        self.assertEqual(stream.last_seq, MAX_STREAM_EVENTS + 2)
+        self.assertEqual(stream.retained_event_count, MAX_STREAM_EVENTS)
+        with self.assertRaisesRegex(ValueError, "older than the retained"):
+            stream.after(0, 0)
+        retained, done, _ = stream.after(2, 0)
+        self.assertFalse(done)
+        self.assertEqual([event.seq for event in retained], list(range(3, MAX_STREAM_EVENTS + 3)))
 
         other = EventStream("e" * 32, "request", TRACEPARENT, 0)
         with self.assertRaisesRegex(RuntimeError, "byte limit"):
             other.publish("delta", {"payload": "x" * 5000}, "large")
+
+    def test_resume_window_enforces_configurable_serialized_byte_ceiling(self):
+        stream = EventStream("e" * 32, "request", TRACEPARENT, 0, max_events=16, max_window_bytes=4096)
+        for index in range(8):
+            stream.publish("delta", {"delta": "x" * 700}, f"key-{index}")
+        self.assertLessEqual(stream.retained_window_bytes, 4096)
+        self.assertLess(stream.retained_event_count, 8)
+        with self.assertRaisesRegex(ValueError, "older than the retained"):
+            stream.after(0, 0)
+
+    def test_cursor_that_expires_while_waiting_is_rejected(self):
+        stream = EventStream("6" * 32, "request", TRACEPARENT, 0, max_events=2)
+        waiting = threading.Event()
+        original_wait = stream._condition.wait
+
+        def publish_after_wake(timeout=None):
+            waiting.set()
+            result = original_wait(timeout)
+            for index in range(3):
+                stream.publish("delta", {"delta": str(index)}, f"key-{index}")
+            return result
+
+        stream._condition.wait = publish_after_wake
+
+        def wake_waiter():
+            if waiting.wait(1):
+                with stream._condition:
+                    stream._condition.notify()
+
+        wake_thread = threading.Thread(target=wake_waiter)
+        wake_thread.start()
+        try:
+            with self.assertRaisesRegex(ValueError, "older than the retained"):
+                stream.after(0, 0.5)
+        finally:
+            wake_thread.join(timeout=1)
+
+    def test_state_reaccounts_event_growth_from_retained_object_bytes(self):
+        state = BoundedState()
+        stream = EventStream("7" * 32, "request", TRACEPARENT, 0)
+        state.put("streams", stream.stream_id, stream)
+        initial_bytes = state.store_bytes("streams")
+        service = GatewayService(bounded_state=state)
+        service.publish_event(stream, "delta", {"delta": "x" * 500}, "output:1")
+        after_one_event = state.store_bytes("streams")
+        self.assertGreater(after_one_event, initial_bytes)
+        for index in range(2, 40):
+            service.publish_event(stream, "delta", {"delta": f"token-{index}"}, f"output:{index}")
+        self.assertLessEqual(stream.retained_event_count, MAX_STREAM_EVENTS)
+        self.assertLessEqual(state.used_bytes, state.memory_budget_bytes)
+        self.assertLess(state.store_bytes("streams"), after_one_event + 8192 * 39)
 
     def test_active_streams_are_not_evicted_and_new_admission_fails_before_debit(self):
         limits = dict(STORE_LIMITS)
         limits["streams"] = 1
         state = BoundedState(store_limits=limits)
         active = EventStream("1" * 32, "active", TRACEPARENT, 0)
-        state.put("streams", active.stream_id, active, reserved_bytes=STREAM_EVENT_RESERVATION_BYTES)
+        state.put("streams", active.stream_id, active)
         service = GatewayService(bearer_token="capacity-test", bounded_state=state)
         body = {
             "model": "om://demo/model/default",
@@ -109,7 +178,7 @@ class BoundedStateTests(unittest.TestCase):
         for index in range(stream_count):
             stream_id = f"{index:032x}"
             stream = EventStream(stream_id, f"request-{index}", TRACEPARENT, 0)
-            state.put("streams", stream_id, stream, reserved_bytes=STREAM_EVENT_RESERVATION_BYTES)
+            state.put("streams", stream_id, stream)
             # The client has abandoned the stream; its producer finishes without a reader.
             stream.finish()
             if index % 10_000 == 0:
@@ -121,6 +190,9 @@ class BoundedStateTests(unittest.TestCase):
         peak_rss_bytes = None
         if resource is not None:
             peak_rss_bytes = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss * 1024
+        retained_stream_count = len(state.values("streams"))
+        retained_stream_bytes = state.store_bytes("streams")
+        average_stream_entry_bytes = retained_stream_bytes / retained_stream_count if retained_stream_count else 0
         print(
             "BOUNDED_STATE_SOAK="
             + json.dumps(
@@ -130,6 +202,11 @@ class BoundedStateTests(unittest.TestCase):
                     "accounted_retained_bytes_after_soak": state.used_bytes,
                     "retained_entries_after_soak": state.entry_count,
                     "retained_streams_after_soak": len(state.values("streams")),
+                    "retained_stream_entry_bytes": retained_stream_bytes,
+                    "average_accounted_bytes_per_retained_stream": average_stream_entry_bytes,
+                    "estimated_stream_entries_per_gib": (
+                        int((1024**3) / average_stream_entry_bytes) if average_stream_entry_bytes else None
+                    ),
                     "max_sampled_retained_streams": max_retained,
                     "tracemalloc_peak_bytes_above_start": peak - initial_current,
                     "process_peak_rss_bytes": peak_rss_bytes,
@@ -160,12 +237,10 @@ class EvictedResumeTests(unittest.TestCase):
         service = GatewayService(bearer_token="resume-test", bounded_state=state)
         old = completed_stream("f" * 32)
         newest = completed_stream("0" * 32)
-        state.put("streams", old.stream_id, old, reserved_bytes=STREAM_EVENT_RESERVATION_BYTES)
-        state.put("streams", newest.stream_id, newest, reserved_bytes=STREAM_EVENT_RESERVATION_BYTES)
+        state.put("streams", old.stream_id, old)
+        state.put("streams", newest.stream_id, newest)
 
         server = make_server("127.0.0.1", 0, service)
-        import threading
-
         thread = threading.Thread(target=server.serve_forever, daemon=True)
         thread.start()
         try:
@@ -174,6 +249,35 @@ class EvictedResumeTests(unittest.TestCase):
                 "GET",
                 f"/v1/streams/{old.stream_id}?cursor=0",
                 headers={"Authorization": "Bearer resume-test"},
+            )
+            response = connection.getresponse()
+            body = json.loads(response.read())
+            connection.close()
+            self.assertEqual(response.status, 410)
+            self.assertEqual(body["code"], "OS-0400")
+        finally:
+            server.shutdown()
+            server.server_close()
+            thread.join(timeout=2)
+
+    def test_resume_cursor_before_retained_window_returns_410_os_0400(self):
+        state = BoundedState()
+        service = GatewayService(bearer_token="window-test", bounded_state=state)
+        stream = EventStream("9" * 32, "request-window", TRACEPARENT, 0, max_events=2)
+        state.put("streams", stream.stream_id, stream)
+        for index in range(3):
+            service.publish_event(stream, "delta", {"delta": str(index)}, f"output:{index}")
+        stream.finish()
+
+        server = make_server("127.0.0.1", 0, service)
+        thread = threading.Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        try:
+            connection = http.client.HTTPConnection(*server.server_address, timeout=2)
+            connection.request(
+                "GET",
+                f"/v1/streams/{stream.stream_id}?cursor=0",
+                headers={"Authorization": "Bearer window-test"},
             )
             response = connection.getresponse()
             body = json.loads(response.read())

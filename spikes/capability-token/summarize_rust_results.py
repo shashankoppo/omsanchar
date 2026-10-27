@@ -22,8 +22,7 @@ def summarize_runs(runs: list[dict[str, Any]], *, seed: int) -> dict[str, Any]:
     run_medians = [int(run["p50_ns"]) for run in runs]
     generator = random.Random(seed)
     bootstrap_medians = sorted(
-        statistics.median(generator.choices(run_medians, k=len(run_medians)))
-        for _ in range(20_000)
+        statistics.median(generator.choices(run_medians, k=len(run_medians))) for _ in range(20_000)
     )
     return {
         "median_ns": int(statistics.median(all_samples)),
@@ -89,7 +88,7 @@ def render_markdown(summary: dict[str, Any]) -> str:
             "",
             "```bash",
             "RUSTUP_HOME=/tmp/omsanchar-rustup CARGO_HOME=/home/shashank_patel/.cargo PATH=/tmp/omsanchar-rust-cargo/bin:$PATH \\",
-            "  cargo +1.85.0 run --release --locked --manifest-path dataplane/sanchar-core/Cargo.toml \\",
+            "  cargo +1.88.0 run --release --locked --manifest-path dataplane/sanchar-core/Cargo.toml \\",
             "  --features token-bench --bin capability_token_bench -- 1000 10 \\",
             "  bench/results/capability-token-rust-wsl2-2026-10-25.json",
             "python spikes/capability-token/summarize_rust_results.py \\",

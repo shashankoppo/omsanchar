@@ -89,7 +89,9 @@ def materialize_advisory_snapshot(date: str) -> tuple[Path, dict[str, str]]:
     ).stdout.strip()
     expected_subject = f"RustSec advisory snapshot {commit}"
     if snapshot_subject != expected_subject:
-        raise RuntimeError(f"cached RustSec snapshot mismatch: expected {expected_subject!r}, found {snapshot_subject!r}")
+        raise RuntimeError(
+            f"cached RustSec snapshot mismatch: expected {expected_subject!r}, found {snapshot_subject!r}"
+        )
     snapshot_changes = subprocess.run(
         ["git", "status", "--porcelain"], cwd=db_path, check=True, capture_output=True, text=True
     ).stdout.strip()

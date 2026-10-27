@@ -40,7 +40,7 @@ for implementation in baseline envoy rust; do
         for run in $(seq 1 10); do
           output="$output_root/$implementation/$tls/$workload/c$((concurrency))/run-${run}.json"
           mkdir -p "$(dirname "$output")"
-          command=(cargo +1.85.0 run --release --locked --manifest-path "$root/dataplane/sanchar-core/Cargo.toml" --features d5-bench --bin d5_loadgen -- "$endpoint" "$workload" "$rate_rps" "$duration_secs" "$concurrency" "$output")
+          command=(cargo +1.88.0 run --release --locked --manifest-path "$root/dataplane/sanchar-core/Cargo.toml" --features d5-bench --bin d5_loadgen -- "$endpoint" "$workload" "$rate_rps" "$duration_secs" "$concurrency" "$output")
           if [[ "$tls" == "https" && -n "$ca_cert" ]]; then
             command+=("$ca_cert")
           fi

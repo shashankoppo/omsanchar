@@ -1,0 +1,19 @@
+{
+  "measurement_date_local": "2026-10-27",
+  "accounted_budget_bytes": 134217728,
+  "accounted_retained_bytes_after_soak": 18833296,
+  "average_accounted_bytes_per_retained_stream": 1801.0,
+  "classification": "measured",
+  "estimated_stream_entries_per_gib": 596192,
+  "exact_command": ".venv-wsl/bin/python -m unittest gateway.tests.test_bounded_state.BoundedStateTests.test_million_open_then_abandoned_streams_stay_under_memory_ceiling -v",
+  "known_limit": "Registry admission/eviction only; each stream is completed immediately. This is not a live HTTP socket or active model-stream soak.",
+  "max_sampled_retained_streams": 10000,
+  "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+  "process_peak_rss_bytes": 81813504,
+  "python": "3.12.3",
+  "retained_entries_after_soak": 14096,
+  "retained_stream_entry_bytes": 18010000,
+  "retained_streams_after_soak": 10000,
+  "streams_opened_and_abandoned": 1000000,
+  "tracemalloc_peak_bytes_above_start": 23765036
+}

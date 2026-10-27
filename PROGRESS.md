@@ -4,30 +4,32 @@
 
 **P0 - foundations and spikes**
 
-Estimated P0 completion: **about 45%**. This is a rough deliverable-coverage estimate, not an effort measure. D1 has local security-scan evidence but still lacks a GitHub remote and hosted CI; D2 is tagged; D4 now has bounded process-local state; D5 has only its pre-registered protocol; and D6 still needs the Rust comparison. No P0 exit criterion is met yet.
+Estimated P0 completion: **about 52%**. This is a rough deliverable-coverage estimate, not an effort measure. D1 has local scan evidence but lacks a GitHub remote and hosted CI; D2 is tagged; D3's stack configuration exists but runtime was not verified; D4 state bounds and WSL2 soaks are measured; D5 has a tested harness but no feature-matched paths or native Linux decision data; D6 correctness tests pass but the verifier failure remains unexplained and timing is withheld. No P0 exit criterion is met yet.
 
 ## Deliverable status
 
 | ID | Status | Evidence / remaining work |
 |---|---|---|
-| D1 Repository scaffold and CI | Local gates and scans run; remote/hosted CI pending | Existing local container and test gates remain green from Session 2. Syft, Grype, and cargo-audit reports are under `docs/security/reports`; no GitHub repository exists yet, so hosted CI cannot run. |
+| D1 Repository scaffold and CI | Local gates and scans run; remote/hosted CI pending | Current WSL2 scans: Syft 1.55.0 (228 SPDX packages), Grype 0 matches, cargo-audit 1 finding across 220 Rust packages. The time advisory was patched; crypto-bigint remains in optional Biscuit/P256 dependencies. No GitHub remote exists, so hosted CI cannot run. |
 | D2 Protocol spec v0.1 | Tagged; compatibility check previously passed | Relative deadlines, signed i64 microcredits, rational price and cumulative ceiling rounding, checked overflow, and cutoff behavior are specified. The deadline binding now subtracts rounded-up hop elapsed time plus a configurable safety margin and fails below minimum useful time. Rust and Python use shared vectors. |
-| D3 One-command integrated dev environment | Not started | The Envoy, NATS JetStream, Rust mock, and OTel Collector stack is not assembled in native and Podman modes. |
-| D4 First end-to-end resumable model slice | Bounded local reference; soak verified in WSL2 | The gateway has an accounted 128 MiB process-local budget, per-store count/TTL limits, deterministic FIFO eviction, bounded event logs, eviction metrics, a 128-active-stream cap, and a defined `410 OS-0400` response while an eviction tombstone remains. Resume across restart is still unsupported. |
-| D5 Envoy/Rust benchmark spike | Pre-registered; measurements inconclusive | ADR-001 records feature parity, the open-loop/HdrHistogram matrix, native Linux host metadata, and the decision rule before D5 measurements. No eligible native Linux host or complete feature-matched implementations are available; the earlier Python/Windows smoke result is not D5 evidence. |
-| D6 Capability token prototype | Python prototype complete; Rust decision inconclusive | The prior HMAC prototype remains in `spikes/capability-token`. ADR-005 now requires Rust HMAC, Biscuit, and Ed25519 measurements at depth 1-8 and records the trust implications and two-tier cache proposal. |
+| D3 One-command integrated dev environment | Configured; runtime unverified | Compose files and one-command Docker/Podman targets include Envoy, NATS JetStream, the Rust mock, and OTel Collector. Windows Docker engine is unavailable and the WSL2 Podman Compose provider is absent. |
+| D4 First end-to-end resumable model slice | Bounded local reference; WSL2 soaks measured | Shared retained-state ceiling is 128 MiB with TTL/count caps, FIFO eviction, per-store eviction metrics, bounded rolling event windows, and `410 OS-0400` for evicted/expired cursors. The 300-second stream TTL fails/removes an open stream when expiry is observed. The one-million registry soak retained 10,000 streams with 18.8 MB accounted state and 81.8 MB process peak RSS. The separate 10k-client socket attempt had 9,114 accepted handler threads; this is below target and WSL2-only. Restart resume remains unsupported. |
+| D5 Envoy/Rust benchmark spike | Harness tested; decision inconclusive | Rust HdrHistogram open-loop harness, raw sample format, matrix driver, and paired confidence-interval summarizer exist. The D3 Envoy config lacks AI filters and no Rust proxy exists; no feature-matched comparison or native Linux run is available. ADR-001 remains undecided. |
+| D6 Capability token prototype | Rust correctness complete; performance inconclusive | Rust HMAC, Biscuit, and Ed25519 chain correctness/tamper tests pass at depths 1-8. The reported release verifier failure remains unreproduced; timing is withheld. ADR-005 remains inconclusive. |
 | D7 Overlay lab and two-container prototype | Not started | No NAT reachability or peer overlay experiment yet. |
 | D8 ADRs 001-007 | Partial | ADR-001 and ADR-005 are drafted; ADR-008 proposes a P1 durable stream log. Other ADRs remain open. |
 | D9 Threat model and security test plan | Not started | Map identities, assets, trust boundaries, abuse cases, and controls to tests. |
-| D10 Developer documentation skeleton | In progress | WSL2 setup, bounded-state behavior, eviction errors, authentication isolation, security-report procedure, and restart-resume limitation are documented. The integrated environment remains open. |
+| D10 Developer documentation skeleton | In progress | WSL2 setup, bounded state and measured soaks, eviction behavior, authentication isolation, current scan findings, and restart-resume limitation are documented. The integrated environment remains runtime-unverified. |
 
-## Session 3 status (2026-10-25)
+## Session 3 continuation (2026-10-27 local)
 
-- WSL2 supply-chain scans: Syft 1.55.0 found 19 package records, Grype 0.121.0 found zero matches using DB schema v6.1.10, and cargo-audit 0.22.2 found zero Rust advisories across 12 locked crates and 1,352 advisories. Raw reports, command vectors, tool versions, dates, hashes, and the commit-pinned RustSec database snapshot are in `docs/security/reports/`.
-- The direct RustSec Git upload-pack fetch failed; the official archive at commit `21d909e4c8bd4e14c7aea58bf980c881a0053ab1` was downloaded and hash-recorded, initialized as a local Git snapshot, then audited with `--no-fetch`.
-- Added ADR-001's pre-registered D5 decision rule and ADR-005's token comparison protocol. No D5 or Rust token performance numbers are claimed.
-- Added ADR-008 for P1 restart-safe resume storage. The gateway currently returns `410 OS-0400` for retained eviction tombstones and `404 OS-2004` after that tombstone is gone.
-- Added relative deadline safety-margin arithmetic and conformance/simulation scenarios. Static bearer auth is now behind an `Authenticator` interface for later SPIFFE/OAuth 2.1 plus DPoP work.
+- Bounded stream retention now uses object-size reaccounting, a shared 128 MiB state budget, store count/TTL bounds, deterministic FIFO eviction, per-store eviction metrics, and a 16-event/4 KiB rolling resume window. The 300-second stream TTL fails/removes open streams when expiry is observed. Resume requests for evicted streams or expired cursors return HTTP 410 `OS-0400`; the waiting-SSE cursor race is tested.
+- The million-entry registry soak passed on WSL2: 10,000 streams retained, 18,833,296 bytes accounted, 23,765,036-byte `tracemalloc` peak above start, and 81,813,504-byte process peak RSS. It exercises registry admission and immediate completion, not one million HTTP connections.
+- The real-socket WSL2 soak connected 10,000 client sockets; peak accepted gateway handlers were 9,114. Incremental process RSS was 246,231,040 bytes, or an estimated 27,017 bytes per accepted idle handler. The 10,000 accepted-handler target was not met, and these results are development-only. Raw JSON is under `bench/results/`.
+- Rust 1.88.0 is now the workspace minimum to use patched `time 0.3.47` (previously `time 0.3.45`). Syft 1.55.0 found 228 SPDX records, Grype 0 matches, and cargo-audit 0.22.2 found one remaining `RUSTSEC-2026-0387` in optional Biscuit/P256 dependencies. All raw results, versions, commands, checksums, and the RustSec archive snapshot are under `docs/security/reports/`.
+- Aggregate `make test` passed under WSL2: spec 11, simulations 10, gateway 18 (including the million-stream soak), Python token 6, Rust core conformance 2, Rust token 3, Rust D5 harness 2, plus mock-model health/MCP/16-way fan-out/SSE smoke. `make lint` passed: style, 220-package dependency/license checks, Ruff, rustfmt, and Clippy.
+- The release verifier failure is still unreproduced and its original scheme/depth/token/log were not preserved. Fixed-seed Biscuit token construction is now deterministic; verifier timing remains withheld and ADR-005 inconclusive.
+- No D5 feature parity or native Linux evidence was produced. Envoy AI filters and a Rust proxy remain absent, so ADR-001 is undecided. D7 remains deferred.
 
 ## Upstream review and corrections
 
@@ -65,23 +67,22 @@ Raw samples and host metadata: `spikes/capability-token/results/windows-python31
 
 ## Tests and environment evidence
 
-- Python spec: 10 tests passed.
-- Python simulation: 5 tests passed, including skew injection and shared deadline vectors.
-- Gateway integration: 6 tests passed, including mid-stream disconnect/resume, no missing/duplicate event sequences, request budget cutoff, and error-cause fields.
-- Rust `sanchar-core`: 2 conformance tests passed; rustfmt 1.75.0 and Clippy with warnings denied passed. The complete `make test` and `make lint` targets passed in WSL2.
-- Python style, Ruff lint/format, installed Python license metadata, and all 11 locked Cargo package license/source records passed.
-- WSL2 Ubuntu 24.04, Rust/Cargo 1.75.0, GNU Make 4.3, Podman, and a separate `.venv-wsl` are installed. Both images built locally; the verification image's 10 spec tests passed; the development image health route and graceful stop passed. The Windows Docker engine is unavailable, and the workspace has no Git remote, so hosted CI cannot be triggered.
+- Python spec: 11 tests passed; simulations: 10; gateway: 18 (including the million-entry soak); Python capability-token prototype: 6.
+- Rust 1.88.0: 2 core conformance, 3 token, and 2 D5 load-generator tests passed; mock-model health, MCP, fan-out, and SSE smoke passed.
+- Aggregate `make test` and `make lint` passed under WSL2 using Rust 1.88.0: style, installed Python license metadata, 220 Cargo package/source/license records, Ruff, rustfmt, and Clippy with warnings denied.
+- WSL2 supply-chain scans are current for the lockfile: Syft 1.55.0, Grype 0 matches, cargo-audit 0.22.2 with one RustSec finding. See `docs/security/reports/README.md` and its raw evidence files.
+- WSL2 Ubuntu 24.04, GNU Make 4.3, Podman, and `.venv-wsl` are installed. The Windows Docker engine is unavailable and Podman's Compose provider is absent, so integrated-stack runtime is unverified. No Git remote exists, so hosted CI cannot be triggered.
 
 ## Decisions, assumptions, and risks
 
-- The local gateway is a reference integration, not a production service: bearer credential and one demo tenant, mock-only model, process-local stream/request/audit/trace maps, no durable resume across restart, and no retention bound across streams.
+- The local gateway is a reference integration, not a production service: bearer credential and one demo tenant, mock-only model, process-local stream/request/audit/trace maps, explicit bounded retention, and no durable resume across restart.
 - The token prototype uses chained HMAC caveats to exercise narrowing. Upstream ADR005 calls for Biscuit-style grants and DPoP; format choice, proof-of-possession, key rotation, revocation, replay protection, and distributed spend prevention remain undecided.
 - The Rust state machine is single-process protocol logic; durable storage, cross-process ownership, and transport integration remain unimplemented.
-- CI configuration contains pinned supply-chain actions and scan gates, but no workflow has run in this repository yet. No container or vulnerability scan result is claimed.
-- WSL2 is the intended Rust/Linux environment. Current evidence used the Windows-mounted workspace; sustained Rust builds should use a WSL Linux-filesystem checkout when a repository remote is available.
+- CI configuration contains pinned supply-chain actions and scan gates, but no hosted workflow has run. The local Grype scan found zero matches; cargo-audit retains one open finding in the optional Biscuit/P256 dependency chain.
+- WSL2 is development-only for performance and capacity results. Current evidence used the Windows-mounted workspace; sustained Rust builds should use a WSL Linux-filesystem checkout when a repository remote is available.
 
 ## Next actions
 
-1. Run WSL `make test` and `make lint`, get a container build and SBOM/vulnerability scan through CI or Podman, then record the actual results.
-2. Finish D5 with measured Envoy and Rust proxy implementations over streaming-LLM, MCP, and fan-out workloads, preserving raw samples and host/version metadata.
-3. Continue in requested order with D7 overlay reachability, then D8 ADRs, D9 threat model, and D10 runnable integrated developer documentation.
+1. Create/configure the GitHub remote, push the branch, and run hosted CI; resolve or explicitly track the remaining cargo-audit finding.
+2. Obtain a qualified native Linux host, complete D5 feature parity, and run its preregistered open-loop matrix; repeat the 10,000 accepted-handler retention test there.
+3. Reproduce and diagnose the historical token verifier failure before collecting token timings. Keep D7 deferred until priorities 1-5 are complete.

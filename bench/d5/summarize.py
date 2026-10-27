@@ -24,7 +24,9 @@ def bootstrap_ci(values: list[int], *, seed: int, replicates: int = 20_000) -> l
     return [float(estimates[int(replicates * 0.025)]), float(estimates[int(replicates * 0.975)])]
 
 
-def load_cell(root: Path, implementation: str, transport: str, workload: str, concurrency: int) -> dict[int, dict[str, Any]]:
+def load_cell(
+    root: Path, implementation: str, transport: str, workload: str, concurrency: int
+) -> dict[int, dict[str, Any]]:
     reports: dict[int, dict[str, Any]] = {}
     for run in RUNS:
         path = root / implementation / transport / workload / f"c{concurrency}" / f"run-{run}.json"
@@ -90,7 +92,10 @@ def main() -> int:
                             "median_proxy_minus_baseline_ns": statistics.median(paired_deltas),
                             "bootstrap_95_ci_ns": bootstrap_ci(
                                 paired_deltas,
-                                seed=20261027 + metric_index + concurrency + (0 if implementation == "envoy" else 100_000),
+                                seed=20261027
+                                + metric_index
+                                + concurrency
+                                + (0 if implementation == "envoy" else 100_000),
                             ),
                             "paired_run_deltas_ns": paired_deltas,
                         }
@@ -106,7 +111,9 @@ def main() -> int:
                     ]
                     results.append(
                         {
-                            "classification": "measured; WSL2 development-only" if all_wsl else "measured; host qualification required",
+                            "classification": "measured; WSL2 development-only"
+                            if all_wsl
+                            else "measured; host qualification required",
                             "implementation": implementation,
                             "transport": transport,
                             "workload": workload,

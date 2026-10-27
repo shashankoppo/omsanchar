@@ -10,13 +10,14 @@ from dataclasses import dataclass
 from typing import Any, Callable, Hashable
 
 STATE_MEMORY_BUDGET_BYTES = 128 * 1024 * 1024
-MAX_STREAM_EVENTS = 130
-MAX_STREAM_EVENT_BYTES = 4096
-STREAM_EVENT_RESERVATION_BYTES = MAX_STREAM_EVENTS * MAX_STREAM_EVENT_BYTES * 2
-MAX_ACTIVE_STREAMS = 128
+MAX_STREAM_EVENTS = 16
+MAX_STREAM_EVENT_BYTES = 2048
+MAX_STREAM_WINDOW_BYTES = 4096
+STREAM_EVENT_ACCOUNTED_RESERVE_BYTES = 4096
+MAX_ACTIVE_STREAMS = 10_000
 
 STORE_LIMITS = {
-    "streams": 4096,
+    "streams": 10_000,
     "requests": 8192,
     "audit": 8192,
     "trace": 8192,
@@ -73,8 +74,9 @@ class BoundedState:
     """FIFO stores sharing a hard accounting budget, TTLs, and entry limits.
 
     TTLs begin at insertion and are not refreshed on reads. Active streams are
-    protected from TTL and capacity eviction; if no eligible entry can make room,
-    admission fails with ``StateCapacityError``.
+    protected from capacity eviction, but their fixed stream TTL fails and removes
+    an open stream; if no other eligible entry can make room, admission fails with
+    ``StateCapacityError``.
     """
 
     def __init__(
@@ -97,7 +99,7 @@ class BoundedState:
         self._append_sequence = {"audit": 0, "trace": 0}
         self._used_bytes = 0
         self._entry_count = 0
-        self._evictions = {name: 0 for name in self.store_limits if name != "evicted"}
+        self._evictions = {name: 0 for name in self.store_limits}
 
     @property
     def used_bytes(self) -> int:
@@ -112,6 +114,55 @@ class BoundedState:
     def eviction_counts(self) -> dict[str, int]:
         with self._lock:
             return dict(self._evictions)
+
+    def store_bytes(self, store: str) -> int:
+        with self._lock:
+            self._sweep(self.clock())
+            return sum(entry.charge for entry in self._store(store).values())
+
+    def reserve_growth(self, store: str, key: Hashable, additional_bytes: int) -> None:
+        """Reserve an upper bound before mutating a retained value."""
+        if additional_bytes < 0:
+            raise ValueError("additional_bytes must be non-negative")
+        with self._lock:
+            now = self.clock()
+            self._sweep(now)
+            entries = self._store(store)
+            entry = entries.get(key)
+            if entry is None:
+                raise StateCapacityError("retained entry no longer exists")
+            if additional_bytes:
+                self._make_room(
+                    store,
+                    additional_bytes,
+                    now,
+                    protected=(store, key),
+                    count_delta=0,
+                )
+                entry.charge += additional_bytes
+                self._used_bytes += additional_bytes
+
+    def reaccount(self, store: str, key: Hashable) -> None:
+        """Replace a temporary growth reserve with measured retained object size."""
+        with self._lock:
+            now = self.clock()
+            self._sweep(now)
+            entries = self._store(store)
+            entry = entries.get(key)
+            if entry is None:
+                raise StateCapacityError("retained entry no longer exists")
+            charge = deep_size(entry.value) + 256
+            delta = charge - entry.charge
+            if delta > 0:
+                self._make_room(
+                    store,
+                    delta,
+                    now,
+                    protected=(store, key),
+                    count_delta=0,
+                )
+            entry.charge = charge
+            self._used_bytes += delta
 
     def active_stream_count(self) -> int:
         with self._lock:
@@ -158,7 +209,7 @@ class BoundedState:
         with self._lock:
             self._append_sequence[store] += 1
             key = self._append_sequence[store]
-        self.put(store, key, value, reserved_bytes=max_value_bytes)
+        self.put(store, key, value)
 
     def get(self, store: str, key: Hashable, default: Any = None) -> Any:
         with self._lock:
@@ -166,7 +217,7 @@ class BoundedState:
             entry = entries.get(key)
             if entry is None:
                 return default
-            if entry.expires_at <= self.clock() and not self._is_active_stream(entry):
+            if entry.expires_at <= self.clock():
                 self._drop(store, key, entry, expired=True)
                 return default
             return entry.value
@@ -198,20 +249,11 @@ class BoundedState:
 
     def _sweep(self, now: float) -> None:
         for store, entries in self._stores.items():
-            if store == "streams":
-                if not entries or next(iter(entries.values())).expires_at > now:
-                    continue
-                expired = [
-                    (key, entry)
-                    for key, entry in entries.items()
-                    if entry.expires_at <= now and not self._is_active_stream(entry)
-                ]
-            else:
-                expired = []
-                for key, entry in entries.items():
-                    if entry.expires_at > now:
-                        break
-                    expired.append((key, entry))
+            expired = []
+            for key, entry in entries.items():
+                if entry.expires_at > now:
+                    break
+                expired.append((key, entry))
             for key, entry in expired:
                 if entries.get(key) is entry:
                     self._drop(store, key, entry, expired=True)
@@ -275,6 +317,10 @@ class BoundedState:
         entries = self._store(store)
         if entries.get(key) is not entry:
             return
+        if expired and store == "streams" and self._is_active_stream(entry):
+            finish = getattr(entry.value, "finish", None)
+            if callable(finish):
+                finish("FAILED")
         del entries[key]
         self._used_bytes -= entry.charge
         self._entry_count -= 1

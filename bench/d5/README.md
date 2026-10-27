@@ -10,7 +10,7 @@ Start the Rust mock model on port 8081, then run one development-only workload:
 
 ```bash
 RUSTUP_HOME=/tmp/omsanchar-rustup CARGO_HOME=/home/shashank_patel/.cargo PATH=/tmp/omsanchar-rust-cargo/bin:$PATH \
-  cargo +1.85.0 run --release --locked --manifest-path dataplane/sanchar-core/Cargo.toml \
+  cargo +1.88.0 run --release --locked --manifest-path dataplane/sanchar-core/Cargo.toml \
   --features d5-bench --bin d5_loadgen -- \
   http://127.0.0.1:8081 sse500 10 2 100 bench/results/d5/wsl2-development-smoke/sse500.json
 ```

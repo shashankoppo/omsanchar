@@ -1,0 +1,86 @@
+{
+  "advisory_database": {
+    "archive_sha256": "342547f3550685b3640730ea6b980a289e96553d6356548208f4bb01437a9f13",
+    "archive_url": "https://codeload.github.com/RustSec/advisory-db/tar.gz/a78282a1414d6c28cc228c4eae3570451affb0dc",
+    "local_snapshot_path": "/tmp/omsanchar-security-snapshots/advisory-db-2026-10-26-a78282a1414d/db",
+    "local_snapshot_reason": "cargo-audit could not reach the Git upload-pack endpoint; the official archive was committed locally and audited with --no-fetch",
+    "source_commit": "a78282a1414d6c28cc228c4eae3570451affb0dc",
+    "source_repository": "https://github.com/RustSec/advisory-db"
+  },
+  "classification": "measured",
+  "date_utc": "2026-10-26T20:41:37+00:00",
+  "host": "DESKTOP-S3HB9HC",
+  "note": "Scanner exit codes are preserved. Grype reports findings without a severity threshold. cargo-audit uses the official RustSec advisory-db source commit recorded above; the Git upload-pack endpoint was unavailable, so the source archive was initialized as a local Git database and audited with --no-fetch.",
+  "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+  "platform_scope": "WSL2 development-only; these scans are supply-chain inventory results, not Linux-host performance evidence",
+  "reports": [
+    {
+      "command": [
+        ".tools/bin/syft",
+        "dir:.",
+        "--exclude",
+        "**/.git/**",
+        "--exclude",
+        "**/.venv/**",
+        "--exclude",
+        "**/.venv-wsl/**",
+        "--exclude",
+        "**/.tools/**",
+        "--exclude",
+        "**/.tools-npm/**",
+        "--exclude",
+        "**/.bufcache/**",
+        "--exclude",
+        "**/target/**",
+        "-o",
+        "spdx-json=docs/security/reports/syft-2026-10-26.spdx.json"
+      ],
+      "exit_code": 0,
+      "output_file": null,
+      "sha256": "a70d19b2fe531fb113256cc3325ad0db73e18047d939ceed402e8ac80b60a32c",
+      "size_bytes": 497320,
+      "stderr": null,
+      "stderr_file": "docs/security/reports/syft-2026-10-26.spdx.json.stderr.txt",
+      "stdout": ""
+    },
+    {
+      "command": [
+        ".tools/bin/grype",
+        "sbom:docs/security/reports/syft-2026-10-26.spdx.json",
+        "-o",
+        "json"
+      ],
+      "exit_code": 0,
+      "output_file": "docs/security/reports/grype-2026-10-26.json",
+      "sha256": "4afb0ae843c245033a3ffd74a8b842f21535934191023d37adfb1bff9d3ecf50",
+      "size_bytes": 5680,
+      "stderr": "",
+      "stdout": null
+    },
+    {
+      "command": [
+        ".tools/bin/cargo-audit",
+        "audit",
+        "--json",
+        "--db",
+        "/tmp/omsanchar-security-snapshots/advisory-db-2026-10-26-a78282a1414d/db",
+        "--no-fetch",
+        "--file",
+        "dataplane/sanchar-core/Cargo.lock"
+      ],
+      "exit_code": 1,
+      "output_file": "docs/security/reports/cargo-audit-2026-10-26.json",
+      "sha256": "dd2013666f3e05be4e9f8c8c082df16d260baede0f85768f1c7a5768433f651a",
+      "size_bytes": 4407,
+      "stderr": "",
+      "stdout": null
+    }
+  ],
+  "versions": {
+    "cargo": "cargo 1.88.0 (873a06493 2025-05-10)",
+    "cargo_audit": "cargo-audit 0.22.2",
+    "grype": "Application:         grype\nVersion:             0.121.0\nBuildDate:           2026-10-19T20:26:34Z\nGitCommit:           afe2742527d98d822da06c9f32eed86fe3d193e0\nGitDescription:      v0.121.0\nPlatform:            linux/amd64\nGoVersion:           go1.26.8\nCompiler:            gc\nSyft Version:        v1.55.0\nSupported DB Schema: 6",
+    "rustc": "rustc 1.88.0 (6b00bc388 2025-06-23)",
+    "syft": "Application:   syft\nVersion:       1.55.0\nBuildDate:     2026-10-19T18:54:46Z\nGitCommit:     f15c3343e29dfb20cf6d82c820e7090b49808c96\nGitDescription: v1.55.0\nPlatform:      linux/amd64\nGoVersion:     go1.26.8\nCompiler:      gc\nSchemaVersion: 16.1.11"
+  }
+}

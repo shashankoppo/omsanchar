@@ -1,0 +1,8 @@
+{
+  "archive_sha256": "342547f3550685b3640730ea6b980a289e96553d6356548208f4bb01437a9f13",
+  "archive_url": "https://codeload.github.com/RustSec/advisory-db/tar.gz/a78282a1414d6c28cc228c4eae3570451affb0dc",
+  "local_snapshot_path": "/tmp/omsanchar-security-snapshots/advisory-db-2026-10-26-a78282a1414d/db",
+  "local_snapshot_reason": "cargo-audit could not reach the Git upload-pack endpoint; the official archive was committed locally and audited with --no-fetch",
+  "source_commit": "a78282a1414d6c28cc228c4eae3570451affb0dc",
+  "source_repository": "https://github.com/RustSec/advisory-db"
+}

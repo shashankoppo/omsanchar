@@ -1,4 +1,4 @@
-FROM rust:1.85.0-bookworm AS build
+FROM rust:1.88.0-bookworm AS build
 
 WORKDIR /build
 COPY dataplane/sanchar-core/Cargo.toml dataplane/sanchar-core/Cargo.lock ./

@@ -24,7 +24,8 @@ from gateway.state import (
     MAX_ACTIVE_STREAMS,
     MAX_STREAM_EVENT_BYTES,
     MAX_STREAM_EVENTS,
-    STREAM_EVENT_RESERVATION_BYTES,
+    MAX_STREAM_WINDOW_BYTES,
+    STREAM_EVENT_ACCOUNTED_RESERVE_BYTES,
     BoundedState,
     StateCapacityError,
     StoreView,
@@ -53,6 +54,10 @@ class StreamEvent:
     data: dict[str, Any]
 
 
+class StreamCursorExpiredError(ValueError):
+    """The requested cursor is older than the in-memory resume window."""
+
+
 class Authenticator(Protocol):
     """Replaceable ingress authentication boundary for the request pipeline."""
 
@@ -72,15 +77,32 @@ class StaticBearerAuthenticator:
 
 
 class EventStream:
-    """Thread-safe append-only event log retained for the local stream lifetime."""
+    """Thread-safe stream with a bounded rolling in-memory resume window."""
 
-    def __init__(self, stream_id: str, request_id: str, traceparent: str, budget_remaining: int):
+    def __init__(
+        self,
+        stream_id: str,
+        request_id: str,
+        traceparent: str,
+        budget_remaining: int,
+        *,
+        max_events: int = MAX_STREAM_EVENTS,
+        max_window_bytes: int = MAX_STREAM_WINDOW_BYTES,
+    ):
+        if max_events < 1 or max_window_bytes < 1:
+            raise ValueError("stream resume-window limits must be positive")
         self.stream_id = stream_id
         self.request_id = request_id
         self.traceparent = traceparent
         self._budget_remaining = budget_remaining
+        self._max_events = max_events
+        self._max_window_bytes = max_window_bytes
         self._events: list[StreamEvent] = []
+        self._event_sizes: list[int] = []
         self._idempotency: dict[str, StreamEvent] = {}
+        self._retained_window_bytes = 0
+        self._base_seq = 0
+        self._last_seq = 0
         self._state = "OPEN"
         self._condition = threading.Condition()
 
@@ -93,15 +115,31 @@ class EventStream:
                 return previous
             if self._state != "OPEN":
                 raise RuntimeError("cannot publish to a terminal stream")
-            if len(self._events) >= MAX_STREAM_EVENTS:
-                raise RuntimeError("stream event limit reached")
-            if (
-                len(json.dumps(data, separators=(",", ":")).encode("utf-8")) > MAX_STREAM_EVENT_BYTES
-                or deep_size(data) > MAX_STREAM_EVENT_BYTES
-            ):
+            if len(key.encode("utf-8")) > 128 or len(event.encode("utf-8")) > 32:
+                raise RuntimeError("stream event metadata exceeds its byte limit")
+            serialized_data = json.dumps(data, separators=(",", ":")).encode("utf-8")
+            if len(serialized_data) > MAX_STREAM_EVENT_BYTES or deep_size(data) > MAX_STREAM_EVENT_BYTES:
                 raise RuntimeError("stream event exceeds its byte limit")
-            item = StreamEvent(len(self._events) + 1, event, data)
+            sequence = self._last_seq + 1
+            frame = json.dumps({"seq": sequence, **data}, separators=(",", ":")).encode("utf-8")
+            retained_bytes = len(event.encode("utf-8")) + len(frame) + 16
+            if retained_bytes > self._max_window_bytes:
+                raise RuntimeError("stream event exceeds its resume-window byte limit")
+            while self._events and (
+                len(self._events) >= self._max_events
+                or self._retained_window_bytes + retained_bytes > self._max_window_bytes
+            ):
+                expired = self._events.pop(0)
+                self._retained_window_bytes -= self._event_sizes.pop(0)
+                self._base_seq = expired.seq
+                for idempotency_key, previous_event in tuple(self._idempotency.items()):
+                    if previous_event.seq == expired.seq:
+                        del self._idempotency[idempotency_key]
+            item = StreamEvent(sequence, event, data)
             self._events.append(item)
+            self._event_sizes.append(retained_bytes)
+            self._retained_window_bytes += retained_bytes
+            self._last_seq = sequence
             self._idempotency[key] = item
             self._condition.notify_all()
             return item
@@ -116,15 +154,31 @@ class EventStream:
 
     def after(self, cursor: int, timeout: float) -> tuple[tuple[StreamEvent, ...], bool, str]:
         with self._condition:
-            if cursor < 0 or cursor > len(self._events):
+            if cursor < 0:
                 raise ValueError("cursor is malformed or ahead of the stream")
-            if cursor == len(self._events) and self._state == "OPEN":
+            if cursor < self._base_seq:
+                raise StreamCursorExpiredError("cursor is older than the retained resume window")
+            if cursor > self._last_seq:
+                raise ValueError("cursor is malformed or ahead of the stream")
+            if cursor == self._last_seq and self._state == "OPEN":
                 self._condition.wait(timeout)
-            events = tuple(self._events[cursor:])
+                if cursor < self._base_seq:
+                    raise StreamCursorExpiredError("cursor is older than the retained resume window")
+            events = tuple(event for event in self._events if event.seq > cursor)
             return events, self._state != "OPEN", self._state
 
     @property
     def last_seq(self) -> int:
+        with self._condition:
+            return self._last_seq
+
+    @property
+    def retained_window_bytes(self) -> int:
+        with self._condition:
+            return self._retained_window_bytes
+
+    @property
+    def retained_event_count(self) -> int:
         with self._condition:
             return len(self._events)
 
@@ -181,6 +235,8 @@ class GatewayService:
         model_delay_seconds: float = 0.01,
         authenticator: Authenticator | None = None,
         bounded_state: BoundedState | None = None,
+        stream_resume_events: int = MAX_STREAM_EVENTS,
+        stream_resume_window_bytes: int = MAX_STREAM_WINDOW_BYTES,
     ):
         if not bearer_token:
             raise ValueError("bearer_token must be non-empty")
@@ -190,6 +246,10 @@ class GatewayService:
         self.tenant = tenant
         self.prices = prices or DEFAULT_PRICES
         self.model_delay_seconds = max(0.0, model_delay_seconds)
+        if stream_resume_events < 1 or stream_resume_window_bytes < 1:
+            raise ValueError("stream resume-window limits must be positive")
+        self.stream_resume_events = stream_resume_events
+        self.stream_resume_window_bytes = stream_resume_window_bytes
         self.meter = TenantMeter(allowance_microcredits)
         self.state = bounded_state or BoundedState()
         self.streams = StoreView(self.state, "streams")
@@ -227,6 +287,16 @@ class GatewayService:
                 "trace",
                 {"time_unix_ns": time.time_ns(), "name": name, "traceparent": traceparent, **attributes},
             )
+
+    def publish_event(self, stream: EventStream, event: str, data: dict[str, Any], key: str) -> StreamEvent:
+        self.state.reserve_growth("streams", stream.stream_id, STREAM_EVENT_ACCOUNTED_RESERVE_BYTES)
+        try:
+            item = stream.publish(event, data, key)
+        except Exception:
+            self.state.reaccount("streams", stream.stream_id)
+            raise
+        self.state.reaccount("streams", stream.stream_id)
+        return item
 
     def increment(self, metric: str, amount: int = 1) -> None:
         with self._lock:
@@ -319,7 +389,14 @@ class GatewayService:
 
         stream_id = uuid.uuid4().hex
         request_id = uuid.uuid4().hex
-        stream = EventStream(stream_id, request_id, traceparent, remaining_request_budget)
+        stream = EventStream(
+            stream_id,
+            request_id,
+            traceparent,
+            remaining_request_budget,
+            max_events=self.stream_resume_events,
+            max_window_bytes=self.stream_resume_window_bytes,
+        )
         with self._lock:
             previous = self.requests.get(cache_key)
             if previous is not None:
@@ -334,7 +411,7 @@ class GatewayService:
             if self.state.active_stream_count() >= MAX_ACTIVE_STREAMS:
                 raise GatewayError(503, "OS-0503", "active stream capacity is full")
             try:
-                self.state.put("streams", stream_id, stream, reserved_bytes=STREAM_EVENT_RESERVATION_BYTES)
+                self.state.put("streams", stream_id, stream)
                 self.state.put("requests", cache_key, (body_digest, len(raw_body), stream_id))
             except StateCapacityError as exc:
                 self.state.delete("streams", stream_id)
@@ -378,7 +455,8 @@ class GatewayService:
         emitted = 0
         try:
             if remaining_request_budget < price.output_microcredits_per_token:
-                stream.publish(
+                self.publish_event(
+                    stream,
                     "error",
                     {
                         "code": "OS-3029",
@@ -390,7 +468,8 @@ class GatewayService:
                 self.audit("budget_cutoff", tenant=self.tenant, stream_id=stream.stream_id, output_tokens=0)
                 return
             if self.meter.remaining() < price.output_microcredits_per_token:
-                stream.publish(
+                self.publish_event(
+                    stream,
                     "error",
                     {
                         "code": "OS-3029",
@@ -403,7 +482,8 @@ class GatewayService:
                 return
             for token in mock_model_stream(model, max_tokens):
                 if remaining_request_budget < price.output_microcredits_per_token:
-                    stream.publish(
+                    self.publish_event(
+                        stream,
                         "error",
                         {
                             "code": "OS-3029",
@@ -415,7 +495,8 @@ class GatewayService:
                     self.audit("quota_cutoff", tenant=self.tenant, stream_id=stream.stream_id, output_tokens=emitted)
                     return
                 if not self.meter.debit(price.output_microcredits_per_token):
-                    stream.publish(
+                    self.publish_event(
+                        stream,
                         "error",
                         {
                             "code": "OS-3029",
@@ -429,7 +510,8 @@ class GatewayService:
                 remaining_request_budget -= price.output_microcredits_per_token
                 stream.update_budget_remaining(remaining_request_budget)
                 emitted += 1
-                stream.publish(
+                self.publish_event(
+                    stream,
                     "delta",
                     {
                         "delta": token,
@@ -460,9 +542,20 @@ class GatewayService:
                 if self.model_delay_seconds:
                     time.sleep(self.model_delay_seconds)
         except Exception as exc:  # The mock worker must always terminate the stream.
-            stream.publish("error", {"code": "OS-4000", "message": type(exc).__name__}, "terminal:failed")
+            try:
+                self.publish_event(
+                    stream,
+                    "error",
+                    {"code": "OS-4000", "message": type(exc).__name__},
+                    "terminal:failed",
+                )
+            except Exception:
+                pass
             stream.finish("FAILED")
-            self.audit("stream_failed", stream_id=stream.stream_id, error=type(exc).__name__)
+            try:
+                self.audit("stream_failed", stream_id=stream.stream_id, error=type(exc).__name__)
+            except StateCapacityError:
+                pass
         finally:
             if stream.state == "OPEN":
                 stream.finish("COMPLETED")
@@ -487,6 +580,7 @@ def mock_model_stream(model: str, max_tokens: int):
 class GatewayHTTPServer(ThreadingHTTPServer):
     daemon_threads = True
     allow_reuse_address = True
+    request_queue_size = 16_384
 
     def __init__(self, address: tuple[str, int], service: GatewayService):
         self.service = service
@@ -600,6 +694,9 @@ class GatewayRequestHandler(BaseHTTPRequestHandler):
         try:
             cursor = _parse_cursor(query.get("cursor", ["0"])[0])
             stream.after(cursor, 0)
+        except StreamCursorExpiredError as exc:
+            self._json(410, {"code": "OS-0400", "message": str(exc)})
+            return
         except ValueError as exc:
             self._json(400, {"code": "OS-0402", "message": str(exc)})
             return
@@ -638,6 +735,13 @@ class GatewayRequestHandler(BaseHTTPRequestHandler):
                     self.wfile.write(f"event: done\ndata: {final}\n\n".encode("utf-8"))
                     self.wfile.flush()
                     return
+        except StreamCursorExpiredError as exc:
+            error = json.dumps({"code": "OS-0400", "message": str(exc)}, separators=(",", ":"))
+            try:
+                self.wfile.write(f"event: error\ndata: {error}\n\n".encode("utf-8"))
+                self.wfile.flush()
+            except (OSError, TimeoutError):
+                pass
         except (OSError, TimeoutError):
             # The producer remains independent; the client can resume by ID/cursor.
             self.server.service.audit("client_disconnected", stream_id=stream.stream_id, cursor=cursor)

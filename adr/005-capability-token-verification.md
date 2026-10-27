@@ -27,7 +27,7 @@ A prior Rust release timing attempt reported a verification failure, but its fai
 
 Investigation found that Biscuit token construction was not reproducible: convenience `build` and `append` APIs draw fresh attenuation keys from the OS RNG. The byte-for-byte reproducibility test failed before the change and passes after the benchmark uses a fixed `StdRng` seed for issuer and attenuation keys. Verification and tamper tests pass at depths 1 through 8. This explains token-byte instability, but does **not** establish the cause of the reported verification failure. A separate release-mode 100-sample-per-run diagnostic passed before deterministic construction; the original failure remains unreproduced. Do not publish new timing until a fixed-seed release reproduction completes without verifier errors.
 
-Current code and tests run on Rust 1.85.0 under WSL2 Ubuntu, Linux kernel `6.18.33.2-microsoft-standard-WSL2`, AMD Ryzen 5 5600H, allowed CPU list `0-11`. WSL2 is development-only. Native Linux performance status is **inconclusive**. The older raw timing artifact and report are retained under `bench/quarantine/` for audit and are not accepted evidence.
+The previously captured correctness checks ran on Rust 1.85.0 under WSL2 Ubuntu, Linux kernel `6.18.33.2-microsoft-standard-WSL2`, AMD Ryzen 5 5600H, allowed CPU list `0-11`. The workspace now requires Rust 1.88.0 to use security-patched `time` 0.3.47. WSL2 is development-only. Native Linux performance status is **inconclusive**. The older raw timing artifact and report are retained under `bench/quarantine/` for audit and are not accepted evidence.
 
 ## Decision
 

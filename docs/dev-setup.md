@@ -45,7 +45,7 @@ make lint
 make dev-native
 ```
 
-The commands work from this Windows-mounted workspace. For sustained Rust builds, keep a checkout under `~/src` on the WSL Linux filesystem to avoid Windows filesystem I/O overhead. CI pins Rust 1.85.0, which supports the edition and syntax used by the pinned Rust research dependencies.
+The commands work from this Windows-mounted workspace. For sustained Rust builds, keep a checkout under `~/src` on the WSL Linux filesystem to avoid Windows filesystem I/O overhead. CI pins Rust 1.88.0, the minimum supported by the security-patched `time` 0.3.47 dependency.
 
 ## Integrated development stack
 
@@ -84,4 +84,4 @@ The CI workflow generates a source inventory and a dependency SBOM, audits the S
 
 ## Environment check recorded for this workspace
 
-The Windows host has Python 3.12.8 and Docker CLI 29.6.2, but its Docker engine is unavailable. WSL2 Ubuntu is installed with Rust/Cargo 1.75.0, rustfmt, Clippy, GNU Make 4.3, Python venv support, and Podman. Install the pinned Rust 1.85.0 toolchain for the capability-token research binary. Results in WSL2 are development-only. Hosted CI has not run because this checkout has no Git remote.
+The Windows host has Python 3.12.8 and Docker CLI 29.6.2, but its Docker engine is unavailable. WSL2 Ubuntu is installed with Rust/Cargo 1.75.0, rustfmt, Clippy, GNU Make 4.3, Python venv support, and Podman. Install the pinned Rust 1.88.0 toolchain for Rust checks and research binaries. Results in WSL2 are development-only. Hosted CI has not run because this checkout has no Git remote.

@@ -34,6 +34,8 @@ ALLOWED_CARGO_LICENSE_IDS = {
     "bsd-2-clause",
     "bsd-3-clause",
     "bsl-1.0",
+    "cdla-permissive-2.0",
+    "isc",
     "mit",
     "unicode-3.0",
     "unlicense",
@@ -79,27 +81,73 @@ def normalized_cargo_name(value: str) -> str:
 
 
 def check_cargo_license_expression(name: str, version: str, expression: str) -> str | None:
-    atoms = re.findall(r"[A-Za-z0-9][A-Za-z0-9.+-]*", expression)
-    license_ids = []
-    index = 0
-    while index < len(atoms):
-        atom = atoms[index]
-        normalized = atom.lower()
-        if normalized == "with":
-            exception = atoms[index + 1].lower() if index + 1 < len(atoms) else ""
-            if exception not in ALLOWED_CARGO_LICENSE_EXCEPTIONS:
-                return f"Unreviewed Rust license exception for {name}=={version}: {exception or expression!r}"
-            index += 2
-            continue
-        if normalized not in {"and", "or"}:
-            license_ids.append(atom)
-        index += 1
-    if not license_ids:
+    # Older Cargo manifests commonly use a slash as an alternative-license separator.
+    expression = expression.replace("/", " OR ")
+    tokens = re.findall(r"\(|\)|\bAND\b|\bOR\b|\bWITH\b|[A-Za-z0-9][A-Za-z0-9.+-]*", expression, re.IGNORECASE)
+    if not tokens:
         return f"Rust dependency has no parseable license expression: {name}=={version}"
-    disallowed = sorted({normalized_license(atom) for atom in license_ids} - ALLOWED_CARGO_LICENSE_IDS)
-    if disallowed:
-        return f"Disallowed Rust license for {name}=={version}: {expression!r} ({', '.join(disallowed)})"
-    return None
+
+    cursor = 0
+
+    def parse_primary() -> bool:
+        nonlocal cursor
+        if cursor >= len(tokens):
+            raise ValueError("missing license identifier")
+        token = tokens[cursor]
+        cursor += 1
+        if token == "(":
+            allowed = parse_or()
+            if cursor >= len(tokens) or tokens[cursor] != ")":
+                raise ValueError("unclosed parenthesis")
+            cursor += 1
+            return allowed
+        if token in {")", "("} or token.upper() in {"AND", "OR", "WITH"}:
+            raise ValueError("expected a license identifier")
+        allowed = normalized_license(token) in ALLOWED_CARGO_LICENSE_IDS
+        if cursor < len(tokens) and tokens[cursor].upper() == "WITH":
+            cursor += 1
+            if cursor >= len(tokens):
+                raise ValueError("missing license exception")
+            exception = tokens[cursor].lower()
+            cursor += 1
+            allowed = allowed and exception in ALLOWED_CARGO_LICENSE_EXCEPTIONS
+        return allowed
+
+    def parse_and() -> bool:
+        nonlocal cursor
+        allowed = parse_primary()
+        while cursor < len(tokens) and tokens[cursor].upper() == "AND":
+            cursor += 1
+            right = parse_primary()
+            allowed = allowed and right
+        return allowed
+
+    def parse_or() -> bool:
+        nonlocal cursor
+        allowed = parse_and()
+        while cursor < len(tokens) and tokens[cursor].upper() == "OR":
+            cursor += 1
+            right = parse_and()
+            allowed = allowed or right
+        return allowed
+
+    try:
+        accepted_choice = parse_or()
+        if cursor != len(tokens):
+            raise ValueError("unexpected license-expression token")
+    except ValueError:
+        return f"Unreviewed Rust license expression for {name}=={version}: {expression!r}"
+    if accepted_choice:
+        return None
+    disallowed = sorted(
+        {
+            normalized_license(token)
+            for token in tokens
+            if token.upper() not in {"AND", "OR", "WITH"} and token not in {"(", ")"}
+        }
+        - ALLOWED_CARGO_LICENSE_IDS
+    )
+    return f"Disallowed Rust license for {name}=={version}: {expression!r} ({', '.join(disallowed)})"
 
 
 def main() -> int:

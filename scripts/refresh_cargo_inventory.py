@@ -14,13 +14,22 @@ MANIFEST = ROOT / "dataplane" / "sanchar-core" / "Cargo.toml"
 INVENTORY = ROOT / "docs" / "security" / "dependency-inventory.json"
 
 DIRECT_PURPOSES = {
+    "biscuit-auth": "Biscuit capability-token verification comparison in the optional research binary",
     "bytes": "HTTP body buffers for the Rust mock model",
+    "ed25519-dalek": "Ed25519 attenuation-chain capability-token comparison",
     "futures-util": "Asynchronous HTTP response stream composition",
+    "hdrhistogram": "HdrHistogram distributions for the D5 open-loop load generator",
+    "hmac": "HMAC attenuation-chain capability-token comparison",
     "http-body-util": "HTTP full and streaming body adapters for the mock model",
     "hyper": "HTTP/1 server for the Rust mock model",
     "hyper-util": "Tokio transport integration for Hyper",
+    "rand": "Deterministic random number generation for token benchmark reproducibility",
+    "reqwest": "Asynchronous HTTP and TLS client for the D5 open-loop load generator",
+    "serde": "Serialization of Rust benchmark reports",
     "serde_json": "MCP JSON-RPC fixture responses and Rust conformance vectors",
+    "sha2": "SHA-256 token hashing and HMAC capability-token comparison",
     "tokio": "Asynchronous runtime and TCP listener for the Rust mock model",
+    "webpki-roots": "Mozilla root-certificate data for Reqwest Rustls TLS in the D5 harness",
 }
 
 

@@ -17,7 +17,7 @@ The prototype must not be used to authorize production traffic. In particular, P
 
 The Rust research binary compares this HMAC-chain trust model with `biscuit-auth` 6.0.0 and a public-key Ed25519 attenuation chain at depths 1 through 8. It reports token bytes, uncached verification, and token-hash cache-hit timing. The cache includes token hashing, a 10-minute monotonic TTL, and an issuer-key version check; it does not include internal-credential minting.
 
-Rust 1.85.0 is required by `biscuit-auth` 6.0.0. To run the default matrix with Cargo, use `make bench-token-rust`; override `TOKEN_BENCH_ITERATIONS`, `TOKEN_BENCH_RUNS`, and `TOKEN_BENCH_OUTPUT` for local work. A WSL2 development-only sample and raw samples are under `bench/results/`; see the corresponding `*-summary.md` and `adr/005-capability-token-verification.md` for interpretation. Do not treat WSL2 timing as the final Linux target result.
+Rust 1.88.0 is the workspace minimum because the security-patched `time` 0.3.47 dependency requires it. To run the default matrix with Cargo, use `make bench-token-rust`; override `TOKEN_BENCH_ITERATIONS`, `TOKEN_BENCH_RUNS`, and `TOKEN_BENCH_OUTPUT` for local work. A WSL2 development-only sample and raw samples are under `bench/results/`; see the corresponding `*-summary.md` and `adr/005-capability-token-verification.md` for interpretation. Do not treat WSL2 timing as the final Linux target result.
 
 ## Run
 

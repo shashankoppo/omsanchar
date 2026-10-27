@@ -174,7 +174,7 @@ impl StreamRecord {
             || self
                 .total_payload_bytes
                 .checked_add(payload.len())
-                .map_or(true, |total| total > self.limits.max_total_payload_bytes)
+                .is_none_or(|total| total > self.limits.max_total_payload_bytes)
         {
             return Err(StreamError::LimitReached);
         }

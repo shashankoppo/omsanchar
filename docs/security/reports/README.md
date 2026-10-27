@@ -1,6 +1,17 @@
 # Local supply-chain scan reports
 
-All results below are **measured** on WSL2 Ubuntu, Linux kernel `6.18.33.2-microsoft-standard-WSL2`, x86_64, on 2026-10-25 UTC. They describe the local source tree at scan time and are not native Linux performance measurements.
+All results below are **measured** on WSL2 Ubuntu, Linux kernel `6.18.33.2-microsoft-standard-WSL2`, x86_64. They describe the local source tree at scan time and are not native Linux performance measurements.
+
+## 2026-10-26
+
+- Syft `1.55.0`, Rust/Cargo `1.88.0`: generated the raw SPDX SBOM with 228 package records; exit code 0.
+- Grype `0.121.0`: 0 matches; exit code 0.
+- cargo-audit `0.22.2`: audited 220 locked Rust packages against 1,378 advisories; 1 vulnerability; exit code 1.
+- RustSec `RUSTSEC-2026-0009` (`time 0.3.45`, stack exhaustion in RFC 2822 parsing) was fixed by updating to `time 0.3.47` and raising the workspace minimum/toolchain to Rust 1.88.0. The [official RustSec advisory](https://github.com/RustSec/advisory-db/blob/main/crates/time/RUSTSEC-2026-0009.md) states the patched floor is `>= 0.3.47`.
+- Remaining: [RUSTSEC-2026-0387](https://github.com/RustSec/advisory-db/blob/main/crates/crypto-bigint/RUSTSEC-2026-0387.md), `crypto-bigint 0.5.5`, pulled by the optional `token-bench` dependency `biscuit-auth 6.0.0` through its P256 stack. The benchmark selects Biscuit's Ed25519 algorithm; P256 is not part of its measured code path, but the lockfile advisory remains open and cargo-audit correctly exits 1. No lockfile suppression was added. The advisory's patched floor is `crypto-bigint >= 0.7.6`, which is incompatible with the current `elliptic-curve 0.13` / `p256 0.13` requirements.
+- License review: the inventory checker now evaluates SPDX `OR` choices separately from required `AND` terms and accepts the reviewed ISC and CDLA-Permissive-2.0 identifiers. The CDLA license is declared by `webpki-roots`, which packages Mozilla root-certificate data; the [CDLA FAQ](https://cdla.dev/faq-resources/faq/) describes the permissive data terms.
+
+The raw files, exact commands, exit codes, tool versions, archive checksum, and hashes are recorded in [`manifest-2026-10-26.json`](manifest-2026-10-26.json): [`syft-2026-10-26.spdx.json`](syft-2026-10-26.spdx.json), [`grype-2026-10-26.json`](grype-2026-10-26.json), [`cargo-audit-2026-10-26.json`](cargo-audit-2026-10-26.json), and [`rustsec-advisory-db-snapshot-2026-10-26.json`](rustsec-advisory-db-snapshot-2026-10-26.json).
 
 ## 2026-10-25
 

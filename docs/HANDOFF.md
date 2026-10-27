@@ -2,63 +2,50 @@
 
 Updated: 2026-10-27 (Asia/Calcutta)
 
-## Preserved state
+## State
 
-- Working branch: `wip/session3`; latest checkpoint `76e6ab2` (`feat(bench): add Rust open-loop D5 harness`) commits the D5 harness, matrix driver, paired summarizer, and WSL2 raw smoke reports.
-- No Git remote is configured. The GitHub repository `om-sanchar` and hosted CI have not been created/run.
-- The Session 3 handoff reports a release-mode verification failure, but the failing scheme/depth/token and complete log were not saved. A seeded-RNG byte reproducibility test failed before and passes after deterministic Biscuit key generation. This identifies token construction nondeterminism, not the verifier-failure cause. The old timing report was moved to `bench/quarantine/` and is not accepted evidence.
-- Security reports currently describe an older Cargo lockfile and are stale after the bytes/Tokio pin changes. Rerun Syft, Grype, and cargo-audit before reporting them as current.
+- Branch: `wip/session3`. This handoff covers the retention, supply-chain, and documentation continuation and its verification below.
+- No Git remote is configured and no repository-creation capability is available through the connected GitHub tools. The requested GitHub repository, push, and hosted CI remain incomplete.
+- P0 rough deliverable coverage is about 52%; see [PROGRESS.md](../PROGRESS.md).
+- Keep the user's priority order. Do not begin D7 until priorities 1-5 are complete.
 
-## Current implementation
+## Completed in this continuation
 
-- Bounded process-local gateway retention, TTL/count caps, FIFO eviction, eviction metrics, expired resume behavior, static bearer auth interface, deadline margin policy, D3 compose/config files, Rust mock model, Rust token-format benchmark, ADRs 001/005/008, soak and benchmark artifacts are in the working tree.
-- The million-admission soak is registry-path evidence; it did not open one million gateway sockets. The original stream reservation is about 1 MiB per stream, so the 128 MiB budget retains only about 126 streams. This must be reduced and separately measured.
-- Token tests pass in WSL2 debug and release: three tests, including verification across depths 1-8, tamper rejection, and byte-for-byte deterministic token construction. The original verifier failure is still unreproduced and has no preserved token/log; no new token timing is publishable until its cause is resolved.
-- Existing raw token results are WSL2 development-only; they cannot decide ADR-005's native Linux target.
-- D5 has no eligible measurements. ADR-001's pre-registered decision rule remains: Rust requires at least 20% lower CPU/request or lower p99 at equal features, with confidence excluding no improvement and no material p99.9/correctness/memory regression; otherwise keep Envoy.
-- The Rust D5 load generator uses HdrHistogram 7.5.4 and Reqwest 0.12.28; `.cargo/config.toml` selects Rust 1.85-compatible transitives. Rust format check and two D5 unit tests pass. It tested SSE500, MCP, and fan-out against the Rust mock on WSL2 with 20/20, 10/10, and 10/10 requests completed and zero drops/errors. Raw HdrHistogram distributions and all request samples are in `bench/results/d5/wsl2-development-smoke/`. This is measured harness smoke only. Envoy AI gateway filters, ext_proc/WASM, a Rust D5 proxy, native Linux data, and target CPU/RSS remain missing.
+- Replaced the per-stream maximum reservation with retained-object reaccounting under a shared 128 MiB state budget. Added TTL and count bounds, deterministic FIFO eviction, per-store eviction metrics, and a rolling 16-event/4 KiB resume window. The 300-second stream TTL fails/removes open streams when expiry is observed. Stale/evicted cursors return HTTP 410 `OS-0400`; a cursor that expires during an SSE wait is rejected. Restart resume remains unsupported; [ADR-008](../adr/008-durable-stream-log.md) proposes the P1 durable log.
+- WSL2 registry soak: 1,000,000 admissions/completions, 10,000 retained streams, 18,833,296 accounted bytes, 23,765,036-byte traced peak above start, 81,813,504-byte process peak RSS. This is registry-path evidence, not one million HTTP connections. Raw report: [bounded-state-registry-soak-wsl2.json](../bench/results/bounded-state-registry-soak-wsl2.json).
+- WSL2 socket soak: 10,000 client TCP sockets connected, peak 9,114 accepted handler threads, 246,231,040-byte RSS increase, 27,017 estimated bytes per accepted idle handler. The 10,000-accepted-handler target was not met. Total process RSS exceeded 128 MiB under this socket load; the state-map accounting budget excludes socket/thread RSS. Raw report: [bounded-state-socket-soak-wsl2.json](../bench/results/bounded-state-socket-soak-wsl2.json).
+- WSL2 only, kernel `6.18.33.2-microsoft-standard-WSL2`, Python 3.12.3, AMD Ryzen 5 5600H, allowed CPUs `0-11`; CPU frequency was a snapshot, not pinned. All capacity numbers are development-only; native Linux evidence remains required.
+- Raised the Rust workspace minimum/tooling pin to 1.88.0 to update `time` from vulnerable 0.3.45 to patched 0.3.47. The Cargo license inventory now reflects 220 packages and its checker handles SPDX `OR` versus `AND`, reviewed ISC, and CDLA-Permissive-2.0.
+- Latest local scans (2026-10-26 UTC): Syft 1.55.0, 228 SPDX package records; Grype 0 matches; cargo-audit 0.22.2, one remaining finding (`RUSTSEC-2026-0387`, `crypto-bigint 0.5.5`) in optional Biscuit/P256 dependencies. The token benchmark selects Biscuit Ed25519; the lockfile finding remains open and is not suppressed. Raw reports and hashes are in [security reports](security/reports/README.md).
+- Aggregate `make test` passed under WSL2: spec 11, simulations 10, gateway 18 (including the million-stream soak), Python token 6, Rust core conformance 2, Rust token 3, Rust D5 harness 2, plus mock-model health/MCP/16-way fan-out/SSE smoke. `make lint` passed: style, 220-package dependency/license checks, Ruff, rustfmt, and Clippy.
 
-## Toolchains and platform limits
+## Still open
 
-- Windows workspace path: `C:\Users\Shashank patel\Desktop\Evolucentsphere_DB\Evolucentsphere Pvt Ltd\omsanchar`.
-- WSL2 environment previously used: Ubuntu 24.04, kernel `6.18.33.2-microsoft-standard-WSL2`, x86_64, Ryzen 5 5600H, allowed CPUs `0-11`.
-- Rust/Cargo 1.85.0 is pinned in CI and the mock container because `biscuit-auth 6.0.0` needs Rust syntax beyond the previously pinned 1.75 toolchain. Toolchain was installed under `/tmp/omsanchar-rustup`; Cargo home is `/home/shashank_patel/.cargo`; shim path is `/tmp/omsanchar-rust-cargo/bin`.
-- No native Linux host is available in the recorded evidence. WSL2 results must be labeled development-only and never pooled with native Linux.
-- Podman is installed in WSL2 but its Compose provider is absent. Docker Compose config parsing was previously successful; full engine runtime was not confirmed.
+- The historical release token verifier failure remains unreproduced; its scheme, depth, serialized token, and log were not preserved. Deterministic Biscuit token construction is now tested, but that does not explain the verifier failure. Do not publish Rust token timing until the failure is diagnosed. ADR-005 performance status is inconclusive.
+- D5 has a tested Rust open-loop HdrHistogram harness, WSL2 direct-mock smoke reports, and a 720-cell driver. It has no equal-feature direct/Envoy/Rust paths, no Rust proxy, no Envoy AI filters, and no qualified Linux host. WSL2 smoke is development-only. ADR-001 remains undecided.
+- The D3 Compose configurations and Docker/Podman commands exist, but the Windows Docker engine is unavailable and the WSL2 Podman Compose provider is absent; stack runtime is unverified.
+- No GitHub repository/remote or hosted CI; no native Linux 10,000-accepted-handler soak; no D7 work.
 
 ## Commands
 
-Run in WSL2 from the repository root, preserving the pinned Rust environment:
+Run from the repository root in WSL2:
 
 ```bash
-RUSTUP_HOME=/tmp/omsanchar-rustup CARGO_HOME=/home/shashank_patel/.cargo PATH=/tmp/omsanchar-rust-cargo/bin:/usr/bin:/bin \
-  make test PYTHON=.venv-wsl/bin/python CARGO='cargo +1.85.0'
-RUSTUP_HOME=/tmp/omsanchar-rustup CARGO_HOME=/home/shashank_patel/.cargo PATH=/tmp/omsanchar-rust-cargo/bin:/usr/bin:/bin \
-  make lint PYTHON=.venv-wsl/bin/python CARGO='cargo +1.85.0'
-RUSTUP_HOME=/tmp/omsanchar-rustup CARGO_HOME=/home/shashank_patel/.cargo PATH=/tmp/omsanchar-rust-cargo/bin:/usr/bin:/bin \
-  cargo +1.85.0 test --locked --manifest-path dataplane/sanchar-core/Cargo.toml --features token-bench --bin capability_token_bench
-RUSTUP_HOME=/tmp/omsanchar-rustup CARGO_HOME=/home/shashank_patel/.cargo PATH=/tmp/omsanchar-rust-cargo/bin:/usr/bin:/bin \
-  cargo +1.85.0 test --locked --manifest-path dataplane/sanchar-core/Cargo.toml --features d5-bench --bin d5_loadgen
-bash -n bench/d5/run-matrix.sh
-RUSTUP_HOME=/tmp/omsanchar-rustup CARGO_HOME=/home/shashank_patel/.cargo PATH=/tmp/omsanchar-rust-cargo/bin:/usr/bin:/bin \
-  cargo +1.85.0 run --release --locked --manifest-path dataplane/sanchar-core/Cargo.toml --features token-bench --bin capability_token_bench -- 1000 10 bench/results/capability-token-rust-wsl2-2026-10-25.json
-python spikes/capability-token/summarize_rust_results.py bench/results/capability-token-rust-wsl2-2026-10-25.json
-python scripts/refresh_cargo_inventory.py --write
-python scripts/check_dependencies.py
-python scripts/run_local_security_scans.py
+export RUSTUP_HOME=/tmp/omsanchar-rustup
+export CARGO_HOME=/home/shashank_patel/.cargo
+export PATH=/tmp/omsanchar-rust-cargo/bin:/usr/bin:/bin
+export RUSTUP_TOOLCHAIN=1.88.0
+
+PYTHON=.venv-wsl/bin/python CARGO=cargo make test
+PYTHON=.venv-wsl/bin/python CARGO=cargo make lint
+PYTHON=.venv-wsl/bin/python scripts/run_local_security_scans.py
+PYTHON=.venv-wsl/bin/python scripts/soak_gateway_connections.py --connections 10000 --batch-size 100 --thread-stack-bytes 131072 --output bench/results/bounded-state-socket-soak-wsl2.json
 ```
 
-The benchmark command's existing artifact is not accepted until its release verification failure is understood. Capture failing scheme, depth, serialized token, and a fixed-seed reproduction. Add a regression test that fails before and passes after the fix.
+The million-entry test is `gateway.tests.test_bounded_state.BoundedStateTests.test_million_open_then_abandoned_streams_stay_under_memory_ceiling`; expect about 3.5 minutes on the Windows-mounted WSL2 checkout.
 
 ## Next three actions
 
-1. The fixed-seed token correctness suite passed in release. The earlier verification failure remains unreproduced and its cause unknown; collect detailed failure output if it recurs, and withhold timing meanwhile.
-2. D5 open-loop HdrHistogram harness and three WSL2 direct mock smokes pass; checkpoint it, then continue feature parity only if practical. ADR-001 remains undecided.
-3. Replace the 1 MiB stream reservation with actual retained-byte accounting and a small resume window, then add real-socket concurrency evidence and refresh the all-feature security scans.
-
-## Pending failures and known limits
-
-- GitHub create/push/hosted CI is unavailable until a repository creation capability and credentials are available. The local Git remote is empty.
-- Native Linux D5 and retention measurements are unavailable; WSL2 can produce development-only harness evidence.
-- Podman Compose provider is missing.
-- D7 is deferred until priorities 1-4 have been handled and budget remains.
+1. Create/configure the GitHub remote, push the branch, and run hosted CI; track the remaining cargo-audit advisory until the Biscuit/P256 dependency chain has a patched compatible release or is replaced.
+2. Obtain a qualified native Linux host, complete D5 feature parity, and run the pre-registered open-loop matrix; repeat the accepted 10,000-handler capacity test there.
+3. Diagnose the historical Rust token verifier failure, then run the depth 1-8 token matrix. Keep D7 deferred until priorities 1-5 are complete.
