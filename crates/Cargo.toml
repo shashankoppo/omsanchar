@@ -1,13 +1,16 @@
 [workspace]
 resolver = "2"
-members = ["om-core", "om-gateway", "om-mock-model"]
+members = ["om-core", "om-token", "om-gateway", "om-mock-model"]
 
 [workspace.dependencies]
 bytes = "=1.11.1"
+biscuit-auth = "=6.0.0"
 futures-util = "=0.3.31"
 http-body-util = "=0.1.2"
 hyper = { version = "=1.6.0", default-features = false, features = ["client", "http1", "server"] }
 hyper-util = { version = "=0.1.12", default-features = false, features = ["client", "client-legacy", "http1", "server", "server-auto", "tokio"] }
+rand = "=0.8.8"
 serde = { version = "=1.0.229", features = ["derive"] }
 serde_json = "=1.0.140"
+sha2 = "=0.10.8"
 tokio = { version = "=1.53.3", default-features = false, features = ["macros", "net", "rt-multi-thread", "signal", "sync", "time"] }

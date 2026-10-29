@@ -13,6 +13,7 @@ http-body-util.workspace = true
 hyper.workspace = true
 hyper-util.workspace = true
 om-core = { path = "../om-core" }
+om-token = { path = "../om-token" }
 serde.workspace = true
 serde_json.workspace = true
 tokio.workspace = true

@@ -1,0 +1,12 @@
+[package]
+name = "om-token"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.88"
+license = "Apache-2.0"
+description = "Biscuit capability token minting, attenuation, verification, and revocation"
+
+[dependencies]
+biscuit-auth.workspace = true
+rand.workspace = true
+sha2.workspace = true

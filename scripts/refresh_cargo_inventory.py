@@ -17,7 +17,7 @@ MANIFESTS = (
 INVENTORY = ROOT / "docs" / "security" / "dependency-inventory.json"
 
 DIRECT_PURPOSES = {
-    "biscuit-auth": "Biscuit capability-token verification comparison in the optional research binary",
+    "biscuit-auth": "Biscuit public-key capability token minting, attenuation and verification in the gateway and research benchmark",
     "bytes": "HTTP body buffers for the Rust gateway and mock model",
     "ed25519-dalek": "Ed25519 attenuation-chain capability-token comparison",
     "futures-util": "Asynchronous SSE response stream composition",

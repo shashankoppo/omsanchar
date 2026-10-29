@@ -35,6 +35,9 @@ jobs:
       - name: Check and demonstrate the S1 Rust gateway
         run: make s1-check
 
+      - name: Demonstrate the S2 Biscuit capability slice
+        run: make demo-s2
+
       - name: Run dependency-free reference tests
         env:
           OM_SKIP_PYTHON_STREAM_SOAK: "1"

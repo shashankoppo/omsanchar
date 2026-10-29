@@ -5,12 +5,12 @@
       "advisory": "RUSTSEC-2026-0387",
       "package": "crypto-bigint",
       "version": "0.5.5",
-      "lockfiles": ["dataplane/sanchar-core/Cargo.lock"],
-      "scope": "Only reached through biscuit-auth's unconditional P256 dependency when the optional token-bench feature is enabled; it is not in the default om-gateway runtime feature set.",
-      "reason": "biscuit-auth 6.0.0 has no P256 feature toggle, so the requested Ed25519-only build cannot exclude this transitive package without replacing or patching Biscuit.",
+      "lockfiles": ["dataplane/sanchar-core/Cargo.lock", "crates/Cargo.lock"],
+      "scope": "Reached through biscuit-auth 6.0.0 in the om-token gateway capability-token runtime and the optional token benchmark.",
+      "reason": "Crates.io still publishes biscuit-auth 6.0.0, which unconditionally depends on P256. cargo update cannot move crypto-bigint past the elliptic-curve 0.13 constraint; the newer upstream source is not a released crate.",
       "source": "https://raw.githubusercontent.com/eclipse-biscuit/biscuit-rust/main/biscuit-auth/Cargo.toml",
       "expires": "2026-11-10",
-      "remediation": "Before expiry, replace or patch the optional Biscuit benchmark dependency, or upgrade to a release that allows P256 to be disabled; rerun cargo audit and remove this exception when clear.",
+      "remediation": "Before expiry, upgrade to a released Biscuit version that removes or gates the affected P256 dependency, or replace the dependency; rerun cargo audit and remove this exception when clear.",
       "scanner_suppression": false
     }
   ]

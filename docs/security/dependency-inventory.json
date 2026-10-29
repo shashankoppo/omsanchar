@@ -346,6 +346,14 @@
     },
     {
       "ecosystem": "cargo",
+      "name": "ed25519-dalek",
+      "version": "2.2.0",
+      "license": "BSD-3-Clause",
+      "purpose": "Ed25519 attenuation-chain capability-token comparison",
+      "source": "registry+https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "ecosystem": "cargo",
       "name": "either",
       "version": "1.19.0",
       "license": "MIT OR Apache-2.0",
@@ -1410,6 +1418,14 @@
     },
     {
       "ecosystem": "cargo",
+      "name": "time",
+      "version": "0.3.55",
+      "license": "MIT OR Apache-2.0",
+      "purpose": "Transitive dependency of the pinned Rust async mock and protocol test stack",
+      "source": "registry+https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "ecosystem": "cargo",
       "name": "time-core",
       "version": "0.1.8",
       "license": "MIT OR Apache-2.0",
@@ -1418,8 +1434,24 @@
     },
     {
       "ecosystem": "cargo",
+      "name": "time-core",
+      "version": "0.1.9",
+      "license": "MIT OR Apache-2.0",
+      "purpose": "Transitive dependency of the pinned Rust async mock and protocol test stack",
+      "source": "registry+https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "ecosystem": "cargo",
       "name": "time-macros",
       "version": "0.2.27",
+      "license": "MIT OR Apache-2.0",
+      "purpose": "Transitive dependency of the pinned Rust async mock and protocol test stack",
+      "source": "registry+https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "ecosystem": "cargo",
+      "name": "time-macros",
+      "version": "0.2.32",
       "license": "MIT OR Apache-2.0",
       "purpose": "Transitive dependency of the pinned Rust async mock and protocol test stack",
       "source": "registry+https://github.com/rust-lang/crates.io-index"

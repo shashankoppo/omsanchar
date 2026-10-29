@@ -9,7 +9,7 @@ use std::{
     pin::Pin,
     sync::Arc,
     task::{Context, Poll},
-    time::Instant,
+    time::{Instant, SystemTime},
 };
 
 use bytes::Bytes;
@@ -26,6 +26,7 @@ use hyper_util::{
     rt::{TokioExecutor, TokioIo},
 };
 use om_core::{new_request_id, valid_request_id, Address, ErrorEnvelope};
+use om_token::{Grant, RequestScope, TokenAuthority, TokenError};
 use serde::Deserialize;
 use serde_json::{json, Value};
 use tokio::{
@@ -136,6 +137,43 @@ struct AppState {
     client: UpstreamClient,
     routes: HashMap<Address, Uri>,
     streams: Arc<Semaphore>,
+    tokens: Arc<TokenAuthority>,
+    authenticator: Arc<dyn RequestAuthenticator>,
+    admin_token: Arc<str>,
+}
+
+trait RequestAuthenticator: Send + Sync {
+    fn verify(&self, token: &str, scope: &RequestScope) -> Result<(), TokenError>;
+}
+
+impl RequestAuthenticator for TokenAuthority {
+    fn verify(&self, token: &str, scope: &RequestScope) -> Result<(), TokenError> {
+        TokenAuthority::verify(self, token, scope)
+    }
+}
+
+#[derive(Deserialize)]
+struct IssueTokenRequest {
+    tenant: String,
+    model: String,
+    budget_microcredits: i64,
+    max_output_tokens: i64,
+    expires_in_seconds: u64,
+}
+
+#[derive(Deserialize)]
+struct AttenuateTokenRequest {
+    token: String,
+    tenant: String,
+    model: String,
+    budget_microcredits: i64,
+    max_output_tokens: i64,
+    expires_at_unix_seconds: u64,
+}
+
+#[derive(Deserialize)]
+struct RevokeTokenRequest {
+    token: String,
 }
 
 fn bounded_response_body(body: Incoming, permit: OwnedSemaphorePermit) -> GatewayBody {
@@ -252,6 +290,82 @@ fn api_error(
         "application/json",
         serde_json::to_value(envelope).expect("error envelope serializes"),
     )
+}
+
+fn text_response(
+    status: StatusCode,
+    request_id: &str,
+    content_type: &'static str,
+    body: String,
+) -> Response<GatewayBody> {
+    let mut result = Response::new(full_body(Bytes::from(body)));
+    *result.status_mut() = status;
+    result
+        .headers_mut()
+        .insert(CONTENT_TYPE, HeaderValue::from_static(content_type));
+    if let Ok(value) = HeaderValue::from_str(request_id) {
+        result.headers_mut().insert("x-request-id", value);
+    }
+    result
+}
+
+fn constant_time_equal(left: &[u8], right: &[u8]) -> bool {
+    if left.len() != right.len() {
+        return false;
+    }
+    left.iter()
+        .zip(right)
+        .fold(0u8, |difference, (left, right)| difference | (left ^ right))
+        == 0
+}
+
+fn is_admin_request(request: &Request<Incoming>, state: &AppState) -> bool {
+    request
+        .headers()
+        .get("x-om-admin-token")
+        .and_then(|value| value.to_str().ok())
+        .is_some_and(|provided| {
+            constant_time_equal(provided.as_bytes(), state.admin_token.as_bytes())
+        })
+}
+
+fn bearer_token(headers: &hyper::HeaderMap) -> Option<&str> {
+    let value = headers.get(hyper::header::AUTHORIZATION)?.to_str().ok()?;
+    value
+        .strip_prefix("Bearer ")
+        .filter(|token| !token.is_empty())
+}
+
+fn token_error_response(request_id: &str, error: TokenError) -> Response<GatewayBody> {
+    match error {
+        TokenError::InvalidInput(message) => {
+            api_error(StatusCode::BAD_REQUEST, request_id, "OS-0101", message)
+        }
+        TokenError::InvalidToken | TokenError::Revoked => api_error(
+            StatusCode::UNAUTHORIZED,
+            request_id,
+            "OS-0100",
+            "capability token is invalid, expired, or revoked",
+        ),
+        TokenError::Unauthorized => api_error(
+            StatusCode::FORBIDDEN,
+            request_id,
+            "OS-0101",
+            "capability token does not authorize this request",
+        ),
+        TokenError::RevocationCapacity => api_error(
+            StatusCode::SERVICE_UNAVAILABLE,
+            request_id,
+            "OS-0503",
+            "bounded token revocation capacity is full",
+        ),
+        TokenError::Internal => api_error(
+            StatusCode::INTERNAL_SERVER_ERROR,
+            request_id,
+            "OS-0600",
+            "capability token operation failed",
+        ),
+    }
 }
 
 fn load_config() -> Result<(SocketAddr, HashMap<Address, Uri>), BoxError> {
@@ -395,6 +509,178 @@ async fn handle(request: Request<Incoming>, state: AppState) -> Response<Gateway
                 )
             }
         }
+        (Method::GET, "/metrics") => text_response(
+            StatusCode::OK,
+            &id,
+            "text/plain; version=0.0.4",
+            format!(
+                "om_token_cache_entries {}\nom_token_cache_hits_total {}\nom_token_cache_evictions_total {}\nom_token_revocation_entries {}\n",
+                state.tokens.cache_entries(),
+                state.tokens.cache_hits(),
+                state.tokens.cache_evictions(),
+                state.tokens.revocation_entries(),
+            ),
+        ),
+        (Method::POST, "/v1/control/tokens") => {
+            if !is_admin_request(&request, &state) {
+                return api_error(
+                    StatusCode::UNAUTHORIZED,
+                    &id,
+                    "OS-0100",
+                    "control-plane administrator authentication is required",
+                );
+            }
+            let (_, body) = request.into_parts();
+            let body = match limited_request_body(body, MAX_REQUEST_BYTES).await {
+                Ok(body) => body,
+                Err(()) => {
+                    return api_error(
+                        StatusCode::PAYLOAD_TOO_LARGE,
+                        &id,
+                        "OS-0001",
+                        "request body exceeds the 1 MiB limit",
+                    );
+                }
+            };
+            let issue: IssueTokenRequest = match serde_json::from_slice(&body) {
+                Ok(issue) => issue,
+                Err(_) => {
+                    return api_error(
+                        StatusCode::BAD_REQUEST,
+                        &id,
+                        "OS-0001",
+                        "token grant body is invalid",
+                    );
+                }
+            };
+            if !(1..=86_400).contains(&issue.expires_in_seconds) {
+                return api_error(
+                    StatusCode::BAD_REQUEST,
+                    &id,
+                    "OS-0101",
+                    "expires_in_seconds must be between 1 and 86400",
+                );
+            }
+            let Some(expires_at_unix_seconds) = SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .ok()
+                .and_then(|now| now.as_secs().checked_add(issue.expires_in_seconds))
+            else {
+                return api_error(
+                    StatusCode::BAD_REQUEST,
+                    &id,
+                    "OS-0101",
+                    "token expiry is out of range",
+                );
+            };
+            let grant = Grant {
+                tenant: issue.tenant,
+                model: issue.model,
+                budget_microcredits: issue.budget_microcredits,
+                max_output_tokens: issue.max_output_tokens,
+                expires_at_unix_seconds,
+            };
+            match state.tokens.mint(&grant) {
+                Ok(token) => response(
+                    StatusCode::CREATED,
+                    &id,
+                    "application/json",
+                    json!({"token":token,"token_type":"Bearer","expires_at_unix_seconds":expires_at_unix_seconds}),
+                ),
+                Err(error) => token_error_response(&id, error),
+            }
+        }
+        (Method::POST, "/v1/control/tokens/attenuate") => {
+            if !is_admin_request(&request, &state) {
+                return api_error(
+                    StatusCode::UNAUTHORIZED,
+                    &id,
+                    "OS-0100",
+                    "control-plane administrator authentication is required",
+                );
+            }
+            let (_, body) = request.into_parts();
+            let body = match limited_request_body(body, MAX_REQUEST_BYTES).await {
+                Ok(body) => body,
+                Err(()) => {
+                    return api_error(
+                        StatusCode::PAYLOAD_TOO_LARGE,
+                        &id,
+                        "OS-0001",
+                        "request body exceeds the 1 MiB limit",
+                    );
+                }
+            };
+            let attenuation: AttenuateTokenRequest = match serde_json::from_slice(&body) {
+                Ok(attenuation) => attenuation,
+                Err(_) => {
+                    return api_error(
+                        StatusCode::BAD_REQUEST,
+                        &id,
+                        "OS-0001",
+                        "token attenuation body is invalid",
+                    );
+                }
+            };
+            let grant = Grant {
+                tenant: attenuation.tenant,
+                model: attenuation.model,
+                budget_microcredits: attenuation.budget_microcredits,
+                max_output_tokens: attenuation.max_output_tokens,
+                expires_at_unix_seconds: attenuation.expires_at_unix_seconds,
+            };
+            match state.tokens.attenuate(&attenuation.token, &grant) {
+                Ok(token) => response(
+                    StatusCode::CREATED,
+                    &id,
+                    "application/json",
+                    json!({"token":token,"token_type":"Bearer","expires_at_unix_seconds":grant.expires_at_unix_seconds}),
+                ),
+                Err(error) => token_error_response(&id, error),
+            }
+        }
+        (Method::POST, "/v1/control/tokens/revoke") => {
+            if !is_admin_request(&request, &state) {
+                return api_error(
+                    StatusCode::UNAUTHORIZED,
+                    &id,
+                    "OS-0100",
+                    "control-plane administrator authentication is required",
+                );
+            }
+            let (_, body) = request.into_parts();
+            let body = match limited_request_body(body, MAX_REQUEST_BYTES).await {
+                Ok(body) => body,
+                Err(()) => {
+                    return api_error(
+                        StatusCode::PAYLOAD_TOO_LARGE,
+                        &id,
+                        "OS-0001",
+                        "request body exceeds the 1 MiB limit",
+                    );
+                }
+            };
+            let revoke: RevokeTokenRequest = match serde_json::from_slice(&body) {
+                Ok(revoke) => revoke,
+                Err(_) => {
+                    return api_error(
+                        StatusCode::BAD_REQUEST,
+                        &id,
+                        "OS-0001",
+                        "token revocation body is invalid",
+                    );
+                }
+            };
+            match state.tokens.revoke(&revoke.token) {
+                Ok(()) => response(
+                    StatusCode::OK,
+                    &id,
+                    "application/json",
+                    json!({"revoked":true}),
+                ),
+                Err(error) => token_error_response(&id, error),
+            }
+        }
         (Method::POST, "/v1/chat/completions") => {
             let (parts, body) = request.into_parts();
             let body = match limited_request_body(body, MAX_REQUEST_BYTES).await {
@@ -438,6 +724,52 @@ async fn handle(request: Request<Incoming>, state: AppState) -> Response<Gateway
                     );
                 }
             };
+            let Some(token) = bearer_token(&parts.headers) else {
+                return api_error(
+                    StatusCode::UNAUTHORIZED,
+                    &id,
+                    "OS-0100",
+                    "a Biscuit bearer capability is required",
+                );
+            };
+            let Some(tenant) = parts
+                .headers
+                .get("x-om-tenant")
+                .and_then(|value| value.to_str().ok())
+            else {
+                return api_error(
+                    StatusCode::BAD_REQUEST,
+                    &id,
+                    "OS-0001",
+                    "x-om-tenant is required",
+                );
+            };
+            let Some(requested_budget_microcredits) = parts
+                .headers
+                .get("x-om-budget-microcredits")
+                .and_then(|value| value.to_str().ok())
+                .and_then(|value| value.parse::<i64>().ok())
+            else {
+                return api_error(
+                    StatusCode::BAD_REQUEST,
+                    &id,
+                    "OS-0001",
+                    "x-om-budget-microcredits must be an integer",
+                );
+            };
+            let requested_output_tokens = payload
+                .get("max_tokens")
+                .and_then(Value::as_i64)
+                .unwrap_or(0);
+            let scope = RequestScope {
+                tenant: tenant.to_owned(),
+                model: model.to_owned(),
+                requested_budget_microcredits,
+                requested_output_tokens,
+            };
+            if let Err(error) = state.authenticator.verify(token, &scope) {
+                return token_error_response(&id, error);
+            }
             let Some(upstream) = state.routes.get(&address).cloned() else {
                 return api_error(
                     StatusCode::SERVICE_UNAVAILABLE,
@@ -630,10 +962,24 @@ async fn main() -> Result<(), BoxError> {
         .http1_max_buf_size(MAX_STREAM_FRAME_BYTES)
         .pool_max_idle_per_host(32)
         .build(connector);
+    let root_secret =
+        std::env::var("OM_TOKEN_ROOT_SECRET").map_err(|_| "OM_TOKEN_ROOT_SECRET must be set")?;
+    let admin_token = std::env::var("OM_ADMIN_TOKEN").map_err(|_| "OM_ADMIN_TOKEN must be set")?;
+    if admin_token.len() < 32 {
+        return Err("OM_ADMIN_TOKEN must contain at least 32 bytes".into());
+    }
+    let tokens = Arc::new(
+        TokenAuthority::from_secret(root_secret.as_bytes())
+            .map_err(|_| "OM_TOKEN_ROOT_SECRET must contain at least 32 bytes")?,
+    );
+    let authenticator: Arc<dyn RequestAuthenticator> = tokens.clone();
     let state = AppState {
         client,
         routes,
         streams: Arc::new(Semaphore::new(MAX_CONCURRENT_STREAMS)),
+        tokens,
+        authenticator,
+        admin_token: Arc::from(admin_token),
     };
     println!(
         "{}",
@@ -654,6 +1000,7 @@ mod tests {
             Arc, Mutex,
         },
         task::{Context, Poll},
+        time::{SystemTime, UNIX_EPOCH},
     };
 
     use bytes::Bytes;
@@ -675,10 +1022,14 @@ mod tests {
     };
 
     use super::{
-        bounded_response_body_with_limits, limited_request_body, serve, AppState, BoxError,
-        UpstreamClient, UpstreamTimeout, MAX_CONCURRENT_STREAMS, MAX_HEADER_BYTES,
-        MAX_REQUEST_BYTES, MAX_STREAM_FRAME_BYTES, UPSTREAM_CONNECT_TIMEOUT,
+        bounded_response_body_with_limits, limited_request_body, serve, AppState, BoxError, Grant,
+        RequestAuthenticator, TokenAuthority, UpstreamClient, UpstreamTimeout,
+        MAX_CONCURRENT_STREAMS, MAX_HEADER_BYTES, MAX_REQUEST_BYTES, MAX_STREAM_FRAME_BYTES,
+        UPSTREAM_CONNECT_TIMEOUT,
     };
+
+    const TEST_TOKEN_SECRET: &[u8] = b"om-sanchar-test-root-secret-32-byte-minimum";
+    const TEST_ADMIN_TOKEN: &str = "om-sanchar-test-admin-secret-at-least-32-bytes";
 
     struct ScriptedBody {
         frames: VecDeque<Bytes>,
@@ -726,10 +1077,17 @@ mod tests {
     }
 
     fn state(routes: HashMap<Address, Uri>) -> AppState {
+        let tokens = Arc::new(
+            TokenAuthority::from_secret(TEST_TOKEN_SECRET).expect("test root secret is valid"),
+        );
+        let authenticator: Arc<dyn RequestAuthenticator> = tokens.clone();
         AppState {
             client: empty_client(),
             routes,
             streams: Arc::new(Semaphore::new(MAX_CONCURRENT_STREAMS)),
+            tokens,
+            authenticator,
+            admin_token: Arc::from(TEST_ADMIN_TOKEN),
         }
     }
 
@@ -827,9 +1185,30 @@ mod tests {
     fn completion_request(address: SocketAddr) -> Request<Full<Bytes>> {
         Request::post(format!("http://{address}/v1/chat/completions"))
             .header("content-type", "application/json")
+            .header("authorization", format!("Bearer {}", test_token()))
+            .header("x-om-tenant", "tenant-a")
+            .header("x-om-budget-microcredits", "1000")
             .body(Full::new(Bytes::from_static(
-                br#"{"model":"om://demo/model/default","stream":true}"#,
+                br#"{"model":"om://demo/model/default","stream":true,"max_tokens":3}"#,
             )))
+            .unwrap()
+    }
+
+    fn test_token() -> String {
+        let token_authority = TokenAuthority::from_secret(TEST_TOKEN_SECRET).unwrap();
+        let expires_at_unix_seconds = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_secs()
+            + 3_600;
+        token_authority
+            .mint(&Grant {
+                tenant: "tenant-a".to_owned(),
+                model: "om://demo/model/default".to_owned(),
+                budget_microcredits: 10_000,
+                max_output_tokens: 64,
+                expires_at_unix_seconds,
+            })
             .unwrap()
     }
 
@@ -937,8 +1316,9 @@ mod tests {
         let (address, shutdown, gateway_task) = spawn_gateway(routed_state(upstream)).await;
         let mut socket = TcpStream::connect(address).await.unwrap();
         let payload = br#"{"model":"om://demo/model/default","stream":true}"#;
+        let token = test_token();
         let request = format!(
-            "POST /v1/chat/completions HTTP/1.1\r\nHost: localhost\r\nContent-Type: application/json\r\nContent-Length: {}\r\nConnection: close\r\n\r\n",
+            "POST /v1/chat/completions HTTP/1.1\r\nHost: localhost\r\nContent-Type: application/json\r\nAuthorization: Bearer {token}\r\nx-om-tenant: tenant-a\r\nx-om-budget-microcredits: 1000\r\nContent-Length: {}\r\nConnection: close\r\n\r\n",
             payload.len()
         );
         socket.write_all(request.as_bytes()).await.unwrap();

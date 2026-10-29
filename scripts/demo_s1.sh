@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+export OM_TOKEN_ROOT_SECRET="${OM_TOKEN_ROOT_SECRET:-om-sanchar-demo-root-secret-change-before-deployment}"
+export OM_ADMIN_TOKEN="${OM_ADMIN_TOKEN:-om-sanchar-demo-admin-secret-change-before-deployment}"
+
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$repo_root"
 
@@ -55,10 +58,18 @@ wait_for_health "http://${OM_GATEWAY_LISTEN:-127.0.0.1:8080}/readyz"
 echo "Gateway health:"
 curl --fail --silent --show-error "http://${OM_GATEWAY_LISTEN:-127.0.0.1:8080}/healthz"
 echo
+token="$(curl --fail --silent --show-error \
+  --header "x-om-admin-token: ${OM_ADMIN_TOKEN}" \
+  --header 'content-type: application/json' \
+  --data '{"tenant":"tenant-a","model":"om://demo/model/default","budget_microcredits":100000,"max_output_tokens":8,"expires_in_seconds":3600}' \
+  "http://${OM_GATEWAY_LISTEN:-127.0.0.1:8080}/v1/control/tokens" | sed -n 's/.*"token":"\([^"]*\)".*/\1/p')"
 echo "Streaming completion through om-gateway:"
 response_file="$(mktemp)"
 curl --include --fail --silent --show-error --no-buffer \
   --header 'content-type: application/json' \
+  --header "authorization: Bearer ${token}" \
+  --header 'x-om-tenant: tenant-a' \
+  --header 'x-om-budget-microcredits: 30000' \
   --data '{"model":"om://demo/model/default","messages":[{"role":"user","content":"Say hello"}],"stream":true,"max_tokens":3}' \
   "http://${OM_GATEWAY_LISTEN:-127.0.0.1:8080}/v1/chat/completions" | tee "$response_file"
 echo
