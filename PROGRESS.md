@@ -2,11 +2,11 @@
 
 ## Current slice
 
-S1 Rust gateway streaming proxy. The runnable demo starts the Rust mock model and gateway, checks health, and streams three SSE chunks through the gateway with a request ID.
+S1 Rust gateway streaming proxy. The runnable demo starts the Rust mock model and gateway, checks health, and streams three SSE chunks through the gateway with a request ID. S1 hardening now enforces header/body limits, upstream deadlines, bounded stream admission and frames, back-pressure, disconnect cancellation, and graceful drain.
 
 | Slice | Feature | Status | Demo command |
 |---|---|---|---|
-| S1 | Rust gateway: OpenAI-compatible SSE proxy, routes, request IDs, JSON logs, health, graceful shutdown | working and demoed | `make demo-s1` |
+| S1 | Rust gateway: OpenAI-compatible SSE proxy, routes, request IDs, JSON logs, health, and bounded transport/shutdown behavior | working and demoed | `make demo-s1` |
 | S2 | Biscuit capability tokens: mint, attenuate, verify, revoke, cache, control-plane endpoints | not started | — |
 | S3 | Budgets, metering, NATS, Postgres, audit | not started | — |
 | S4 | JetStream durable stream resume with deduplication | not started | — |

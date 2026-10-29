@@ -5,6 +5,7 @@
       "advisory": "RUSTSEC-2026-0387",
       "package": "crypto-bigint",
       "version": "0.5.5",
+      "lockfiles": ["dataplane/sanchar-core/Cargo.lock"],
       "scope": "Only reached through biscuit-auth's unconditional P256 dependency when the optional token-bench feature is enabled; it is not in the default om-gateway runtime feature set.",
       "reason": "biscuit-auth 6.0.0 has no P256 feature toggle, so the requested Ed25519-only build cannot exclude this transitive package without replacing or patching Biscuit.",
       "source": "https://raw.githubusercontent.com/eclipse-biscuit/biscuit-rust/main/biscuit-auth/Cargo.toml",

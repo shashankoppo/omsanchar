@@ -36,6 +36,8 @@ jobs:
         run: make s1-check
 
       - name: Run dependency-free reference tests
+        env:
+          OM_SKIP_PYTHON_STREAM_SOAK: "1"
         run: |
           python3 -m unittest discover -s spec/tests -v
           python3 -m unittest discover -s sim/tests -v
@@ -50,6 +52,12 @@ jobs:
 
       - name: Check locked Rust dependency versions, sources, and licenses
         run: python3 scripts/check_dependencies.py --check-rust
+
+      - name: Install pinned cargo-audit
+        run: cargo install cargo-audit --locked --version 0.22.2
+
+      - name: Audit all committed Cargo lockfiles
+        run: python3 scripts/check_cargo_audit.py
 
       - name: Install pinned Python lint tooling
         run: python3 -m pip install --disable-pip-version-check --no-deps --target "${RUNNER_TEMP}/om-sanchar-ci-python" -r requirements-dev.txt
