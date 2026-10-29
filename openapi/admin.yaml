@@ -1,0 +1,61 @@
+openapi: 3.1.0
+info: {title: Om Sanchar Admin API, version: 0.1.0}
+servers: [{url: /admin/v1}]
+paths:
+  /auth/login: {post: {operationId: login, requestBody: {required: true, content: {application/json: {schema: {$ref: '#/components/schemas/Login'}}}}, responses: {'200': {description: Session, content: {application/json: {schema: {$ref: '#/components/schemas/Session'}}}}, '401': {$ref: '#/components/responses/Error'}}}}
+  /tenants: {get: {$ref: '#/components/x-operations/listTenants'}, post: {$ref: '#/components/x-operations/createTenant'}}
+  /principals: {get: {$ref: '#/components/x-operations/listPrincipals'}, post: {$ref: '#/components/x-operations/createPrincipal'}}
+  /api-keys: {get: {$ref: '#/components/x-operations/listApiKeys'}, post: {$ref: '#/components/x-operations/createApiKey'}}
+  /capability-tokens: {post: {$ref: '#/components/x-operations/mintToken'}}
+  /capability-tokens/attenuate: {post: {$ref: '#/components/x-operations/attenuateToken'}}
+  /capability-tokens/revoke: {post: {$ref: '#/components/x-operations/revokeToken'}}
+  /routes: {get: {$ref: '#/components/x-operations/listRoutes'}, post: {$ref: '#/components/x-operations/createRoute'}}
+  /models: {get: {$ref: '#/components/x-operations/listModels'}, post: {$ref: '#/components/x-operations/createModel'}}
+  /tools: {get: {$ref: '#/components/x-operations/listTools'}, post: {$ref: '#/components/x-operations/createTool'}}
+  /tools/catalog-preview: {get: {operationId: catalogPreview, parameters: [{name: principal_id, in: query, required: true, schema: {type: string}}], responses: {'200': {description: Catalog, content: {application/json: {schema: {type: array, items: {$ref: '#/components/schemas/Tool'}}}}}, '401': {$ref: '#/components/responses/Error'}}}}
+  /policies: {get: {$ref: '#/components/x-operations/listPolicies'}, post: {$ref: '#/components/x-operations/createPolicy'}}
+  /streams: {get: {$ref: '#/components/x-operations/listStreams'}}
+  /streams/{stream_id}/events: {get: {operationId: liveStream, parameters: [{$ref: '#/components/parameters/streamId'}], responses: {'200': {description: SSE event stream, content: {text/event-stream: {schema: {type: string}}}}, '404': {$ref: '#/components/responses/Error'}}}}
+  /streams/{stream_id}/resume: {post: {operationId: resumeStream, parameters: [{$ref: '#/components/parameters/streamId'}], requestBody: {required: true, content: {application/json: {schema: {type: object, required: [cursor], properties: {cursor: {type: integer, minimum: 0}}}}}}, responses: {'200': {description: Stream}, '410': {$ref: '#/components/responses/Error'}}}}
+  /streams/{stream_id}/cancel: {post: {operationId: cancelStream, parameters: [{$ref: '#/components/parameters/streamId'}], responses: {'204': {description: Cancelled}, '404': {$ref: '#/components/responses/Error'}}}}
+  /usage: {get: {$ref: '#/components/x-operations/listUsage'}}
+  /billing/ledger: {get: {$ref: '#/components/x-operations/listLedger'}}
+  /audit: {get: {$ref: '#/components/x-operations/listAudit'}}
+  /audit/verify: {get: {operationId: verifyAuditChain, responses: {'200': {description: Verification, content: {application/json: {schema: {type: object, required: [valid], properties: {valid: {type: boolean}, head_hash: {type: string}}}}}}}}}
+  /traces: {get: {$ref: '#/components/x-operations/listTraces'}}
+  /config/versions: {get: {$ref: '#/components/x-operations/listConfigVersions'}}
+components:
+  securitySchemes: {sessionCookie: {type: apiKey, in: cookie, name: om_session}}
+  parameters: {streamId: {name: stream_id, in: path, required: true, schema: {type: string}}}
+  responses: {Error: {description: Om Sanchar error, content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}}}
+  schemas:
+    Login: {type: object, required: [api_key], properties: {api_key: {type: string}}}
+    Session: {type: object, required: [principal, role], properties: {principal: {type: string}, role: {type: string, enum: [owner, admin, viewer]}}}
+    Error: {type: object, required: [code, message], properties: {code: {type: string, enum: [OS-0001, OS-0100, OS-0101, OS-0102, OS-0200, OS-0201, OS-0300, OS-0400, OS-0402, OS-0503, OS-0600]}, message: {type: string}, request_id: {type: string}}}
+    Resource: {type: object, required: [id, name], properties: {id: {type: string}, name: {type: string}, tenant_id: {type: string}}}
+    Tool: {allOf: [{$ref: '#/components/schemas/Resource'}, {type: object, properties: {server: {type: string}, enabled: {type: boolean}}}]}
+    TokenGrant: {type: object, required: [tenant, model, budget_microcredits, max_output_tokens], properties: {tenant: {type: string}, model: {type: string}, budget_microcredits: {type: integer, format: int64, minimum: 0}, max_output_tokens: {type: integer, minimum: 0}, expires_at_unix_seconds: {type: integer, format: int64}}}
+  x-operations:
+    listTenants: &list {operationId: listTenants, responses: {'200': {description: List, content: {application/json: {schema: {type: array, items: {$ref: '#/components/schemas/Resource'}}}}}}}
+    createTenant: &create {operationId: createTenant, requestBody: {required: true, content: {application/json: {schema: {$ref: '#/components/schemas/Resource'}}}}, responses: {'201': {description: Created}}}
+    listPrincipals: {<<: *list, operationId: listPrincipals}
+    createPrincipal: {<<: *create, operationId: createPrincipal}
+    listApiKeys: {<<: *list, operationId: listApiKeys}
+    createApiKey: {<<: *create, operationId: createApiKey}
+    listRoutes: {<<: *list, operationId: listRoutes}
+    createRoute: {<<: *create, operationId: createRoute}
+    listModels: {<<: *list, operationId: listModels}
+    createModel: {<<: *create, operationId: createModel}
+    listTools: {<<: *list, operationId: listTools}
+    createTool: {<<: *create, operationId: createTool}
+    listPolicies: {<<: *list, operationId: listPolicies}
+    createPolicy: {<<: *create, operationId: createPolicy}
+    listStreams: {<<: *list, operationId: listStreams}
+    listUsage: {<<: *list, operationId: listUsage}
+    listLedger: {<<: *list, operationId: listLedger}
+    listAudit: {<<: *list, operationId: listAudit}
+    listTraces: {<<: *list, operationId: listTraces}
+    listConfigVersions: {<<: *list, operationId: listConfigVersions}
+    mintToken: {operationId: mintToken, requestBody: {required: true, content: {application/json: {schema: {$ref: '#/components/schemas/TokenGrant'}}}}, responses: {'201': {description: Token shown once}}}
+    attenuateToken: {operationId: attenuateToken, requestBody: {required: true, content: {application/json: {schema: {$ref: '#/components/schemas/TokenGrant'}}}}, responses: {'201': {description: Narrow token}}}
+    revokeToken: {operationId: revokeToken, requestBody: {required: true, content: {application/json: {schema: {type: object, required: [token], properties: {token: {type: string}}}}}}, responses: {'204': {description: Revoked}}}

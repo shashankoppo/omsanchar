@@ -26,6 +26,7 @@ S1 Rust gateway streaming proxy. The runnable demo starts the Rust mock model an
 - Keep every demo local and deterministic. A slice is complete only when its documented command runs and shows its behavior.
 - D5 benchmarks, benchmark-host work, D7 overlay work, evidence-report expansion, and docs-pipeline changes are frozen during the implementation pivot.
 - The current local Biscuit dependency pulls P256 unconditionally within its optional benchmark feature. The dated exception is tracked in `docs/security/security-exceptions.json`; it does not suppress scanner output.
+- Console UI: admin OpenAPI 3.1 contract and mock-first React/Vite shell are being built on `console-ui`; backend compatibility remains additive after its first merge.
 
 ## Known limitation
 
