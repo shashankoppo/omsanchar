@@ -1,4 +1,4 @@
-.PHONY: dev-native dev-stack dev-stack-podman dev-stack-down dev-stack-down-podman test test-spec test-sim test-gateway test-token test-rust test-token-rust test-d5-loadgen test-mock bench-token-rust bench-d5 lint proto sbom source-sbom dependency-sbom vuln-scan container compose-build deps s1-check s2-check demo-s1 demo-s2
+.PHONY: dev up dev-native dev-stack dev-stack-podman dev-stack-down dev-stack-down-podman test test-spec test-sim test-gateway test-token test-rust test-token-rust test-d5-loadgen test-mock bench-token-rust bench-d5 lint proto sbom source-sbom dependency-sbom vuln-scan container compose-build deps s1-check s2-check demo-s1 demo-s2
 
 PYTHON ?= python3
 CARGO ?= cargo
@@ -16,6 +16,14 @@ D5_DURATION_SECS ?= 1
 D5_MAX_IN_FLIGHT ?= 100
 D5_OUTPUT ?= bench/results/d5-development-run.json
 CRATES_MANIFEST ?= crates/Cargo.toml
+
+# Fast build-first inner loop: checks only the Rust crates changed by the active slice.
+dev:
+	$(CARGO) check --locked --manifest-path $(CRATES_MANIFEST) --workspace
+
+# Build and start the prebuilt local S1/S2 stack; Ctrl+C stops both processes.
+up:
+	bash scripts/demo_s1.sh
 
 dev-native:
 	$(PYTHON) -m gateway.server

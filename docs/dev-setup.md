@@ -45,7 +45,19 @@ make lint
 make dev-native
 ```
 
-The commands work from this Windows-mounted workspace. For sustained Rust builds, keep a checkout under `~/src` on the WSL Linux filesystem to avoid Windows filesystem I/O overhead. CI pins Rust 1.88.0, the minimum supported by the security-patched `time` 0.3.47 dependency.
+The commands work from this Windows-mounted workspace, but sustained Rust work must use a native WSL checkout. The active developer setup is:
+
+```bash
+mkdir -p ~/work ~/.cache/omsanchar-target
+git clone https://github.com/shashankoppo/omsanchar.git ~/work/omsanchar
+cd ~/work/omsanchar
+export CARGO_TARGET_DIR="$HOME/.cache/omsanchar-target"
+export CARGO_INCREMENTAL=1
+make dev       # compiler-only inner loop
+make up        # builds then runs the local gateway/mock demonstration
+```
+
+Keep `CARGO_TARGET_DIR` on the WSL filesystem. This avoids the `/mnt/c` cross-filesystem compiler penalty; the target is an inner-loop rebuild under 30 seconds after dependencies are warm. CI pins Rust 1.88.0, the minimum supported by the security-patched `time` 0.3.47 dependency. `sccache` and a fast linker are used when installed by the local environment; neither is required to run the checkout.
 
 ## Integrated development stack
 
